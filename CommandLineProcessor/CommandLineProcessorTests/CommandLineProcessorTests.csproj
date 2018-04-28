@@ -56,10 +56,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLineProcessorProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommandLineProcessorContracts\CommandLineProcessorContracts.csproj">
+      <Project>{642ab68f-f0a5-4b53-8b0b-ade8a943481b}</Project>
+      <Name>CommandLineProcessorContracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandLineProcessorLib\CommandLineProcessorLib.csproj">
+      <Project>{313e1a1c-dee8-4d79-b418-ea817ac3e4a7}</Project>
+      <Name>CommandLineProcessorLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

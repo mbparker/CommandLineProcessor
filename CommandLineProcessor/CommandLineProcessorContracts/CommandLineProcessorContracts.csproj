@@ -40,6 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DuplicateCommandSelectorException.cs" />
+    <Compile Include="ICommand.cs" />
+    <Compile Include="ICommandLineProcessorService.cs" />
     <Compile Include="Ioc\IIocContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ioc\ServiceLifestyle.cs" />
