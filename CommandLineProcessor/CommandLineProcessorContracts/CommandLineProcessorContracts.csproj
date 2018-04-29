@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandNotFoundException.cs" />
     <Compile Include="DuplicateCommandSelectorException.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />

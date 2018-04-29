@@ -35,7 +35,35 @@
         }
 
         [Test]
-        public void IntIndex_WhenFirstItem_ReturnsExpectedItem()
+        public void IntIndex_WhenIndexAboveHighBound_Throws()
+        {
+            systemUnderTest.Load(mockCommandList);
+
+            Assert.That(
+                () =>
+                    {
+                        var dummy = systemUnderTest[systemUnderTest.Count];
+                    },
+                Throws.InstanceOf<ArgumentOutOfRangeException>().With.Message.EqualTo(
+                    $"Specified index is out of bounds.{Environment.NewLine}Index value: {systemUnderTest.Count}"));
+        }
+
+        [Test]
+        public void IntIndex_WhenIndexBelowLowBound_Throws()
+        {
+            systemUnderTest.Load(mockCommandList);
+
+            Assert.That(
+                () =>
+                    {
+                        var dummy = systemUnderTest[-1];
+                    },
+                Throws.InstanceOf<ArgumentOutOfRangeException>().With.Message.EqualTo(
+                    $"Specified index is out of bounds.{Environment.NewLine}Index value: {-1}"));
+        }
+
+        [Test]
+        public void IntIndex_WhenIndexIsLowBound_ReturnsExpectedItem()
         {
             systemUnderTest.Load(mockCommandList);
 
@@ -54,7 +82,7 @@
             Assert.That(
                 () => { systemUnderTest.Load(CreateCommandCollectionWithDuplicateSelectors()); },
                 Throws.InstanceOf<DuplicateCommandSelectorException>().With.Message
-                    .EqualTo($"Command Selector values must be unique."));
+                    .EqualTo("Command Selector values must be unique."));
         }
 
         [Test]
@@ -83,12 +111,54 @@
         }
 
         [Test]
+        public void StringIndex_WhenEmptySelector_Throws()
+        {
+            systemUnderTest.Load(mockCommandList);
+
+            Assert.That(
+                () =>
+                    {
+                        var dummy = systemUnderTest[string.Empty];
+                    },
+                Throws.InstanceOf<ArgumentException>().With.Message.EqualTo(
+                    $"Value is required.{Environment.NewLine}Parameter name: selector"));
+        }
+
+        [Test]
+        public void StringIndex_WhenNullSelector_Throws()
+        {
+            systemUnderTest.Load(mockCommandList);
+
+            Assert.That(
+                () =>
+                    {
+                        var dummy = systemUnderTest[null];
+                    },
+                Throws.InstanceOf<ArgumentException>().With.Message.EqualTo(
+                    $"Value is required.{Environment.NewLine}Parameter name: selector"));
+        }
+
+        [Test]
+        public void StringIndex_WhenSelectorDoesNotExist_Throws()
+        {
+            systemUnderTest.Load(mockCommandList);
+
+            Assert.That(
+                () =>
+                    {
+                        var dummy = systemUnderTest["i dont exist"];
+                    },
+                Throws.InstanceOf<CommandNotFoundException>().With.Message.EqualTo(
+                    $"Command not found.{Environment.NewLine}Selector: 'i dont exist'"));
+        }
+
+        [Test]
         public void StringIndex_WhenSubCommand_ReturnsExpectedItem()
         {
             systemUnderTest.Load(mockCommandList);
 
             Assert.That(
-                systemUnderTest["test3|s"],
+                systemUnderTest[" test3|s"],
                 Is.SameAs(
                     mockCommandList.Single(x => x.Selectors.Contains("TEst3")).Children
                         .Single(x => x.Selectors.Contains("S"))));
@@ -100,7 +170,7 @@
             systemUnderTest.Load(mockCommandList);
 
             Assert.That(
-                systemUnderTest["TEst3"],
+                systemUnderTest["TEst3 "],
                 Is.SameAs(mockCommandList.Single(x => x.Selectors.Contains("TEst3"))));
         }
 

@@ -17,9 +17,40 @@
 
         public int Count => commandLookup.Count;
 
-        public ICommand this[string selector] => commandLookup[selector.ToUpper()];
+        public ICommand this[string selector]
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(selector))
+                {
+                    throw new ArgumentException("Value is required.", nameof(selector));
+                }
 
-        public ICommand this[int index] => commandLookup.Values.ElementAt(index);
+                if (commandLookup.TryGetValue(selector.Trim().ToUpper(), out var result))
+                {
+                    return result;
+                }
+
+                throw new CommandNotFoundException("Command not found.", selector);
+            }
+        }
+
+        public ICommand this[int index]
+        {
+            get
+            {
+                try
+                {
+                    return commandLookup.Values.ElementAt(index);
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        $"Specified index is out of bounds.{Environment.NewLine}Index value: {index}",
+                        e);
+                }
+            }
+        }
 
         public void Load(IEnumerable<ICommand> commands)
         {
