@@ -17,7 +17,7 @@
 
         public int Count => commandLookup.Count;
 
-        public ICommand this[string selector] => commandLookup[selector];
+        public ICommand this[string selector] => commandLookup[selector.ToUpper()];
 
         public ICommand this[int index] => commandLookup.Values.ElementAt(index);
 
@@ -51,7 +51,13 @@
                 {
                     foreach (var selector in command.Selectors)
                     {
-                        lookup.Add($"{command.Path}|{selector.ToUpper()}", command);
+                        var path = command.Path?.ToUpper();
+                        if (!string.IsNullOrWhiteSpace(path))
+                        {
+                            path += "|";
+                        }
+
+                        lookup.Add($"{path}{selector.ToUpper()}", command);
                     }
 
                     BuildCommandLookup(lookup, command.Children);
