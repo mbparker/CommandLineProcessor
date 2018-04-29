@@ -4,7 +4,11 @@
 
     public interface ICommandLineProcessorService
     {
-        string CurrentInput { get; }
+        ICommand ActiveCommand { get; }
+
+        string LastInput { get; }
+
+        CommandLineState State { get; }
 
         void ProcessInput(string input);
 

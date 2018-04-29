@@ -40,8 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLineState.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />
+    <Compile Include="ICommandPathCalculator.cs" />
     <Compile Include="ICommandRepositoryService.cs" />
     <Compile Include="Ioc\IIocContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
