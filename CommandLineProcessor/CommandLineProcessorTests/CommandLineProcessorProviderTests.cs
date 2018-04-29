@@ -14,7 +14,7 @@
     [TestFixture]
     public class CommandLineProcessorProviderTests
     {
-        private List<ICommand> mockCommandList;
+        private ICommandRepositoryService commandRepositoryMock;
 
         private CommandLineProcessorProvider systemUnderTest;
 
@@ -54,71 +54,18 @@
         }
 
         [Test]
-        public void RegisterCommands_WhenInvoked_DoesNotThrow()
+        public void RegisterCommands_WhenInvoked_InvokesLoadOnRepository()
         {
-            Assert.DoesNotThrow(() => { systemUnderTest.RegisterCommands(mockCommandList); });
-        }
-
-        [Test]
-        public void RegisterCommands_WhenInvokedWithDuplicateSelectors_Throws()
-        {
-            Assert.That(
-                () => { systemUnderTest.RegisterCommands(CreateCommandCollectionWithDuplicateSelectors()); },
-                Throws.InstanceOf<DuplicateCommandSelectorException>().With.Message.EqualTo(
-                    $"Command Selector values must be unique."));
-        }
-
-        [Test]
-        public void RegisterCommands_WhenInvokedWithEmpty_Throws()
-        {
-            Assert.That(
-                () => { systemUnderTest.RegisterCommands(new List<ICommand>()); },
-                Throws.InstanceOf<ArgumentException>().With.Message.EqualTo(
-                    $"Collection cannot be empty.{Environment.NewLine}Parameter name: commands"));
-        }
-
-        [Test]
-        public void RegisterCommands_WhenInvokedWithNull_Throws()
-        {
-            Assert.That(
-                () => { systemUnderTest.RegisterCommands(null); },
-                Throws.InstanceOf<ArgumentNullException>().With.Message.EqualTo(
-                    $"Value cannot be null.{Environment.NewLine}Parameter name: commands"));
+            var commands = new List<ICommand>();
+            systemUnderTest.RegisterCommands(commands);
+            commandRepositoryMock.Received(1).Load(commands);
         }
 
         [SetUp]
         public void SetUp()
         {
-            systemUnderTest = new CommandLineProcessorProvider();
-            mockCommandList = new List<ICommand>(CreateValidCommandCollection());
-        }
-
-        private IEnumerable<ICommand> CreateCommandCollectionWithDuplicateSelectors()
-        {
-            var result = new List<ICommand>();
-            var command = Substitute.For<ICommand>();
-            command.Selectors.Returns(new[] { "Test", "T" });
-            command.Parent.Returns((ICommand)null);
-            result.Add(command);
-            command = Substitute.For<ICommand>();
-            command.Selectors.Returns(new[] { "Test2", "T" });
-            command.Parent.Returns((ICommand)null);
-            result.Add(command);
-            return result;
-        }
-
-        private IEnumerable<ICommand> CreateValidCommandCollection()
-        {
-            var result = new List<ICommand>();
-            var command = Substitute.For<ICommand>();
-            command.Selectors.Returns(new[] { "Test", "T" });
-            command.Parent.Returns((ICommand)null);
-            result.Add(command);
-            command = Substitute.For<ICommand>();
-            command.Selectors.Returns(new[] { "TEst2", "T2" });
-            command.Parent.Returns((ICommand)null);
-            result.Add(command);
-            return result;
+            commandRepositoryMock = Substitute.For<ICommandRepositoryService>();
+            systemUnderTest = new CommandLineProcessorProvider(commandRepositoryMock);
         }
     }
 }

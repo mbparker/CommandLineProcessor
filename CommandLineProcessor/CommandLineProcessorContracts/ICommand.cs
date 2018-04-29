@@ -12,6 +12,8 @@
 
         ICommand Parent { get; }
 
+        string Path { get; }
+
         IEnumerable<string> Selectors { get; }
 
         void Execute(params object[] args);
