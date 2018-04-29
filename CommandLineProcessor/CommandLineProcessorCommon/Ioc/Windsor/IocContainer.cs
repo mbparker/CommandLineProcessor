@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorDemo.Ioc
+﻿namespace CommandLineProcessorCommon.Ioc.Windsor
 {
     using System;
     using System.Collections.Generic;

@@ -2,8 +2,8 @@
 {
     using System;
     using System.Windows.Forms;
-
-    using CommandLineProcessorDemo.Ioc;
+   
+    using CommandLineProcessorCommon.Ioc.Windsor;
 
     static class Program
     {

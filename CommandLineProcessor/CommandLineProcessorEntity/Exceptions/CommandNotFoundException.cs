@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorContracts
+﻿namespace CommandLineProcessorEntity.Exceptions
 {
     using System;
 

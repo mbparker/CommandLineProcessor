@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorDemo.Ioc
+﻿namespace CommandLineProcessorCommon.Ioc.Windsor
 {
     using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;

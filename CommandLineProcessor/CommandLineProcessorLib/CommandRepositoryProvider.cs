@@ -6,6 +6,8 @@
 
     using CommandLineProcessorContracts;
 
+    using CommandLineProcessorEntity.Exceptions;
+
     public class CommandRepositoryProvider : ICommandRepositoryService
     {
         private readonly Dictionary<string, ICommand> commandLookup;

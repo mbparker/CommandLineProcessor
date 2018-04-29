@@ -49,6 +49,10 @@
       <Project>{642ab68f-f0a5-4b53-8b0b-ade8a943481b}</Project>
       <Name>CommandLineProcessorContracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CommandLineProcessorEntity\CommandLineProcessorEntity.csproj">
+      <Project>{2f513c2d-2ee5-47b0-9712-d0e28715dd42}</Project>
+      <Name>CommandLineProcessorEntity</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

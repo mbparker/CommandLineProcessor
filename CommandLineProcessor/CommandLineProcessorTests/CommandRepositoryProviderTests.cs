@@ -6,6 +6,8 @@
 
     using CommandLineProcessorContracts;
 
+    using CommandLineProcessorEntity.Exceptions;
+
     using CommandLineProcessorLib;
 
     using NSubstitute;

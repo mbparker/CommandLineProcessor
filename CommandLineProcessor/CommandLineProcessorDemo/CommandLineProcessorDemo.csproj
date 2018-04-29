@@ -61,8 +61,6 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Ioc\IocContainer.cs" />
-    <Compile Include="Ioc\IocContainerHolder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -89,9 +87,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommandLineProcessorCommon\CommandLineProcessorCommon.csproj">
+      <Project>{9e3ebba4-19cb-4188-9072-8287773cd7e0}</Project>
+      <Name>CommandLineProcessorCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommandLineProcessorContracts\CommandLineProcessorContracts.csproj">
       <Project>{642ab68f-f0a5-4b53-8b0b-ade8a943481b}</Project>
       <Name>CommandLineProcessorContracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandLineProcessorEntity\CommandLineProcessorEntity.csproj">
+      <Project>{2f513c2d-2ee5-47b0-9712-d0e28715dd42}</Project>
+      <Name>CommandLineProcessorEntity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandLineProcessorLib\CommandLineProcessorLib.csproj">
+      <Project>{313e1a1c-dee8-4d79-b418-ea817ac3e4a7}</Project>
+      <Name>CommandLineProcessorLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
