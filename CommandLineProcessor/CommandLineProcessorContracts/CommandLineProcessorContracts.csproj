@@ -45,6 +45,8 @@
     <Compile Include="ICommandLineProcessorService.cs" />
     <Compile Include="ICommandPathCalculator.cs" />
     <Compile Include="ICommandRepositoryService.cs" />
+    <Compile Include="IExecutableCommand.cs" />
+    <Compile Include="IInputCommand.cs" />
     <Compile Include="Ioc\IIocContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ioc\ServiceLifestyle.cs" />
