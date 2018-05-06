@@ -27,16 +27,16 @@
         {
             var result = new List<ICommand>();
 
-            var command = Substitute.For<ICommand>();
+            var command = Substitute.For<IExecutableCommand>();
             command.Selectors.Returns(new[] { "Test" });
             command.Parent.ReturnsNull();
             command.Path.Returns(string.Empty);
 
-            var subCommand1 = Substitute.For<ICommand>();
+            var subCommand1 = Substitute.For<IExecutableCommand>();
             subCommand1.Selectors.Returns(new[] { "Sub", "S" });
             subCommand1.Parent.Returns(command);
             subCommand1.Path.Returns("Test");
-            var subCommand2 = Substitute.For<ICommand>();
+            var subCommand2 = Substitute.For<IExecutableCommand>();
             subCommand2.Selectors.Returns(new[] { "Sub2", "S2" });
             subCommand2.Parent.Returns(command);
             subCommand2.Path.Returns("Test");
@@ -44,24 +44,29 @@
             command.Children.Returns(new[] { subCommand1, subCommand2 });
             result.Add(command);
 
-            command = Substitute.For<ICommand>();
+            command = Substitute.For<IExecutableCommand>();
             command.Selectors.Returns(new[] { "Test2", "T2" });
             command.Parent.ReturnsNull();
             command.Path.Returns(string.Empty);
             command.Children.Returns(new ICommand[0]);
             result.Add(command);
 
-            command = Substitute.For<ICommand>();
+            command = Substitute.For<IExecutableCommand>();
             command.Selectors.Returns(new[] { "TEst3", "T3", "TE" });
             command.Parent.ReturnsNull();
             command.Path.Returns(string.Empty);
 
-            var subCommand3 = Substitute.For<ICommand>();
+            var subCommand3 = Substitute.For<IExecutableCommand>();
             subCommand3.Selectors.Returns(new[] { "Sub", "S" });
             subCommand3.Parent.Returns(command);
             subCommand3.Path.Returns("TEst3");
 
-            command.Children.Returns(new[] { subCommand3 });
+            var subCommand4 = Substitute.For<IInputCommand>();
+            subCommand4.Selectors.Returns(new[] { "SubInput", "SI" });
+            subCommand4.Parent.Returns(command);
+            subCommand4.Path.Returns("TEst3");
+
+            command.Children.Returns(new ICommand[] { subCommand3, subCommand4 });
             result.Add(command);
 
             return result;

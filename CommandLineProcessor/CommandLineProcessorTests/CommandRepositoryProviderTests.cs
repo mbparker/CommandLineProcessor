@@ -26,7 +26,7 @@
         {
             systemUnderTest.Load(mockCommandList);
 
-            Assert.That(systemUnderTest.Count, Is.EqualTo(12));
+            Assert.That(systemUnderTest.Count, Is.EqualTo(14));
         }
 
         [Test]
