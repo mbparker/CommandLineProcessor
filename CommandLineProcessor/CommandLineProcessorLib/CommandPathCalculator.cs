@@ -11,7 +11,7 @@
             var fullyQualifiedInput = input;
             if (activeCommand != null)
             {
-                fullyQualifiedInput = activeCommand.Selectors.First() + "|" + fullyQualifiedInput;
+                fullyQualifiedInput = activeCommand.AliasSelectors.First() + "|" + fullyQualifiedInput;
                 if (!string.IsNullOrWhiteSpace(activeCommand.Path))
                 {
                     fullyQualifiedInput = activeCommand.Path + "|" + fullyQualifiedInput;

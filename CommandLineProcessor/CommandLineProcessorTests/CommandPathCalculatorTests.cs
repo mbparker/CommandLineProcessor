@@ -27,7 +27,7 @@
         public void CalculateFullyQualifiedPath_WhenInvokedWithSubCommand_ReturnsExpectedPath()
         {
             var commandMock = Substitute.For<ICommand>();
-            commandMock.Selectors.Returns(new[] { "CS1", "CS2" });
+            commandMock.AliasSelectors.Returns(new[] { "CS1", "CS2" });
             commandMock.Path.Returns("root|next");
 
             var input = "command";
@@ -41,7 +41,7 @@
         public void CalculateFullyQualifiedPath_WhenInvokedWithTopLevelCommand_ReturnsExpectedPath()
         {
             var commandMock = Substitute.For<ICommand>();
-            commandMock.Selectors.Returns(new[] { "CS1", "CS2" });
+            commandMock.AliasSelectors.Returns(new[] { "CS1", "CS2" });
 
             var input = "command";
             var expected = "CS1|command";

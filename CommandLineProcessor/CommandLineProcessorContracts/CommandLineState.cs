@@ -6,6 +6,8 @@
 
         WaitingForCommandRegistration,
 
-        WaitingForCommand
+        WaitingForCommand,
+
+        WaitingForInput
     }
 }

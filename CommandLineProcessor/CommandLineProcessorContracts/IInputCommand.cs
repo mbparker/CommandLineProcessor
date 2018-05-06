@@ -1,7 +1,15 @@
 ﻿namespace CommandLineProcessorContracts
 {
+    using System.Collections.Generic;
+
     public interface IInputCommand : ICommand
     {
-        string Data { get; set; }
+        IDictionary<string, object> Inputs { get; }
+
+        ICommand NextCommand { get; }
+
+        string Prompt { get; }
+
+        void ApplyInput(string inputText);
     }
 }

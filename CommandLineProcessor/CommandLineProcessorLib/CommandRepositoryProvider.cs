@@ -78,11 +78,12 @@
 
         private void BuildCommandLookup(IDictionary<string, ICommand> lookup, IEnumerable<ICommand> commandList)
         {
+            string selectorText = string.Empty;
             try
             {
                 foreach (var command in commandList)
                 {
-                    foreach (var selector in command.Selectors)
+                    if (!string.IsNullOrWhiteSpace(command.PrimarySelector))
                     {
                         var path = command.Path?.ToUpper();
                         if (!string.IsNullOrWhiteSpace(path))
@@ -90,15 +91,26 @@
                             path += "|";
                         }
 
-                        lookup.Add($"{path}{selector.ToUpper()}", command);
-                    }
+                        selectorText = $"{path}{command.PrimarySelector.ToUpper()}";
+                        lookup.Add(selectorText, command);
 
-                    BuildCommandLookup(lookup, command.Children);
+                        foreach (var selector in command.AliasSelectors)
+                        {
+                            selectorText = $"{path}{selector.ToUpper()}";
+                            lookup.Add(selectorText, command);
+                        }
+
+                        var children = (command as IContainerCommand)?.Children;
+                        if (children != null)
+                        {
+                            BuildCommandLookup(lookup, children);
+                        }
+                    }
                 }
             }
             catch (ArgumentException e)
             {
-                throw new DuplicateCommandSelectorException("Command Selector values must be unique.", e);
+                throw new DuplicateCommandSelectorException($"Cannot add '{selectorText}'. Command Selector values must be unique.", e);
             }
         }
     }

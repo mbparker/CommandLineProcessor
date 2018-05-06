@@ -66,29 +66,34 @@
             systemUnderTest.RegisterCommands(validCommandCollection);
             var command = SetUpCommand();
 
-            systemUnderTest.ProcessInput(command.Selectors.First());
+            systemUnderTest.ProcessInput(command.PrimarySelector);
 
             Assert.That(systemUnderTest.ActiveCommand, Is.SameAs(command));
         }
 
         [Test]
-        public void ProcessInput_WhenMatchingSubCommand_SetsActiveCommand()
+        public void ProcessInput_WhenMatchingInputSubCommand_InvokexExecuteOnInputsChild()
         {
             systemUnderTest.RegisterCommands(validCommandCollection);
-            var command = SetUpCommand();
-            var subCommand = SetUpSubCommand(command);
 
-            systemUnderTest.ProcessInput(command.Selectors.First());
-            systemUnderTest.ProcessInput(subCommand.Selectors.First());
+            ICommand command = validCommandCollection.Single(x => x.PrimarySelector.ToUpper() == "TEST3");
+            SetUpCommand(command);
+            command = (command as IContainerCommand).Children.First(x => x.PrimarySelector.ToUpper() == "SUBINPUT");
+            SetUpCommand(command);
+            command = (command as IInputCommand).NextCommand;
 
-            Assert.That(systemUnderTest.ActiveCommand, Is.SameAs(subCommand));
+            systemUnderTest.ProcessInput("test3");
+            systemUnderTest.ProcessInput("subinput");
+            systemUnderTest.ProcessInput("Hello World");
+
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<object[]>());
         }
 
         [Test]
         public void ProcessInput_WhenWaitingForCommand_TriesToGetCommand()
         {
             systemUnderTest.RegisterCommands(validCommandCollection);
-            var commandFirstSelector = SetUpCommand().Selectors.First();
+            var commandFirstSelector = SetUpCommand().PrimarySelector;
 
             systemUnderTest.ProcessInput(commandFirstSelector);
 
@@ -135,23 +140,20 @@
 
         private ICommand SetUpCommand()
         {
-            var command = validCommandCollection.First();
-            var commandFirstSelector = command.Selectors.First();
+            var command = validCommandCollection.First();            
+            var commandFirstSelector = command.PrimarySelector;
             commandRepositoryMock[commandFirstSelector].Returns(command);
             commandPathCalculatorMock.CalculateFullyQualifiedPath(null, commandFirstSelector)
                 .Returns(commandFirstSelector);
             return command;
         }
 
-        private ICommand SetUpSubCommand(ICommand command)
+        private void SetUpCommand(ICommand command)
         {
-            var commandFirstSelector = command.Selectors.First();
-            var subCommand = command.Children.First();
-            var subCommandFirstSelector = subCommand.Selectors.First();
-            commandRepositoryMock[commandFirstSelector + "|" + subCommandFirstSelector].Returns(subCommand);
-            commandPathCalculatorMock.CalculateFullyQualifiedPath(command, subCommandFirstSelector)
-                .Returns(commandFirstSelector + "|" + subCommandFirstSelector);
-            return subCommand;
+            var commandFirstSelector = command.PrimarySelector.ToLower();
+            commandRepositoryMock[commandFirstSelector].Returns(command);
+            commandPathCalculatorMock.CalculateFullyQualifiedPath(command.Parent, commandFirstSelector)
+                .Returns(commandFirstSelector);
         }
     }
 }

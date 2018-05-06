@@ -83,7 +83,7 @@
             Assert.That(
                 () => { systemUnderTest.Load(CommandGenerator.GenerateCommandCollectionWithDuplicateSelectors()); },
                 Throws.InstanceOf<DuplicateCommandSelectorException>().With.Message
-                    .EqualTo("Command Selector values must be unique."));
+                    .EqualTo("Cannot add 'T'. Command Selector values must be unique."));
         }
 
         [Test]
@@ -161,8 +161,8 @@
             Assert.That(
                 systemUnderTest[" test3|s"],
                 Is.SameAs(
-                    mockCommandList.Single(x => x.Selectors.Contains("TEst3")).Children
-                        .Single(x => x.Selectors.Contains("S"))));
+                    (mockCommandList.Single(x => x.PrimarySelector == "TEst3") as IContainerCommand).Children
+                        .Single(x => x.AliasSelectors.Contains("S"))));
         }
 
         [Test]
@@ -172,7 +172,7 @@
 
             Assert.That(
                 systemUnderTest["TEst3 "],
-                Is.SameAs(mockCommandList.Single(x => x.Selectors.Contains("TEst3"))));
+                Is.SameAs(mockCommandList.Single(x => x.PrimarySelector == "TEst3")));
         }
     }
 }

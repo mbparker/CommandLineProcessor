@@ -5,6 +5,8 @@
    
     using CommandLineProcessorCommon.Ioc.Windsor;
 
+    using CommandLineProcessorContracts;
+
     static class Program
     {
         /// <summary>
@@ -19,7 +21,8 @@
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 ContainerRegistration.RegisterServices(IocContainerHolder.Container);
-                Application.Run(new FormMain());
+                var processor = IocContainerHolder.Container.Resolve<ICommandLineProcessorService>();
+                Application.Run(new FormMain(processor));
             }
             finally
             {

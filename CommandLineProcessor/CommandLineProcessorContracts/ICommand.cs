@@ -4,16 +4,16 @@
 
     public interface ICommand
     {
-        IEnumerable<ICommand> Children { get; }
+        IEnumerable<string> AliasSelectors { get; }
 
         string HelpText { get; }
 
         string Name { get; }
 
-        ICommand Parent { get; }
+        ICommand Parent { get; set; }
 
         string Path { get; }
 
-        IEnumerable<string> Selectors { get; }
+        string PrimarySelector { get; }
     }
 }
