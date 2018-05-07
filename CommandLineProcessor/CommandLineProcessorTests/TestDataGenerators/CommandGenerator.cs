@@ -61,6 +61,7 @@
             command.AliasSelectors.Returns(new[] { "T3", "TE" });
             command.Parent.ReturnsNull();
             command.Path.Returns(string.Empty);
+            command.Name.Returns("Test Command 3");
 
             var subCommand3 = Substitute.For<IExecutableCommand>();
             subCommand3.PrimarySelector.Returns("Sub");
@@ -72,7 +73,9 @@
             subCommand4.PrimarySelector.Returns("SubInput");
             subCommand4.AliasSelectors.Returns(new[] { "SI" });
             subCommand4.Parent.Returns(command);
-            subCommand4.Path.Returns("TEst3");            
+            subCommand4.Path.Returns("TEst3");
+            subCommand4.Prompt.Returns("Prompt Text");
+            subCommand4.Name.Returns(x => subCommand4.Parent.Name);
 
             var subCommand5 = Substitute.For<IExecutableCommand>();
             subCommand5.PrimarySelector.ReturnsNull();

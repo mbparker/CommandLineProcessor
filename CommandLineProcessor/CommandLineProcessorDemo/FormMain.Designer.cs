@@ -28,50 +28,50 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textEdit_CommandLine = new DevExpress.XtraEditors.TextEdit();
-            this.memoEdit_CommandHistory = new DevExpress.XtraEditors.MemoEdit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit_CommandLine.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.memoEdit_CommandHistory.Properties)).BeginInit();
+            this.textBox_CommandLine = new System.Windows.Forms.TextBox();
+            this.textBox_CommandHistory = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // textEdit_CommandLine
+            // textBox_CommandLine
             // 
-            this.textEdit_CommandLine.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.textEdit_CommandLine.Location = new System.Drawing.Point(0, 430);
-            this.textEdit_CommandLine.Name = "textEdit_CommandLine";
-            this.textEdit_CommandLine.Size = new System.Drawing.Size(800, 20);
-            this.textEdit_CommandLine.TabIndex = 0;
-            this.textEdit_CommandLine.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textEdit_CommandLine_KeyUp);
+            this.textBox_CommandLine.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textBox_CommandLine.Location = new System.Drawing.Point(0, 532);
+            this.textBox_CommandLine.Name = "textBox_CommandLine";
+            this.textBox_CommandLine.Size = new System.Drawing.Size(1067, 22);
+            this.textBox_CommandLine.TabIndex = 2;
+            this.textBox_CommandLine.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_CommandLine_KeyDown);
             // 
-            // memoEdit_CommandHistory
+            // textBox_CommandHistory
             // 
-            this.memoEdit_CommandHistory.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.memoEdit_CommandHistory.Location = new System.Drawing.Point(0, 334);
-            this.memoEdit_CommandHistory.Name = "memoEdit_CommandHistory";
-            this.memoEdit_CommandHistory.Properties.ReadOnly = true;
-            this.memoEdit_CommandHistory.Size = new System.Drawing.Size(800, 96);
-            this.memoEdit_CommandHistory.TabIndex = 1;
+            this.textBox_CommandHistory.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textBox_CommandHistory.Location = new System.Drawing.Point(0, 384);
+            this.textBox_CommandHistory.Multiline = true;
+            this.textBox_CommandHistory.Name = "textBox_CommandHistory";
+            this.textBox_CommandHistory.ReadOnly = true;
+            this.textBox_CommandHistory.Size = new System.Drawing.Size(1067, 148);
+            this.textBox_CommandHistory.TabIndex = 3;
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.memoEdit_CommandHistory);
-            this.Controls.Add(this.textEdit_CommandLine);
+            this.ClientSize = new System.Drawing.Size(1067, 554);
+            this.Controls.Add(this.textBox_CommandHistory);
+            this.Controls.Add(this.textBox_CommandLine);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormMain";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.FormMain_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit_CommandLine.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.memoEdit_CommandHistory.Properties)).EndInit();
+            this.Shown += new System.EventHandler(this.FormMain_Shown);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private DevExpress.XtraEditors.TextEdit textEdit_CommandLine;
-        private DevExpress.XtraEditors.MemoEdit memoEdit_CommandHistory;
+        private System.Windows.Forms.TextBox textBox_CommandLine;
+        private System.Windows.Forms.TextBox textBox_CommandHistory;
     }
 }
 

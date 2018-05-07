@@ -22,7 +22,8 @@
                 Application.SetCompatibleTextRenderingDefault(false);
                 ContainerRegistration.RegisterServices(IocContainerHolder.Container);
                 var processor = IocContainerHolder.Container.Resolve<ICommandLineProcessorService>();
-                Application.Run(new FormMain(processor));
+                var inputHandler = IocContainerHolder.Container.Resolve<IInputHandlerService>();
+                Application.Run(new FormMain(processor, inputHandler));
             }
             finally
             {

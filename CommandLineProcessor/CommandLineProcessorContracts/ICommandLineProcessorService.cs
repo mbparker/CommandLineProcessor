@@ -8,10 +8,10 @@
 
         string LastInput { get; }
 
-        CommandLineState State { get; }
+        CommandLineState State { get; }        
 
         void ProcessInput(string input);
 
-        void RegisterCommands(IEnumerable<ICommand> commands);
+        void RegisterCommands(IEnumerable<ICommand> commands);        
     }
 }

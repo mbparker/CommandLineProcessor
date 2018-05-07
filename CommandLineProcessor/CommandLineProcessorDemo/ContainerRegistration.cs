@@ -12,6 +12,7 @@
             container.Register<ICommandLineProcessorService, CommandLineProcessorProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandRepositoryService, CommandRepositoryProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandPathCalculator, CommandPathCalculator>(ServiceLifestyle.Transient);
+            container.Register<IInputHandlerService, InputHandlerProvider>(ServiceLifestyle.Transient);
         }
     }
 }

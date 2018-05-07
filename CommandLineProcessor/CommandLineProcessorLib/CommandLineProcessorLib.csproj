@@ -43,9 +43,14 @@
     <Compile Include="CommandLineProcessorProvider.cs" />
     <Compile Include="CommandPathCalculator.cs" />
     <Compile Include="CommandRepositoryProvider.cs" />
+    <Compile Include="InputHandlerProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommandLineProcessorCommon\CommandLineProcessorCommon.csproj">
+      <Project>{9E3EBBA4-19CB-4188-9072-8287773CD7E0}</Project>
+      <Name>CommandLineProcessorCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommandLineProcessorContracts\CommandLineProcessorContracts.csproj">
       <Project>{642ab68f-f0a5-4b53-8b0b-ade8a943481b}</Project>
       <Name>CommandLineProcessorContracts</Name>
