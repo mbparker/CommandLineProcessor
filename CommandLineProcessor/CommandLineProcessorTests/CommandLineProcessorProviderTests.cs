@@ -84,9 +84,55 @@
 
             systemUnderTest.ProcessInput("test3");
             systemUnderTest.ProcessInput("subinput");
+
+            Assert.That(systemUnderTest.State, Is.EqualTo(CommandLineState.WaitingForInput));
+
             systemUnderTest.ProcessInput("Hello World");
 
             (command as IExecutableCommand).Received(1).Execute(Arg.Any<object[]>());
+            Assert.IsNull(systemUnderTest.ActiveCommand);
+        }
+
+        [Test]
+        public void ProcessInput_WhenCancel_MakesParentInputOrContainerActive()
+        {
+            systemUnderTest.RegisterCommands(validCommandCollection);
+
+            var rootCommand = validCommandCollection.Single(x => x.PrimarySelector.ToUpper() == "TEST3");
+            var command = rootCommand;
+            SetUpCommand(command);
+            command = (command as IContainerCommand).Children.First(x => x.PrimarySelector.ToUpper() == "SUBINPUT");
+            SetUpCommand(command);
+            command = (command as IInputCommand).NextCommand;
+
+            systemUnderTest.ProcessInput("test3");
+            systemUnderTest.ProcessInput("subinput");
+            systemUnderTest.ProcessInput("^c");
+
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<object[]>());
+            Assert.AreSame(systemUnderTest.ActiveCommand, rootCommand);
+            Assert.That(systemUnderTest.State, Is.EqualTo(CommandLineState.WaitingForCommand));
+        }
+
+        [Test]
+        public void ProcessInput_WhenMultipleCancel_GoesBackToNoActiveCommand()
+        {
+            systemUnderTest.RegisterCommands(validCommandCollection);
+
+            var rootCommand = validCommandCollection.Single(x => x.PrimarySelector.ToUpper() == "TEST3");
+            var command = rootCommand;
+            SetUpCommand(command);
+            command = (command as IContainerCommand).Children.First(x => x.PrimarySelector.ToUpper() == "SUBINPUT");
+            SetUpCommand(command);
+            command = (command as IInputCommand).NextCommand;
+
+            systemUnderTest.ProcessInput("test3");
+            systemUnderTest.ProcessInput("subinput");
+            systemUnderTest.ProcessInput("^c||^c||^c");
+
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<object[]>());
+            Assert.IsNull(systemUnderTest.ActiveCommand);
+            Assert.That(systemUnderTest.State, Is.EqualTo(CommandLineState.WaitingForCommand));
         }
 
         [Test]

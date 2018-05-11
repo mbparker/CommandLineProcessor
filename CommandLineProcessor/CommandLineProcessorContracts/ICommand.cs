@@ -15,5 +15,8 @@
         string Path { get; }
 
         string PrimarySelector { get; }
+
+        bool CommandIs<T>()
+            where T : class;
     }
 }

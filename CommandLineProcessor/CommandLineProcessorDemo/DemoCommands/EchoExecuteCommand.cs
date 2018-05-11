@@ -5,7 +5,7 @@
 
     using CommandLineProcessorContracts;
 
-    public class EchoExecuteCommand : IExecutableCommand
+    public class EchoExecuteCommand : BaseCommand, IExecutableCommand
     {
         private readonly Action<string> executeAction;
 
@@ -14,17 +14,17 @@
             this.executeAction = executeAction;
         }
 
-        public IEnumerable<string> AliasSelectors => new string[0];
+        public override IEnumerable<string> AliasSelectors => new string[0];
 
-        public string HelpText => string.Empty;
+        public override string HelpText => string.Empty;
 
-        public string Name => string.Empty;
+        public override string Name => string.Empty;
 
-        public ICommand Parent { get; set; }
+        public override ICommand Parent { get; set; }
 
-        public string Path => Parent?.PrimarySelector ?? string.Empty;
+        public override string Path => Parent?.PrimarySelector ?? string.Empty;
 
-        public string PrimarySelector => "EchoExecute";
+        public override string PrimarySelector => "EchoExecute";
 
         public void Execute(params object[] args)
         {

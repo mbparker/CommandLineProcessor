@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseCommand.cs" />
     <Compile Include="CommandLineState.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />

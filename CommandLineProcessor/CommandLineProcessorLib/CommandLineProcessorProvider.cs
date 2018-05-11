@@ -6,6 +6,8 @@
 
     using CommandLineProcessorContracts;
 
+    using CommandLineProcessorEntity;
+
     public class CommandLineProcessorProvider : ICommandLineProcessorService
     {
         private readonly ICommandPathCalculator commandPathCalculator;
@@ -19,11 +21,14 @@
             this.commandRepository = commandRepository;
             this.commandPathCalculator = commandPathCalculator;
             State = CommandLineState.WaitingForCommandRegistration;
+            Settings = new CommandLineSettings();
         }
 
         public ICommand ActiveCommand { get; private set; }
 
         public string LastInput { get; private set; }
+
+        public CommandLineSettings Settings { get; set; }
 
         public CommandLineState State { get; private set; }
 
@@ -32,11 +37,10 @@
             if (string.IsNullOrWhiteSpace(input))
             {
                 throw new ArgumentException("Value is required.", nameof(input));
-            }
+            }            
 
-            LastInput = input;
-
-            ProcessInputBasedOnState(input);
+            string[] inputElements = SplitInput(input);
+            ProcessInput(inputElements);
         }
 
         public void RegisterCommands(IEnumerable<ICommand> commands)
@@ -55,6 +59,21 @@
             return ((ActiveCommand as IContainerCommand)?.Children.Count() ?? 0) == 1;
         }
 
+        private void CancelCurrentCommand()
+        {
+            ActiveCommand = ActiveCommand?.Parent;
+            while (ActiveCommand != null)
+            {
+                if (ActiveCommand.CommandIs<IInputCommand>() || ActiveCommand.CommandIs<IContainerCommand>())
+                {
+                    UpdateStateForEndOfProcessing();
+                    return;
+                }
+
+                ActiveCommand = ActiveCommand.Parent;
+            }
+        }
+
         private string GetFullyQualifiedInput(string input)
         {
             return commandPathCalculator.CalculateFullyQualifiedPath(ActiveCommand, input);
@@ -69,14 +88,20 @@
 
         private void HandleCommand()
         {
-            if (ActiveCommandHasNoChildren())
+            if (ActiveCommand.CommandIs<IContainerCommand>())
             {
-                TryExecuteActiveCommand();
+                if (ActiveCommandHasNoChildren())
+                {
+                    TryExecuteActiveCommand();
+                }
+                else if (ActiveCommandHasOneChild())
+                {
+                    MakeSingleChildActive();
+                    TryExecuteActiveCommand();
+                }
             }
-
-            if (ActiveCommandHasOneChild())
+            else if (ActiveCommand.CommandIs<IExecutableCommand>())
             {
-                MakeSingleChildActive();
                 TryExecuteActiveCommand();
             }
 
@@ -95,9 +120,23 @@
             ActiveCommand = (ActiveCommand as IContainerCommand)?.Children.First();
         }
 
+        private void ProcessInput(IEnumerable<string> inputs)
+        {
+            foreach (var input in inputs)
+            {
+                ProcessInputBasedOnState(input);
+            }
+        }
+
         private void ProcessInputBasedOnState(string input)
         {
-            if (State == CommandLineState.WaitingForCommand)
+            LastInput = input;
+
+            if (input.ToUpper() == Settings.CancelToken)
+            {
+                CancelCurrentCommand();
+            }
+            else if (State == CommandLineState.WaitingForCommand)
             {
                 HandleCommand(input);
             }
@@ -112,19 +151,23 @@
             ActiveCommand = commandRepository[fullyQualifiedInput];
         }
 
+        private string[] SplitInput(string input)
+        {
+            return input.Split(new[] { "||" }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         private void TryExecuteActiveCommand()
         {
-            var executable = ActiveCommand as IExecutableCommand;
-            if (executable != null)
+            if (ActiveCommand is IExecutableCommand exe)
             {
-                executable.Execute(executable.GetArguments());
+                exe.Execute(exe.GetArguments());
                 ActiveCommand = null;
             }
         }
 
         private void UpdateStateForEndOfProcessing()
         {
-            if ((ActiveCommand as IInputCommand) != null)
+            if (ActiveCommand?.CommandIs<IInputCommand>() ?? false)
             {
                 State = CommandLineState.WaitingForInput;
             }

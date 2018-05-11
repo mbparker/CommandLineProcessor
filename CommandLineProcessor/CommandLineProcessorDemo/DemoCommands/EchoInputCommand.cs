@@ -4,7 +4,7 @@
 
     using CommandLineProcessorContracts;
 
-    public class EchoInputCommand : IInputCommand
+    public class EchoInputCommand : BaseCommand, IInputCommand
     {
         public EchoInputCommand(IExecutableCommand nextCommand)
         {
@@ -12,21 +12,21 @@
             Inputs = new Dictionary<string, object>();
         }
 
-        public IEnumerable<string> AliasSelectors => new[] { "E" };
+        public override IEnumerable<string> AliasSelectors => new[] { "E" };
 
-        public string HelpText => "Writes out the specified text to the history window.";
+        public override string HelpText => "Writes out the specified text to the history window.";
 
         public IDictionary<string, object> Inputs { get; }
 
-        public string Name => "Echo";
+        public override string Name => "Echo";
 
         public ICommand NextCommand { get; }
 
-        public ICommand Parent { get; set; }
+        public override ICommand Parent { get; set; }
 
-        public string Path => string.Empty;
+        public override string Path => string.Empty;
 
-        public string PrimarySelector => "Echo";
+        public override string PrimarySelector => "Echo";
 
         public string Prompt => "Enter Text";
 
