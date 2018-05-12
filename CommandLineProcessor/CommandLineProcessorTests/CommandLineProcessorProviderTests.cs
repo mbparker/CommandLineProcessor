@@ -25,6 +25,10 @@
 
         private List<ICommand> validCommandCollection;
 
+        private ICommandContextFactory commandContextFactoryMock;
+
+        private ICommandContext commandContextMock;
+
         [Test]
         public void ProcessInput_WhenCancel_MakesParentInputOrContainerActive()
         {
@@ -41,7 +45,7 @@
             systemUnderTest.ProcessInput("subinput");
             systemUnderTest.ProcessInput("^c");
 
-            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<object[]>());
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
             Assert.AreSame(systemUnderTest.ActiveCommand, rootCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
         }
@@ -117,7 +121,7 @@
 
             systemUnderTest.ProcessInput("Hello World");
 
-            (command as IExecutableCommand).Received(1).Execute(Arg.Any<object[]>());
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
 
@@ -147,7 +151,7 @@
             systemUnderTest.ProcessInput("subinput");
             systemUnderTest.ProcessInput("^c||^c||^c");
 
-            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<object[]>());
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
         }
@@ -170,13 +174,13 @@
             systemUnderTest.ProcessInput("subinput");
             systemUnderTest.ProcessInput("`test3||subinput||hello world");
 
-            (command as IExecutableCommand).Received(1).Execute(Arg.Any<object[]>());
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
             Assert.AreSame(systemUnderTest.ActiveCommand, inputCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForInput));
 
             systemUnderTest.ProcessInput("Hello World");
 
-            (command as IExecutableCommand).Received(2).Execute(Arg.Any<object[]>());
+            (command as IExecutableCommand).Received(2).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
         }
@@ -239,7 +243,10 @@
             validCommandCollection = CommandGenerator.GenerateValidCommandCollection().ToList();
             commandRepositoryMock = Substitute.For<ICommandRepositoryService>();
             commandPathCalculatorMock = Substitute.For<ICommandPathCalculator>();
-            systemUnderTest = new CommandLineProcessorProvider(commandRepositoryMock, commandPathCalculatorMock);
+            commandContextMock = Substitute.For<ICommandContext>();
+            commandContextFactoryMock = Substitute.For<ICommandContextFactory>();
+            commandContextFactoryMock.Create().Returns(commandContextMock);
+            systemUnderTest = new CommandLineProcessorProvider(commandRepositoryMock, commandPathCalculatorMock, commandContextFactoryMock);
         }
 
         [Test]

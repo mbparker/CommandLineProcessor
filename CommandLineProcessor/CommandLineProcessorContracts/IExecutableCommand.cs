@@ -2,8 +2,8 @@
 {
     public interface IExecutableCommand : ICommand
     {
-        void Execute(params object[] args);
+        void Execute(ICommandContext context, params object[] args);
 
-        object[] GetArguments();
+        object[] GetArguments(ICommandContext context);
     }
 }

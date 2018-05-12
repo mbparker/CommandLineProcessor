@@ -14,18 +14,26 @@
 
         private readonly ICommandRepositoryService commandRepository;
 
+        private readonly ICommandContextFactory contextFactory;
+
         private readonly Stack<CommandLineProcessorState> stateStack;
 
         private CommandLineProcessorState state;
 
         public CommandLineProcessorProvider(
             ICommandRepositoryService commandRepository,
-            ICommandPathCalculator commandPathCalculator)
+            ICommandPathCalculator commandPathCalculator,
+            ICommandContextFactory contextFactory)
         {
             this.commandRepository = commandRepository;
             this.commandPathCalculator = commandPathCalculator;
+            this.contextFactory = contextFactory;
             stateStack = new Stack<CommandLineProcessorState>();
-            state = new CommandLineProcessorState { Status = CommandLineStatus.WaitingForCommandRegistration };
+            state = new CommandLineProcessorState
+                        {
+                            Status = CommandLineStatus.WaitingForCommandRegistration,
+                            Context = this.contextFactory.Create()
+                        };
             Settings = new CommandLineSettings();
         }
 
@@ -182,11 +190,16 @@
 
             UpdateStateForEndOfProcessing();
             TryResumePreviousCommand();
+
+            if (StackDepth == 0 && ActiveCommand == null)
+            {
+                state.Context.DataStore.Clear();
+            }
         }
 
         private void HandleInput(string input)
         {
-            (ActiveCommand as IInputCommand)?.ApplyInput(input);
+            (ActiveCommand as IInputCommand)?.ApplyInput(state.Context, input);
             ActiveCommand = (ActiveCommand as IInputCommand)?.NextCommand;
             HandleCommand();
         }
@@ -267,14 +280,15 @@
             }
 
             stateStack.Push(state);
-            state = new CommandLineProcessorState { Status = CommandLineStatus.WaitingForCommand };
+            state = new CommandLineProcessorState
+                        { Status = CommandLineStatus.WaitingForCommand, Context = contextFactory.Create() };
         }
 
         private void TryExecuteActiveCommand()
         {
             if (ActiveCommand is IExecutableCommand exe)
             {
-                exe.Execute(exe.GetArguments());
+                exe.Execute(state.Context, exe.GetArguments(state.Context));
                 ActiveCommand = null;
             }
         }
@@ -302,6 +316,8 @@
         private class CommandLineProcessorState
         {
             public ICommand Command { get; set; }
+
+            public ICommandContext Context { get; set; }
 
             public CommandLineStatus Status { get; set; }
         }

@@ -13,6 +13,8 @@
             container.Register<ICommandRepositoryService, CommandRepositoryProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandPathCalculator, CommandPathCalculator>(ServiceLifestyle.Transient);
             container.Register<IInputHandlerService, InputHandlerProvider>(ServiceLifestyle.Transient);
+            container.Register<ICommandContext, CommandContext>(ServiceLifestyle.Transient);
+            container.RegisterAsFactory<ICommandContextFactory>(ServiceLifestyle.Singleton);
         }
     }
 }

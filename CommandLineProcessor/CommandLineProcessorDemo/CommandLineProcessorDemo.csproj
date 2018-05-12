@@ -57,8 +57,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContainerRegistration.cs" />
+    <Compile Include="DemoCommands\AddExecuteCommand.cs" />
+    <Compile Include="DemoCommands\AddInputCommand1.cs" />
+    <Compile Include="DemoCommands\AddInputCommand2.cs" />
     <Compile Include="DemoCommands\EchoExecuteCommand.cs" />
     <Compile Include="DemoCommands\EchoInputCommand.cs" />
+    <Compile Include="DemoCommands\MathCommand.cs" />
+    <Compile Include="DemoCommands\MultiplyInputCommand1.cs" />
+    <Compile Include="DemoCommands\MultiplyInputCommand2.cs" />
+    <Compile Include="DemoCommands\MultiplyExecuteCommand.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -47,6 +47,8 @@
     <Compile Include="CommandLineStatus.cs" />
     <Compile Include="CommandLineStatusChangedEventArgs.cs" />
     <Compile Include="ICommand.cs" />
+    <Compile Include="ICommandContext.cs" />
+    <Compile Include="ICommandContextFactory.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />
     <Compile Include="ICommandPathCalculator.cs" />
     <Compile Include="ICommandRepositoryService.cs" />

@@ -1,7 +1,5 @@
 ﻿namespace CommandLineProcessorLib
 {
-    using System.Linq;
-
     using CommandLineProcessorContracts;
 
     public class CommandPathCalculator : ICommandPathCalculator
@@ -11,7 +9,7 @@
             var fullyQualifiedInput = input;
             if (activeCommand != null)
             {
-                fullyQualifiedInput = activeCommand.AliasSelectors.First() + "|" + fullyQualifiedInput;
+                fullyQualifiedInput = activeCommand.PrimarySelector + "|" + fullyQualifiedInput;
                 if (!string.IsNullOrWhiteSpace(activeCommand.Path))
                 {
                     fullyQualifiedInput = activeCommand.Path + "|" + fullyQualifiedInput;

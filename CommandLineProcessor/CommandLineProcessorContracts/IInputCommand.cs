@@ -4,12 +4,10 @@
 
     public interface IInputCommand : ICommand
     {
-        IDictionary<string, object> Inputs { get; }
-
         ICommand NextCommand { get; }
 
         string Prompt { get; }
 
-        void ApplyInput(string inputText);
+        void ApplyInput(ICommandContext context, string inputText);
     }
 }
