@@ -16,9 +16,7 @@
 
         private readonly Stack<CommandLineProcessorState> stateStack;
 
-        private ICommand activeCommand;
-
-        private CommandLineStatus status;
+        private CommandLineProcessorState state;
 
         public CommandLineProcessorProvider(
             ICommandRepositoryService commandRepository,
@@ -27,7 +25,7 @@
             this.commandRepository = commandRepository;
             this.commandPathCalculator = commandPathCalculator;
             stateStack = new Stack<CommandLineProcessorState>();
-            status = CommandLineStatus.WaitingForCommandRegistration;
+            state = new CommandLineProcessorState { Status = CommandLineStatus.WaitingForCommandRegistration };
             Settings = new CommandLineSettings();
         }
 
@@ -45,16 +43,16 @@
 
         public ICommand ActiveCommand
         {
-            get => activeCommand;
+            get => state.Command;
             private set
             {
-                if (activeCommand != value)
+                if (state.Command != value)
                 {
-                    var priorCommand = activeCommand;
-                    activeCommand = value;
+                    var priorCommand = state.Command;
+                    state.Command = value;
                     ActiveCommandChanged?.Invoke(
                         this,
-                        new CommandLineCommandChangedEventArgs(priorCommand, activeCommand));
+                        new CommandLineCommandChangedEventArgs(priorCommand, state.Command));
                 }
             }
         }
@@ -69,14 +67,14 @@
 
         public CommandLineStatus Status
         {
-            get => status;
+            get => state.Status;
             private set
             {
-                if (status != value)
+                if (state.Status != value)
                 {
-                    var oldStatus = status;
-                    status = value;
-                    StatusChangedEvent?.Invoke(this, new CommandLineStatusChangedEventArgs(oldStatus, status));
+                    var oldStatus = state.Status;
+                    state.Status = value;
+                    StatusChangedEvent?.Invoke(this, new CommandLineStatusChangedEventArgs(oldStatus, state.Status));
                 }
             }
         }
@@ -225,8 +223,6 @@
             {
                 var newInput = GetTransparentCommandInput(input);
                 SuspendCurrentCommand();
-                ActiveCommand = null;
-                Status = CommandLineStatus.WaitingForCommand;
                 ProcessInputBasedOnState(newInput);
                 return;
             }
@@ -270,7 +266,8 @@
                     $"The current command cannot be suspended. The maximum command stack size of {Settings.MaximumStackSize} has been reached.");
             }
 
-            stateStack.Push(new CommandLineProcessorState { Command = ActiveCommand, Status = Status });
+            stateStack.Push(state);
+            state = new CommandLineProcessorState { Status = CommandLineStatus.WaitingForCommand };
         }
 
         private void TryExecuteActiveCommand()
@@ -286,9 +283,7 @@
         {
             if (ActiveCommand == null && stateStack.Any())
             {
-                var resumeState = stateStack.Pop();
-                ActiveCommand = resumeState.Command;
-                Status = resumeState.Status;
+                state = stateStack.Pop();
             }
         }
 
