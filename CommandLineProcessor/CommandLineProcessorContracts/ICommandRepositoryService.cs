@@ -10,6 +10,8 @@
 
         ICommand this[int index] { get; }
 
+        void Clear();
+
         void Load(IEnumerable<ICommand> commands);
     }
 }

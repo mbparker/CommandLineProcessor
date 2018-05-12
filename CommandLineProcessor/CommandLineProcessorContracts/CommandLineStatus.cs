@@ -1,6 +1,6 @@
 ﻿namespace CommandLineProcessorContracts
 {
-    public enum CommandLineState
+    public enum CommandLineStatus
     {
         Unknown,
 

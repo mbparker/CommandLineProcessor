@@ -54,6 +54,11 @@
             }
         }
 
+        public void Clear()
+        {
+            commandLookup.Clear();
+        }
+
         public void Load(IEnumerable<ICommand> commands)
         {
             if (commands == null)

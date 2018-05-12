@@ -14,39 +14,109 @@
 
         private readonly ICommandRepositoryService commandRepository;
 
+        private readonly Stack<CommandLineProcessorState> stateStack;
+
+        private ICommand activeCommand;
+
+        private CommandLineStatus status;
+
         public CommandLineProcessorProvider(
             ICommandRepositoryService commandRepository,
             ICommandPathCalculator commandPathCalculator)
         {
             this.commandRepository = commandRepository;
             this.commandPathCalculator = commandPathCalculator;
-            State = CommandLineState.WaitingForCommandRegistration;
+            stateStack = new Stack<CommandLineProcessorState>();
+            status = CommandLineStatus.WaitingForCommandRegistration;
             Settings = new CommandLineSettings();
         }
 
-        public ICommand ActiveCommand { get; private set; }
+        public event EventHandler<CommandLineCommandChangedEventArgs> ActiveCommandChanged;
+
+        public event EventHandler<CommandLineErrorEventArgs> CommandRegistrationError;
+
+        public event EventHandler<CommandLineProcessInputEventArgs> ProcessingInputElement;
+
+        public event EventHandler<CommandLineProcessInputEventArgs> ProcessingRawInput;
+
+        public event EventHandler<CommandLineErrorEventArgs> ProcessInputError;
+
+        public event EventHandler<CommandLineStatusChangedEventArgs> StatusChangedEvent;
+
+        public ICommand ActiveCommand
+        {
+            get => activeCommand;
+            private set
+            {
+                if (activeCommand != value)
+                {
+                    var priorCommand = activeCommand;
+                    activeCommand = value;
+                    ActiveCommandChanged?.Invoke(
+                        this,
+                        new CommandLineCommandChangedEventArgs(priorCommand, activeCommand));
+                }
+            }
+        }
 
         public string LastInput { get; private set; }
 
+        public string LastRawInput { get; private set; }
+
         public CommandLineSettings Settings { get; set; }
 
-        public CommandLineState State { get; private set; }
+        public int StackDepth => stateStack.Count;
+
+        public CommandLineStatus Status
+        {
+            get => status;
+            private set
+            {
+                if (status != value)
+                {
+                    var oldStatus = status;
+                    status = value;
+                    StatusChangedEvent?.Invoke(this, new CommandLineStatusChangedEventArgs(oldStatus, status));
+                }
+            }
+        }
 
         public void ProcessInput(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
+            try
             {
-                throw new ArgumentException("Value is required.", nameof(input));
-            }            
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    throw new ArgumentException("Value is required.", nameof(input));
+                }
 
-            string[] inputElements = SplitInput(input);
-            ProcessInput(inputElements);
+                input = input.Trim();
+                NotifyNewRawInput(input);
+                string[] inputElements = SplitInput(input);
+                ProcessInput(inputElements);
+            }
+            catch (Exception e)
+            {
+                ActiveCommand = null;
+                Status = CommandLineStatus.WaitingForCommand;
+                stateStack.Clear();
+                ProcessInputError?.Invoke(this, new CommandLineErrorEventArgs(e));
+            }
         }
 
         public void RegisterCommands(IEnumerable<ICommand> commands)
         {
-            commandRepository.Load(commands);
-            State = CommandLineState.WaitingForCommand;
+            try
+            {
+                commandRepository.Load(commands);
+                Status = CommandLineStatus.WaitingForCommand;
+            }
+            catch (Exception e)
+            {
+                commandRepository.Clear();
+                Status = CommandLineStatus.WaitingForCommandRegistration;
+                CommandRegistrationError?.Invoke(this, new CommandLineErrorEventArgs(e));
+            }
         }
 
         private bool ActiveCommandHasNoChildren()
@@ -72,11 +142,18 @@
 
                 ActiveCommand = ActiveCommand.Parent;
             }
+
+            UpdateStateForEndOfProcessing();
         }
 
         private string GetFullyQualifiedInput(string input)
         {
             return commandPathCalculator.CalculateFullyQualifiedPath(ActiveCommand, input);
+        }
+
+        private string GetTransparentCommandInput(string input)
+        {
+            return input.Remove(0, Settings.SuspendActiveCommandToken.Length);
         }
 
         private void HandleCommand(string input)
@@ -106,6 +183,7 @@
             }
 
             UpdateStateForEndOfProcessing();
+            TryResumePreviousCommand();
         }
 
         private void HandleInput(string input)
@@ -120,6 +198,18 @@
             ActiveCommand = (ActiveCommand as IContainerCommand)?.Children.First();
         }
 
+        private void NotifyNewInput(string input)
+        {
+            LastInput = input;
+            ProcessingInputElement?.Invoke(this, new CommandLineProcessInputEventArgs(input));
+        }
+
+        private void NotifyNewRawInput(string input)
+        {
+            LastRawInput = input;
+            ProcessingRawInput?.Invoke(this, new CommandLineProcessInputEventArgs(input));
+        }
+
         private void ProcessInput(IEnumerable<string> inputs)
         {
             foreach (var input in inputs)
@@ -130,17 +220,28 @@
 
         private void ProcessInputBasedOnState(string input)
         {
-            LastInput = input;
+            input = input.Trim();
+            if (ShouldSuspendCurrentCommand(input))
+            {
+                var newInput = GetTransparentCommandInput(input);
+                SuspendCurrentCommand();
+                ActiveCommand = null;
+                Status = CommandLineStatus.WaitingForCommand;
+                ProcessInputBasedOnState(newInput);
+                return;
+            }
 
-            if (input.ToUpper() == Settings.CancelToken)
+            NotifyNewInput(input);
+
+            if (input.ToUpper() == Settings.CancelToken.ToUpper())
             {
                 CancelCurrentCommand();
             }
-            else if (State == CommandLineState.WaitingForCommand)
+            else if (Status == CommandLineStatus.WaitingForCommand)
             {
                 HandleCommand(input);
             }
-            else if (State == CommandLineState.WaitingForInput)
+            else if (Status == CommandLineStatus.WaitingForInput)
             {
                 HandleInput(input);
             }
@@ -151,9 +252,25 @@
             ActiveCommand = commandRepository[fullyQualifiedInput];
         }
 
+        private bool ShouldSuspendCurrentCommand(string input)
+        {
+            return input.StartsWith(Settings.SuspendActiveCommandToken, StringComparison.CurrentCultureIgnoreCase);
+        }
+
         private string[] SplitInput(string input)
         {
-            return input.Split(new[] { "||" }, StringSplitOptions.RemoveEmptyEntries);
+            return input.Split(new[] { Settings.CommandSeparatorToken }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        private void SuspendCurrentCommand()
+        {
+            if (stateStack.Count == Settings.MaximumStackSize)
+            {
+                throw new InvalidOperationException(
+                    $"The current command cannot be suspended. The maximum command stack size of {Settings.MaximumStackSize} has been reached.");
+            }
+
+            stateStack.Push(new CommandLineProcessorState { Command = ActiveCommand, Status = Status });
         }
 
         private void TryExecuteActiveCommand()
@@ -165,16 +282,33 @@
             }
         }
 
+        private void TryResumePreviousCommand()
+        {
+            if (ActiveCommand == null && stateStack.Any())
+            {
+                var resumeState = stateStack.Pop();
+                ActiveCommand = resumeState.Command;
+                Status = resumeState.Status;
+            }
+        }
+
         private void UpdateStateForEndOfProcessing()
         {
             if (ActiveCommand?.CommandIs<IInputCommand>() ?? false)
             {
-                State = CommandLineState.WaitingForInput;
+                Status = CommandLineStatus.WaitingForInput;
             }
             else
             {
-                State = CommandLineState.WaitingForCommand;
+                Status = CommandLineStatus.WaitingForCommand;
             }
+        }
+
+        private class CommandLineProcessorState
+        {
+            public ICommand Command { get; set; }
+
+            public CommandLineStatus Status { get; set; }
         }
     }
 }
