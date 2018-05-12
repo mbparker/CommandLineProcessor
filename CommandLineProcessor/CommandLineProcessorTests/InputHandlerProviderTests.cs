@@ -7,9 +7,13 @@
 
     using CommandLineProcessorContracts;
 
+    using CommandLineProcessorEntity;
+
     using CommandLineProcessorLib;
 
     using CommandLineProcessorTests.TestDataGenerators;
+
+    using NSubstitute;
 
     using NUnit.Framework;
 
@@ -19,6 +23,8 @@
         private const string CommandRoot = "cmd";
 
         private ICommand activeCommandMock;
+
+        private ICommandLineProcessorService processorMock;
 
         private InputHandlerProvider systemUnderTest;
 
@@ -82,6 +88,28 @@
         }
 
         [Test]
+        public void GetPrompt_WhenStackDepthIsOne_ReturnsCorrectText()
+        {
+            SetUpActiveCommandForInputCommand();
+            processorMock.StackDepth.Returns(1);
+            Assert.That(
+                systemUnderTest.GetPrompt(),
+                Is.EqualTo(
+                    $"{processorMock.Settings.CommandLevelIndicator} {CommandRoot}: Test Command 3 (Prompt Text): "));
+        }
+
+        [Test]
+        public void GetPrompt_WhenStackDepthIsTwo_ReturnsCorrectText()
+        {
+            SetUpActiveCommandForInputCommand();
+            processorMock.StackDepth.Returns(2);
+            Assert.That(
+                systemUnderTest.GetPrompt(),
+                Is.EqualTo(
+                    $"{processorMock.Settings.CommandLevelIndicator}{processorMock.Settings.CommandLevelIndicator} {CommandRoot}: Test Command 3 (Prompt Text): "));
+        }
+
+        [Test]
         public void MinimumSelectionStart_ActiveContainerCommand_ReturnsLengthOfPrompt()
         {
             SetUpActiveCommandForContainerCommand();
@@ -108,10 +136,12 @@
         public void SetUp()
         {
             validCommands = CommandGenerator.GenerateValidCommandCollection().ToList();
+            processorMock = Substitute.For<ICommandLineProcessorService>();
+            processorMock.ActiveCommand.Returns(x => activeCommandMock);
+            processorMock.Settings = new CommandLineSettings { CommandPromptRoot = CommandRoot };
             activeCommandMock = null;
             systemUnderTest = new InputHandlerProvider();
-            systemUnderTest.GetActiveCommandFunc = () => activeCommandMock;
-            systemUnderTest.PromptRoot = CommandRoot;
+            systemUnderTest.Processor = processorMock;
         }
 
         private void SetUpActiveCommandForContainerCommand()

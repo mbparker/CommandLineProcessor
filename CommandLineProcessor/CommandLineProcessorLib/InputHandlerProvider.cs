@@ -1,7 +1,7 @@
 ﻿namespace CommandLineProcessorLib
 {
-    using System;
     using System.Linq;
+    using System.Text;
 
     using CommandLineProcessorCommon;
 
@@ -9,11 +9,9 @@
 
     public class InputHandlerProvider : IInputHandlerService
     {
-        public Func<ICommand> GetActiveCommandFunc { get; set; }
-
         public int MinimumSelectionStart => GetPrompt().Length;
 
-        public string PromptRoot { get; set; }
+        public ICommandLineProcessorService Processor { get; set; }
 
         public bool AllowKeyPress(int key, int selectionStartIndex)
         {
@@ -24,14 +22,15 @@
 
         public string GetPrompt()
         {
-            var result = PromptRoot;
+            var result = Processor.Settings.CommandPromptRoot;
             result = AppendCommandOptions(result);
-            return $"{result}: ";
+            var levelIndicator = GetCommandLevelIndicator();
+            return $"{levelIndicator}{result}: ";
         }
 
         private string AppendCommandOptions(string prompt)
         {
-            var activeCommand = GetActiveCommandFunc();
+            var activeCommand = Processor.ActiveCommand;
             var result = prompt;
 
             var containerCommand = activeCommand as IContainerCommand;
@@ -49,6 +48,22 @@
             }
 
             return result;
+        }
+
+        private string GetCommandLevelIndicator()
+        {
+            var builder = new StringBuilder();
+            for (int i = 0; i < Processor.StackDepth; i++)
+            {
+                builder.Append(Processor.Settings.CommandLevelIndicator);
+            }
+
+            if (Processor.StackDepth > 0)
+            {
+                builder.Append(" ");
+            }
+
+            return builder.ToString();
         }
     }
 }

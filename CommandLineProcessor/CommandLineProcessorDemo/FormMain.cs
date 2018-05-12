@@ -25,8 +25,7 @@
             this.commandLineProcessor.ProcessInputError += CommandLineProcessor_ProcessInputError;
             this.commandLineProcessor.CommandRegistrationError += CommandLineProcessor_CommandRegistrationError;
             this.inputHandler = inputHandler;
-            this.inputHandler.GetActiveCommandFunc = () => commandLineProcessor.ActiveCommand;
-            this.inputHandler.PromptRoot = "Command";
+            this.inputHandler.Processor = commandLineProcessor;
         }
 
         private void CommandLineProcessor_ActiveCommandChanged(object sender, CommandLineCommandChangedEventArgs e)
