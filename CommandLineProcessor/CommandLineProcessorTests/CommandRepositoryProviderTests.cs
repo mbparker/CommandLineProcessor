@@ -150,7 +150,7 @@
                         var dummy = systemUnderTest["i dont exist"];
                     },
                 Throws.InstanceOf<CommandNotFoundException>().With.Message.EqualTo(
-                    $"Command not found.{Environment.NewLine}Selector: 'i dont exist'"));
+                    "Command 'i dont exist' not found."));
         }
 
         [Test]

@@ -33,7 +33,9 @@
                     return result;
                 }
 
-                throw new CommandNotFoundException("Command not found.", selector);
+                throw new CommandNotFoundException(
+                    $"Command '{selector.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries).Last()}' not found.",
+                    selector);
             }
         }
 

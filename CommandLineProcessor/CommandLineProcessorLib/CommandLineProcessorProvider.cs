@@ -7,6 +7,7 @@
     using CommandLineProcessorContracts;
 
     using CommandLineProcessorEntity;
+    using CommandLineProcessorEntity.Exceptions;
 
     public class CommandLineProcessorProvider : ICommandLineProcessorService
     {
@@ -101,6 +102,10 @@
                 string[] inputElements = SplitInput(input);
                 ProcessInput(inputElements);
             }
+            catch (WaitForInputException)
+            {
+                // do nothing
+            }
             catch (Exception e)
             {
                 ActiveCommand = null;
@@ -152,6 +157,16 @@
             UpdateStateForEndOfProcessing();
         }
 
+        private void ClearCurrentState()
+        {
+            state.Context.DataStore.Clear();
+        }
+
+        private bool FullyCompleted()
+        {
+            return StackDepth == 0 && ActiveCommand == null;
+        }
+
         private string GetFullyQualifiedInput(string input)
         {
             return commandPathCalculator.CalculateFullyQualifiedPath(ActiveCommand, input);
@@ -191,15 +206,28 @@
             UpdateStateForEndOfProcessing();
             TryResumePreviousCommand();
 
-            if (StackDepth == 0 && ActiveCommand == null)
+            if (FullyCompleted())
             {
-                state.Context.DataStore.Clear();
+                ClearCurrentState();
             }
         }
 
         private void HandleInput(string input)
         {
-            (ActiveCommand as IInputCommand)?.ApplyInput(state.Context, input);
+            try
+            {
+                (ActiveCommand as IInputCommand)?.ApplyInput(state.Context, input);
+            }
+            catch (WaitForInputException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                ProcessInputError?.Invoke(this, new CommandLineErrorEventArgs(e));
+                return;
+            }
+
             ActiveCommand = (ActiveCommand as IInputCommand)?.NextCommand;
             HandleCommand();
         }
@@ -232,12 +260,18 @@
         private void ProcessInputBasedOnState(string input)
         {
             input = input.Trim();
+
             if (ShouldSuspendCurrentCommand(input))
             {
                 var newInput = GetTransparentCommandInput(input);
                 SuspendCurrentCommand();
                 ProcessInputBasedOnState(newInput);
                 return;
+            }
+
+            if (input.ToUpper() == "~")
+            {
+                throw new WaitForInputException();
             }
 
             NotifyNewInput(input);
@@ -258,7 +292,15 @@
 
         private void SelectActiveCommandFromQuialifiedInput(string fullyQualifiedInput)
         {
-            ActiveCommand = commandRepository[fullyQualifiedInput];
+            try
+            {
+                ActiveCommand = commandRepository[fullyQualifiedInput];
+            }
+            catch (Exception e)
+            {
+                ProcessInputError?.Invoke(this, new CommandLineErrorEventArgs(e));
+            }
+            
         }
 
         private bool ShouldSuspendCurrentCommand(string input)

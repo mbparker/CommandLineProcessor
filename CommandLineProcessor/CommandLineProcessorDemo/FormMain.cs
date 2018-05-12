@@ -75,20 +75,25 @@
 
         private IEnumerable<ICommand> GetCommands()
         {
-            var exeCommand = new EchoExecuteCommand(s => textBox_CommandHistory.AppendText("You Entered: " + s + Environment.NewLine));
-            var inputCommand = new EchoInputCommand(exeCommand);
+            var echoExecute = new EchoExecuteCommand(
+                s => textBox_CommandHistory.AppendText("You Entered: " + s + Environment.NewLine));
+            var echoInput = new EchoInputCommand(echoExecute);
 
-            var addExecute = new AddExecuteCommand(v => textBox_CommandHistory.AppendText("Result: " + v + Environment.NewLine));
+            var addExecute = new AddExecuteCommand(
+                v => textBox_CommandHistory.AppendText("Result: " + v + Environment.NewLine));
             var addInput2 = new AddInputCommand2(addExecute);
             var addInput1 = new AddInputCommand1(addInput2);
 
-            var multiplyExecute = new MultiplyExecuteCommand(v => textBox_CommandHistory.AppendText("Result: " + v + Environment.NewLine));
+            var multiplyExecute = new MultiplyExecuteCommand(
+                v => textBox_CommandHistory.AppendText("Result: " + v + Environment.NewLine));
             var multiplyInput2 = new MultiplyInputCommand2(multiplyExecute);
             var multiplyInput1 = new MultiplyInputCommand1(multiplyInput2);
 
             var mathCommand = new MathCommand(new ICommand[] { multiplyInput1, addInput1 });
 
-            return new ICommand[] { inputCommand, mathCommand };
+            var exitCommand = new ExitCommand(Application.Exit);
+
+            return new ICommand[] { echoInput, mathCommand, exitCommand };
         }
 
         private void textBox_CommandLine_KeyDown(object sender, KeyEventArgs e)
