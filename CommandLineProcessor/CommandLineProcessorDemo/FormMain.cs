@@ -108,6 +108,16 @@
                     commandLineProcessor.ProcessInput(input);
                     UpdateCommandLine();
                 }
+                else
+                {
+                    if (e.Control && e.KeyCode == Keys.C)
+                    {
+                        e.Handled = true;
+                        e.SuppressKeyPress = true;
+                        commandLineProcessor.ProcessInput(commandLineProcessor.Settings.CancelToken);                        
+                        UpdateCommandLine();
+                    }
+                }
             }
             else
             {

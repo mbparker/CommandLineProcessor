@@ -37,8 +37,9 @@
             // textBox_CommandLine
             // 
             this.textBox_CommandLine.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textBox_CommandLine.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox_CommandLine.Location = new System.Drawing.Point(0, 430);
-            this.textBox_CommandLine.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_CommandLine.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_CommandLine.Name = "textBox_CommandLine";
             this.textBox_CommandLine.Size = new System.Drawing.Size(800, 20);
             this.textBox_CommandLine.TabIndex = 2;
@@ -47,8 +48,9 @@
             // textBox_CommandHistory
             // 
             this.textBox_CommandHistory.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textBox_CommandHistory.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox_CommandHistory.Location = new System.Drawing.Point(0, 309);
-            this.textBox_CommandHistory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_CommandHistory.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_CommandHistory.Multiline = true;
             this.textBox_CommandHistory.Name = "textBox_CommandHistory";
             this.textBox_CommandHistory.ReadOnly = true;
@@ -58,6 +60,7 @@
             // textBox_Diagnostics
             // 
             this.textBox_Diagnostics.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox_Diagnostics.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox_Diagnostics.Location = new System.Drawing.Point(0, 0);
             this.textBox_Diagnostics.Multiline = true;
             this.textBox_Diagnostics.Name = "textBox_Diagnostics";
@@ -83,7 +86,7 @@
             this.Controls.Add(this.textBox_CommandHistory);
             this.Controls.Add(this.textBox_CommandLine);
             this.Name = "FormMain";
-            this.Text = "Form1";
+            this.Text = "Command Line Demo";
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.Shown += new System.EventHandler(this.FormMain_Shown);
             this.ResumeLayout(false);

@@ -214,7 +214,7 @@
 
         private void HandleCommand()
         {
-            if (ActiveCommand.CommandIs<IContainerCommand>())
+            if (ActiveCommand?.CommandIs<IContainerCommand>() ?? false)
             {
                 if (ActiveCommandHasNoChildren())
                 {
@@ -226,7 +226,7 @@
                     TryExecuteActiveCommand();
                 }
             }
-            else if (ActiveCommand.CommandIs<IExecutableCommand>())
+            else if (ActiveCommand?.CommandIs<IExecutableCommand>() ?? false)
             {
                 TryExecuteActiveCommand();
             }

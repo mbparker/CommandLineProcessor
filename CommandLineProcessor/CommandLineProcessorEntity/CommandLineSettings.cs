@@ -8,7 +8,7 @@
 
         public string CommandPromptRoot { get; set; } = "Command";
 
-        public string CommandSeparatorToken { get; set; } = "||";
+        public string CommandSeparatorToken { get; set; } = "|";
 
         public int MaximumStackSize { get; set; } = 10;
 
