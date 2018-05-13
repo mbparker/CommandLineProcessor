@@ -12,6 +12,8 @@
 
         public int MaximumStackSize { get; set; } = 10;
 
+        public string PauseForUserInputToken { get; set; } = "~";
+
         public string SuspendActiveCommandToken { get; set; } = "`";
     }
 }

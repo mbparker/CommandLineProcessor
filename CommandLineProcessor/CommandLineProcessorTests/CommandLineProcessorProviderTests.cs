@@ -186,6 +186,73 @@
         }
 
         [Test]
+        public void ProcessInput_WhenMacroWithPause_PausesForUserInput()
+        {
+            systemUnderTest.RegisterCommands(validCommandCollection);
+
+            var rootCommand = validCommandCollection.Single(x => x.PrimarySelector.ToUpper() == "TEST3");
+            var command = rootCommand;
+            SetUpCommand(command);
+            var inputCommand =
+                (rootCommand as IContainerCommand).Children.First(x => x.PrimarySelector.ToUpper() == "SUBINPUT");
+            command = inputCommand;
+            SetUpCommand(command);
+            var exeCommand =
+                (rootCommand as IContainerCommand).Children.First(x => x.PrimarySelector.ToUpper() == "SUB");
+            SetUpCommand(exeCommand);
+            command = (command as IInputCommand).NextCommand;
+
+            systemUnderTest.ProcessInput("test3||subinput||~||test3||sub");
+
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            Assert.AreSame(systemUnderTest.ActiveCommand, inputCommand);
+            Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForInput));
+
+            systemUnderTest.ProcessInput("Hello World");
+
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            (exeCommand as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            Assert.IsNull(systemUnderTest.ActiveCommand);
+            Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
+        }
+
+        [Test]
+        public void ProcessInput_WhenMacroWithPauseAndTransparentCommandWithPause_PausesForUserInput()
+        {
+            systemUnderTest.RegisterCommands(validCommandCollection);
+
+            var rootCommand = validCommandCollection.Single(x => x.PrimarySelector.ToUpper() == "TEST3");
+            var command = rootCommand;
+            SetUpCommand(command);
+            var inputCommand =
+                (rootCommand as IContainerCommand).Children.First(x => x.PrimarySelector.ToUpper() == "SUBINPUT");
+            command = inputCommand;
+            SetUpCommand(command);
+            var exeCommand =
+                (rootCommand as IContainerCommand).Children.First(x => x.PrimarySelector.ToUpper() == "SUB");
+            SetUpCommand(exeCommand);
+            command = (command as IInputCommand).NextCommand;
+
+            systemUnderTest.ProcessInput("test3||`test3||~||subinput||~||test3||sub");
+
+            Assert.AreSame(systemUnderTest.ActiveCommand, rootCommand);
+            Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
+
+            systemUnderTest.ProcessInput("sub");
+
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            Assert.AreSame(systemUnderTest.ActiveCommand, inputCommand);
+            Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForInput));
+            
+            systemUnderTest.ProcessInput("Hello World");
+
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            (exeCommand as IExecutableCommand).Received(2).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            Assert.IsNull(systemUnderTest.ActiveCommand);
+            Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
+        }
+
+        [Test]
         public void ProcessInput_WhenWaitingForCommand_TriesToGetCommand()
         {
             systemUnderTest.RegisterCommands(validCommandCollection);

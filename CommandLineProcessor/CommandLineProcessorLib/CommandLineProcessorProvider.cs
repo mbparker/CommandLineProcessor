@@ -99,8 +99,16 @@
 
                 input = input.Trim();
                 NotifyNewRawInput(input);
-                string[] inputElements = SplitInput(input);
-                ProcessInput(inputElements);
+
+                if (ShouldContinuePausedCommand())
+                {
+                    ContinuePausedCommand(input);
+                }
+                else
+                {
+                    string[] inputElements = SplitInput(input);
+                    ProcessInput(inputElements);
+                }
             }
             catch (WaitForInputException)
             {
@@ -159,7 +167,15 @@
 
         private void ClearCurrentState()
         {
+            state.ResetInputList();
             state.Context.DataStore.Clear();
+        }
+
+        private void ContinuePausedCommand(string input)
+        {
+            var remainingInputs = GetRemainingCommandInputs();
+            remainingInputs.Insert(0, input);
+            ProcessInput(remainingInputs);
         }
 
         private bool FullyCompleted()
@@ -170,6 +186,18 @@
         private string GetFullyQualifiedInput(string input)
         {
             return commandPathCalculator.CalculateFullyQualifiedPath(ActiveCommand, input);
+        }
+
+        private List<string> GetRemainingCommandInputs()
+        {
+            var remainingInputs = new List<string>();
+            for (int i = state.InputIndex; i < state.InputList.Count; i++)
+            {
+                remainingInputs.Add(state.InputList[i]);
+            }
+
+            state.ResetInputList();
+            return remainingInputs;
         }
 
         private string GetTransparentCommandInput(string input)
@@ -251,9 +279,23 @@
 
         private void ProcessInput(IEnumerable<string> inputs)
         {
-            foreach (var input in inputs)
+            var inputList = new List<string>(inputs);
+            for (int i = 0; i < inputList.Count; i++)
             {
-                ProcessInputBasedOnState(input);
+                try
+                {
+                    ProcessInputBasedOnState(inputList[i]);
+                }
+                catch (WaitForInputException)
+                {
+                    if (i < inputList.Count - 1)
+                    {
+                        state.InputList.AddRange(inputList);
+                        state.InputIndex = i + 1;
+                    }
+
+                    throw;
+                }
             }
         }
 
@@ -269,7 +311,7 @@
                 return;
             }
 
-            if (input.ToUpper() == "~")
+            if (input.ToUpper() == Settings.PauseForUserInputToken.ToUpper())
             {
                 throw new WaitForInputException();
             }
@@ -300,7 +342,11 @@
             {
                 ProcessInputError?.Invoke(this, new CommandLineErrorEventArgs(e));
             }
-            
+        }
+
+        private bool ShouldContinuePausedCommand()
+        {
+            return state.InputList.Count > 0 && state.InputIndex >= 0;
         }
 
         private bool ShouldSuspendCurrentCommand(string input)
@@ -357,11 +403,27 @@
 
         private class CommandLineProcessorState
         {
+            public CommandLineProcessorState()
+            {
+                InputList = new List<string>();
+                ResetInputList();
+            }
+
             public ICommand Command { get; set; }
 
             public ICommandContext Context { get; set; }
 
+            public int InputIndex { get; set; }
+
+            public List<string> InputList { get; }
+
             public CommandLineStatus Status { get; set; }
+
+            public void ResetInputList()
+            {
+                InputList.Clear();
+                InputIndex = -1;
+            }
         }
     }
 }
