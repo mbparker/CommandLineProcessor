@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public interface ICommandRepositoryService
+    public interface ICommandRepositoryService : IEnumerable<ICommand>
     {
         int Count { get; }
 

@@ -17,7 +17,9 @@
 
         event EventHandler<CommandLineErrorEventArgs> ProcessInputError;
 
-        event EventHandler<CommandLineStatusChangedEventArgs> StatusChangedEvent;
+        event EventHandler<CommandLineStatusChangedEventArgs> StatusChanged;
+
+        event EventHandler<CommandLineHelpEventArgs> HelpRequest;
 
         ICommand ActiveCommand { get; }
 

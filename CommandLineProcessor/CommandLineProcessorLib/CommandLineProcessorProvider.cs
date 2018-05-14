@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using CommandLineProcessorCommon;
+
     using CommandLineProcessorContracts;
 
     using CommandLineProcessorEntity;
@@ -48,7 +50,9 @@
 
         public event EventHandler<CommandLineErrorEventArgs> ProcessInputError;
 
-        public event EventHandler<CommandLineStatusChangedEventArgs> StatusChangedEvent;
+        public event EventHandler<CommandLineStatusChangedEventArgs> StatusChanged;
+
+        public event EventHandler<CommandLineHelpEventArgs> HelpRequest;
 
         public ICommand ActiveCommand
         {
@@ -83,7 +87,7 @@
                 {
                     var oldStatus = state.Status;
                     state.Status = value;
-                    StatusChangedEvent?.Invoke(this, new CommandLineStatusChangedEventArgs(oldStatus, state.Status));
+                    StatusChanged?.Invoke(this, new CommandLineStatusChangedEventArgs(oldStatus, state.Status));
                 }
             }
         }
@@ -99,6 +103,12 @@
 
                 input = input.Trim();
                 NotifyNewRawInput(input);
+
+                if (input == Constants.InternalTokens.Help)
+                {
+                    EmitHelp();
+                    return;
+                }
 
                 if (ShouldContinuePausedCommand())
                 {
@@ -120,6 +130,21 @@
                 Status = CommandLineStatus.WaitingForCommand;
                 stateStack.Clear();
                 ProcessInputError?.Invoke(this, new CommandLineErrorEventArgs(e));
+            }
+        }
+
+        private void EmitHelp()
+        {
+            if (ActiveCommand != null)
+            {
+                HelpRequest?.Invoke(
+                    this,
+                    new CommandLineHelpEventArgs(ActiveCommand, (ActiveCommand as IContainerCommand)?.Children));
+            }
+            else
+            {
+                var commands = commandRepository.Where(x => x.Parent == null).Distinct().OrderBy(x => x.PrimarySelector);
+                HelpRequest?.Invoke(this, new CommandLineHelpEventArgs(null, commands));
             }
         }
 

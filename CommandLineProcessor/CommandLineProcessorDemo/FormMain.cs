@@ -19,13 +19,39 @@
             InitializeComponent();
             this.commandLineProcessor = commandLineProcessor;
             this.commandLineProcessor.ActiveCommandChanged += CommandLineProcessor_ActiveCommandChanged;
-            this.commandLineProcessor.StatusChangedEvent += CommandLineProcessor_StatusChangedEvent;
+            this.commandLineProcessor.StatusChanged += CommandLineProcessor_StatusChanged;
             this.commandLineProcessor.ProcessingRawInput += CommandLineProcessor_ProcessingRawInput;
             this.commandLineProcessor.ProcessingInputElement += CommandLineProcessor_ProcessingInputElement;
+            this.commandLineProcessor.HelpRequest += CommandLineProcessor_HelpRequest;
             this.commandLineProcessor.ProcessInputError += CommandLineProcessor_ProcessInputError;
             this.commandLineProcessor.CommandRegistrationError += CommandLineProcessor_CommandRegistrationError;
             this.inputHandler = inputHandler;
             this.inputHandler.Processor = commandLineProcessor;
+        }
+
+        private void CommandLineProcessor_HelpRequest(object sender, CommandLineHelpEventArgs e)
+        {
+            if (e.CommandInfo != null)
+            {
+                textBox_CommandHistory.AppendText($"Current Command Help:{Environment.NewLine}");
+                textBox_CommandHistory.AppendText($"{e.CommandInfo.PrimarySelector} - {e.CommandInfo.HelpText}{Environment.NewLine}");
+                if (e.SubCommandInfo != null)
+                {
+                    textBox_CommandHistory.AppendText($"Options:{Environment.NewLine}");
+                    foreach (var subCommand in e.SubCommandInfo)
+                    {
+                        textBox_CommandHistory.AppendText($"\t{subCommand.PrimarySelector} - {subCommand.HelpText}{Environment.NewLine}");
+                    }
+                }
+            }
+            else
+            {
+                textBox_CommandHistory.AppendText($"Available Commands:{Environment.NewLine}");
+                foreach (var command in e.SubCommandInfo)
+                {
+                    textBox_CommandHistory.AppendText($"{command.PrimarySelector} - {command.HelpText}{Environment.NewLine}");
+                }
+            }
         }
 
         private void CommandLineProcessor_ActiveCommandChanged(object sender, CommandLineCommandChangedEventArgs e)
@@ -57,7 +83,7 @@
             textBox_CommandHistory.AppendText($"Error: {e.Exception.Message}{Environment.NewLine}");
         }
 
-        private void CommandLineProcessor_StatusChangedEvent(object sender, CommandLineStatusChangedEventArgs e)
+        private void CommandLineProcessor_StatusChanged(object sender, CommandLineStatusChangedEventArgs e)
         {
             textBox_Diagnostics.AppendText($"Status Change: {e.PriorStatus} -> {e.Status}{Environment.NewLine}");
             UpdateCommandLine();

@@ -1,8 +1,11 @@
 ﻿namespace CommandLineProcessorLib
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+
+    using CommandLineProcessorCommon;
 
     using CommandLineProcessorContracts;
 
@@ -34,7 +37,7 @@
                 }
 
                 throw new CommandNotFoundException(
-                    $"Command '{selector.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries).Last()}' not found.",
+                    $"Command '{selector.Split(new[] { Constants.InternalTokens.SelectorSeperator }, StringSplitOptions.RemoveEmptyEntries).Last()}' not found.",
                     selector);
             }
         }
@@ -95,7 +98,7 @@
                         var path = command.Path?.ToUpper();
                         if (!string.IsNullOrWhiteSpace(path))
                         {
-                            path += "|";
+                            path += Constants.InternalTokens.SelectorSeperator;
                         }
 
                         selectorText = $"{path}{command.PrimarySelector.ToUpper()}";
@@ -119,6 +122,16 @@
             {
                 throw new DuplicateCommandSelectorException($"Cannot add '{selectorText}'. Command Selector values must be unique.", e);
             }
+        }
+
+        IEnumerator<ICommand> IEnumerable<ICommand>.GetEnumerator()
+        {
+            return commandLookup.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return commandLookup.Values.GetEnumerator();
         }
     }
 }

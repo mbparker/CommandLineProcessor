@@ -104,7 +104,7 @@
                     CommandLineStatus.WaitingForCommand));
 
             var actualStatusChangedEvents = new List<CommandLineStatusChangedEventArgs>();
-            systemUnderTest.StatusChangedEvent += (sender, args) => { actualStatusChangedEvents.Add(args); };
+            systemUnderTest.StatusChanged += (sender, args) => { actualStatusChangedEvents.Add(args); };
 
             systemUnderTest.RegisterCommands(validCommandCollection);
 

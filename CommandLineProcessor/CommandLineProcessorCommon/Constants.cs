@@ -2,6 +2,13 @@
 {
     public static class Constants
     {
+        public static class InternalTokens
+        {
+            public const string Help = "?";
+
+            public const string SelectorSeperator = "|";
+        }
+
         public static class Keys
         {
             public const int Back = 8;
