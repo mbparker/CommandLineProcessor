@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Windows.Forms;
 
     using CommandLineProcessorContracts;
@@ -29,41 +30,28 @@
             this.inputHandler.Processor = commandLineProcessor;
         }
 
-        private void CommandLineProcessor_HelpRequest(object sender, CommandLineHelpEventArgs e)
-        {
-            if (e.CommandInfo != null)
-            {
-                textBox_CommandHistory.AppendText($"Current Command Help:{Environment.NewLine}");
-                textBox_CommandHistory.AppendText($"{e.CommandInfo.PrimarySelector} - {e.CommandInfo.HelpText}{Environment.NewLine}");
-                if (e.SubCommandInfo != null)
-                {
-                    textBox_CommandHistory.AppendText($"Options:{Environment.NewLine}");
-                    foreach (var subCommand in e.SubCommandInfo)
-                    {
-                        textBox_CommandHistory.AppendText($"\t{subCommand.PrimarySelector} - {subCommand.HelpText}{Environment.NewLine}");
-                    }
-                }
-            }
-            else
-            {
-                textBox_CommandHistory.AppendText($"Available Commands:{Environment.NewLine}");
-                foreach (var command in e.SubCommandInfo)
-                {
-                    textBox_CommandHistory.AppendText($"{command.PrimarySelector} - {command.HelpText}{Environment.NewLine}");
-                }
-            }
-        }
-
         private void CommandLineProcessor_ActiveCommandChanged(object sender, CommandLineCommandChangedEventArgs e)
         {
             textBox_Diagnostics.AppendText(
-                $"Active Command Change: {e.PriorCommand?.Name ?? "None"} ({e.PriorCommand?.GetType().Name ?? "N/A"}) -> {e.ActiveCommand?.Name ?? "None"} ({e.ActiveCommand?.GetType().Name ?? "N/A"}) Stack Depth: {commandLineProcessor.StackDepth}{Environment.NewLine}");
+                $"Active Command Change: {GetCommandNameForStateText(e.PriorCommand)} -> {GetCommandNameForStateText(e.ActiveCommand)} Stack Depth: {commandLineProcessor.StackDepth}{Environment.NewLine}");
             UpdateCommandLine();
         }
 
         private void CommandLineProcessor_CommandRegistrationError(object sender, CommandLineErrorEventArgs e)
         {
             MessageBox.Show(this, e.Exception.Message);
+        }
+
+        private void CommandLineProcessor_HelpRequest(object sender, CommandLineHelpEventArgs e)
+        {
+            if (e.CommandInfo != null)
+            {
+                DisplayActiveCommandHelp(e.CommandInfo, e.SubCommandInfo);
+            }
+            else
+            {
+                DisplayGlobalHelp(e.SubCommandInfo);
+            }
         }
 
         private void CommandLineProcessor_ProcessingInputElement(object sender, CommandLineProcessInputEventArgs e)
@@ -89,6 +77,34 @@
             UpdateCommandLine();
         }
 
+        private void DisplayActiveCommandHelp(
+            ICommandDescriptor activeCommandDescriptor,
+            IEnumerable<ICommandDescriptor> subCommandDescriptors)
+        {
+            textBox_CommandHistory.AppendText($"Current Command Help:{Environment.NewLine}");
+            var aliases = GetAliasesForHelp(activeCommandDescriptor);
+            textBox_CommandHistory.AppendText(GenerateHelpTextForCommand(activeCommandDescriptor, aliases));
+            if (subCommandDescriptors != null)
+            {
+                textBox_CommandHistory.AppendText($"Options:{Environment.NewLine}");
+                foreach (var subCommand in subCommandDescriptors)
+                {
+                    aliases = GetAliasesForHelp(subCommand);
+                    textBox_CommandHistory.AppendText($"\t{GenerateHelpTextForCommand(subCommand, aliases)}");
+                }
+            }
+        }
+
+        private void DisplayGlobalHelp(IEnumerable<ICommandDescriptor> commands)
+        {
+            textBox_CommandHistory.AppendText($"Available Commands:{Environment.NewLine}");
+            foreach (var command in commands)
+            {
+                var aliases = GetAliasesForHelp(command);
+                textBox_CommandHistory.AppendText(GenerateHelpTextForCommand(command, aliases));
+            }
+        }
+
         private void FormMain_Load(object sender, EventArgs e)
         {
             commandLineProcessor.RegisterCommands(GetCommands());
@@ -97,6 +113,21 @@
         private void FormMain_Shown(object sender, EventArgs e)
         {
             UpdateCommandLine();
+        }
+
+        private string GenerateHelpTextForCommand(ICommandDescriptor command, string aliases)
+        {
+            return $"{command.PrimarySelector}{aliases} - {command.Name}: {command.HelpText}{Environment.NewLine}";
+        }
+
+        private string GetAliasesForHelp(ICommandDescriptor command)
+        {
+            return command.AliasSelectors.Any() ? $" ({string.Join(",", command.AliasSelectors)})" : string.Empty;
+        }
+
+        private string GetCommandNameForStateText(ICommand command)
+        {
+            return $"{command?.Name ?? "None"} ({command?.GetType().Name ?? "N/A"})";
         }
 
         private IEnumerable<ICommand> GetCommands()
@@ -140,7 +171,7 @@
                     {
                         e.Handled = true;
                         e.SuppressKeyPress = true;
-                        commandLineProcessor.ProcessInput(commandLineProcessor.Settings.CancelToken);                        
+                        commandLineProcessor.ProcessInput(commandLineProcessor.Settings.CancelToken);
                         UpdateCommandLine();
                     }
                 }

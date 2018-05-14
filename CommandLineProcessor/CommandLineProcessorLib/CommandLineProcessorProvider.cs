@@ -44,6 +44,8 @@
 
         public event EventHandler<CommandLineErrorEventArgs> CommandRegistrationError;
 
+        public event EventHandler<CommandLineHelpEventArgs> HelpRequest;
+
         public event EventHandler<CommandLineProcessInputEventArgs> ProcessingInputElement;
 
         public event EventHandler<CommandLineProcessInputEventArgs> ProcessingRawInput;
@@ -51,8 +53,6 @@
         public event EventHandler<CommandLineErrorEventArgs> ProcessInputError;
 
         public event EventHandler<CommandLineStatusChangedEventArgs> StatusChanged;
-
-        public event EventHandler<CommandLineHelpEventArgs> HelpRequest;
 
         public ICommand ActiveCommand
         {
@@ -107,10 +107,8 @@
                 if (input == Constants.InternalTokens.Help)
                 {
                     EmitHelp();
-                    return;
                 }
-
-                if (ShouldContinuePausedCommand())
+                else if (ShouldContinuePausedCommand())
                 {
                     ContinuePausedCommand(input);
                 }
@@ -130,21 +128,6 @@
                 Status = CommandLineStatus.WaitingForCommand;
                 stateStack.Clear();
                 ProcessInputError?.Invoke(this, new CommandLineErrorEventArgs(e));
-            }
-        }
-
-        private void EmitHelp()
-        {
-            if (ActiveCommand != null)
-            {
-                HelpRequest?.Invoke(
-                    this,
-                    new CommandLineHelpEventArgs(ActiveCommand, (ActiveCommand as IContainerCommand)?.Children));
-            }
-            else
-            {
-                var commands = commandRepository.Where(x => x.Parent == null).Distinct().OrderBy(x => x.PrimarySelector);
-                HelpRequest?.Invoke(this, new CommandLineHelpEventArgs(null, commands));
             }
         }
 
@@ -201,6 +184,31 @@
             var remainingInputs = GetRemainingCommandInputs();
             remainingInputs.Insert(0, input);
             ProcessInput(remainingInputs);
+        }
+
+        private void EmitHelp()
+        {
+            if (ActiveCommand != null)
+            {
+                EmitHelpForActiveCommand();
+            }
+            else
+            {
+                EmitHelpForAllCommands();
+            }
+        }
+
+        private void EmitHelpForActiveCommand()
+        {
+            HelpRequest?.Invoke(
+                this,
+                new CommandLineHelpEventArgs(ActiveCommand, (ActiveCommand as IContainerCommand)?.Children));
+        }
+
+        private void EmitHelpForAllCommands()
+        {
+            var commands = commandRepository.Where(x => x.Parent == null).Distinct().OrderBy(x => x.PrimarySelector);
+            HelpRequest?.Invoke(this, new CommandLineHelpEventArgs(null, commands));
         }
 
         private bool FullyCompleted()

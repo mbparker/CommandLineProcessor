@@ -5,7 +5,7 @@
 
     using CommandLineProcessorContracts;
 
-    public class ExitCommand : BaseCommand, IExecutableCommand
+    public class ExitCommand : BaseCommand, IInputCommand
     {
         private readonly Action exitAction;
 
@@ -16,20 +16,22 @@
 
         public override IEnumerable<string> AliasSelectors => new[] { "EX" };
 
-        public override string HelpText => "Terminates the program immediately";
+        public override string HelpText => "Terminates the program, after confirmation.";
 
         public override string Name => "Exit Application";
 
         public override string PrimarySelector => "EXit";
 
-        public void Execute(ICommandContext context, params object[] args)
-        {
-            exitAction();
-        }
+        public ICommand NextCommand => null;
 
-        public object[] GetArguments(ICommandContext context)
+        public string Prompt => "Are you sure you want to exit? (Y/N)";
+
+        public void ApplyInput(ICommandContext context, string inputText)
         {
-            return new object[0];
+            if (inputText.ToUpper().StartsWith("Y"))
+            {
+                exitAction();
+            }
         }
     }
 }
