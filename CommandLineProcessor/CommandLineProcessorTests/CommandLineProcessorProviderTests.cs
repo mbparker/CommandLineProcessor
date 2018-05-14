@@ -29,6 +29,8 @@
 
         private ICommandContext commandContextMock;
 
+        private ICommandHistoryService commandHistoryServiceMock;
+
         [Test]
         public void ProcessInput_WhenCancel_MakesParentInputOrContainerActive()
         {
@@ -313,7 +315,8 @@
             commandContextMock = Substitute.For<ICommandContext>();
             commandContextFactoryMock = Substitute.For<ICommandContextFactory>();
             commandContextFactoryMock.Create().Returns(commandContextMock);
-            systemUnderTest = new CommandLineProcessorProvider(commandRepositoryMock, commandPathCalculatorMock, commandContextFactoryMock);
+            commandHistoryServiceMock = Substitute.For<ICommandHistoryService>();
+            systemUnderTest = new CommandLineProcessorProvider(commandRepositoryMock, commandPathCalculatorMock, commandContextFactoryMock, commandHistoryServiceMock);
         }
 
         [Test]

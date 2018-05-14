@@ -26,11 +26,13 @@
         public CommandLineProcessorProvider(
             ICommandRepositoryService commandRepository,
             ICommandPathCalculator commandPathCalculator,
-            ICommandContextFactory contextFactory)
+            ICommandContextFactory contextFactory,
+            ICommandHistoryService historyService)
         {
             this.commandRepository = commandRepository;
             this.commandPathCalculator = commandPathCalculator;
             this.contextFactory = contextFactory;
+            HistoryService = historyService;
             stateStack = new Stack<CommandLineProcessorState>();
             state = new CommandLineProcessorState
                         {
@@ -69,6 +71,8 @@
                 }
             }
         }
+
+        public ICommandHistoryService HistoryService { get; }
 
         public string LastInput { get; private set; }
 
@@ -242,7 +246,8 @@
         {
             var fullyQualifiedInput = GetFullyQualifiedInput(input);
             SelectActiveCommandFromQuialifiedInput(fullyQualifiedInput);
-            HandleCommand();
+            HistoryService.NotifyCommandExecuting(ActiveCommand);
+            HandleCommand();            
         }
 
         private void HandleCommand()

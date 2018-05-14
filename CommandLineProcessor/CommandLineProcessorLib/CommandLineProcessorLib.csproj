@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandContext.cs" />
+    <Compile Include="CommandHistoryProvider.cs" />
     <Compile Include="CommandLineProcessorProvider.cs" />
     <Compile Include="CommandPathCalculator.cs" />
     <Compile Include="CommandRepositoryProvider.cs" />

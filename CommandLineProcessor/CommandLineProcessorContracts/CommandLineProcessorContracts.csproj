@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCommand.cs" />
+    <Compile Include="CommandExecutedEventArgs.cs" />
     <Compile Include="CommandLineHelpEventArgs.cs" />
     <Compile Include="CommandLineCommandChangedEventArgs.cs" />
     <Compile Include="CommandLineErrorEventArgs.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="ICommandContext.cs" />
     <Compile Include="ICommandContextFactory.cs" />
     <Compile Include="ICommandDescriptor.cs" />
+    <Compile Include="ICommandHistoryService.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />
     <Compile Include="ICommandPathCalculator.cs" />
     <Compile Include="ICommandRepositoryService.cs" />
