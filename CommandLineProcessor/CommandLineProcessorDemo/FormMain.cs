@@ -6,8 +6,13 @@
     using System.Windows.Forms;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Events;
 
     using CommandLineProcessorDemo.DemoCommands;
+    using CommandLineProcessorDemo.DemoCommands.Echo;
+    using CommandLineProcessorDemo.DemoCommands.Math;
+    using CommandLineProcessorDemo.DemoCommands.Math.Add;
+    using CommandLineProcessorDemo.DemoCommands.Math.Multiply;
 
     public partial class FormMain : Form
     {
@@ -56,7 +61,8 @@
 
         private void CommandLineProcessor_ProcessingInputElement(object sender, CommandLineProcessInputEventArgs e)
         {
-            textBox_Diagnostics.AppendText($"Current Input: {e.InputText}{Environment.NewLine}");
+            var text = inputHandler.GetPrompt() + e.InputText;
+            textBox_CommandHistory.AppendText($"{text}{Environment.NewLine}");            
             UpdateCommandLine();
         }
 
@@ -165,14 +171,43 @@
                     commandLineProcessor.ProcessInput(input);
                     UpdateCommandLine();
                 }
-                else
+                else if ((e.Control && e.KeyCode == Keys.C) || e.KeyCode == Keys.Escape)
                 {
-                    if (e.Control && e.KeyCode == Keys.C)
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    commandLineProcessor.ProcessInput(commandLineProcessor.Settings.CancelToken);
+                    UpdateCommandLine();
+                }
+                else if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    switch (e.KeyCode)
                     {
-                        e.Handled = true;
-                        e.SuppressKeyPress = true;
-                        commandLineProcessor.ProcessInput(commandLineProcessor.Settings.CancelToken);
-                        UpdateCommandLine();
+                        case Keys.Up:
+                            var previousCommand = commandLineProcessor.HistoryService.Previous();
+                            if (previousCommand != null)
+                            {
+                                textBox_CommandLine.Text = inputHandler.GetPrompt() + previousCommand.PrimarySelector;
+                                textBox_CommandLine.SelectionStart = textBox_CommandLine.Text.Length;
+                            }
+                            else
+                            {
+                                textBox_CommandHistory.AppendText($"*At beginning of command history*{Environment.NewLine}");
+                            }
+                            break;
+                        case Keys.Down:
+                            var nextCommand = commandLineProcessor.HistoryService.Next();
+                            if (nextCommand != null)
+                            {
+                                textBox_CommandLine.Text = inputHandler.GetPrompt() + nextCommand.PrimarySelector;
+                                textBox_CommandLine.SelectionStart = textBox_CommandLine.Text.Length;
+                            }
+                            else
+                            {
+                                textBox_CommandHistory.AppendText($"*At end of command history*{Environment.NewLine}");
+                            }
+                            break;
                     }
                 }
             }

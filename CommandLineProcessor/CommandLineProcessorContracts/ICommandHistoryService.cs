@@ -1,10 +1,10 @@
 ﻿namespace CommandLineProcessorContracts
 {
-    using System;
+    using CommandLineProcessorEntity;
 
     public interface ICommandHistoryService
     {
-        event EventHandler<CommandExecutedEventArgs> CommandExecuting;
+        CommandHistorySettings Settings { get; set; }
 
         ICommand First();
 

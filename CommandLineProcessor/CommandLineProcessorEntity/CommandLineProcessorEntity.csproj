@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandHistorySettings.cs" />
     <Compile Include="CommandLineHelpInfo.cs" />
     <Compile Include="CommandLineSettings.cs" />
     <Compile Include="Exceptions\CommandNotFoundException.cs" />

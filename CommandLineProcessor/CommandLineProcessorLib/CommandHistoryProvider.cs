@@ -1,9 +1,10 @@
 ﻿namespace CommandLineProcessorLib
 {
-    using System;
     using System.Collections.Generic;
 
     using CommandLineProcessorContracts;
+
+    using CommandLineProcessorEntity;
 
     public class CommandHistoryProvider : ICommandHistoryService
     {
@@ -11,7 +12,12 @@
 
         private int historyIndex = -1;
 
-        public event EventHandler<CommandExecutedEventArgs> CommandExecuting;
+        public CommandHistoryProvider()
+        {
+            Settings = new CommandHistorySettings();
+        }
+
+        public CommandHistorySettings Settings { get; set; }
 
         public ICommand First()
         {
@@ -27,6 +33,12 @@
 
         public ICommand Next()
         {
+            if (historyIndex < 0)
+            {
+                historyIndex = history.Count - 1;
+                return null;
+            }
+
             if (historyIndex < history.Count - 1)
             {
                 historyIndex++;
@@ -42,16 +54,24 @@
             {
                 if (command.Parent == null)
                 {
-                    history.Add(command);
-                    historyIndex = history.Count - 1;
-                }
+                    if (history.Count == Settings.MaximumCommandsInHistory)
+                    {
+                        history.RemoveAt(0);
+                    }
 
-                CommandExecuting?.Invoke(this, new CommandExecutedEventArgs(command));
-            }            
+                    history.Add(command);
+                    historyIndex = -1;
+                }
+            }
         }
 
         public ICommand Previous()
         {
+            if (historyIndex < 0)
+            {
+                return Last();
+            }
+
             if (historyIndex > 0)
             {
                 historyIndex--;
@@ -63,7 +83,7 @@
 
         private ICommand FetchHistoryItem()
         {
-            if (history.Count > historyIndex)
+            if (history.Count > historyIndex && historyIndex >= 0)
             {
                 return history[historyIndex];
             }

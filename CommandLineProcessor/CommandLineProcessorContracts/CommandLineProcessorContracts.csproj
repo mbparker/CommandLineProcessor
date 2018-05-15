@@ -41,13 +41,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCommand.cs" />
-    <Compile Include="CommandExecutedEventArgs.cs" />
-    <Compile Include="CommandLineHelpEventArgs.cs" />
-    <Compile Include="CommandLineCommandChangedEventArgs.cs" />
-    <Compile Include="CommandLineErrorEventArgs.cs" />
-    <Compile Include="CommandLineProcessInputEventArgs.cs" />
+    <Compile Include="Events\CommandLineHelpEventArgs.cs" />
+    <Compile Include="Events\CommandLineCommandChangedEventArgs.cs" />
+    <Compile Include="Events\CommandLineErrorEventArgs.cs" />
+    <Compile Include="Events\CommandLineProcessInputEventArgs.cs" />
     <Compile Include="CommandLineStatus.cs" />
-    <Compile Include="CommandLineStatusChangedEventArgs.cs" />
+    <Compile Include="Events\CommandLineStatusChangedEventArgs.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandContext.cs" />
     <Compile Include="ICommandContextFactory.cs" />

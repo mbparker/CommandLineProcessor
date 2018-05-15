@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorContracts
+﻿namespace CommandLineProcessorContracts.Events
 {
     using System;
     using System.Collections.Generic;

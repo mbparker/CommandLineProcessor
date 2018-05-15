@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
 
+    using CommandLineProcessorContracts.Events;
+
     using CommandLineProcessorEntity;
 
     public interface ICommandLineProcessorService
@@ -22,6 +24,8 @@
         event EventHandler<CommandLineHelpEventArgs> HelpRequest;
 
         ICommand ActiveCommand { get; }
+
+        ICommandHistoryService HistoryService { get; }
 
         string LastInput { get; }
 

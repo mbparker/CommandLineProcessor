@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorDemo.DemoCommands
+﻿namespace CommandLineProcessorDemo.DemoCommands.Math.Add
 {
     using CommandLineProcessorContracts;
     public class AddInputCommand2 : BaseCommand, IInputCommand

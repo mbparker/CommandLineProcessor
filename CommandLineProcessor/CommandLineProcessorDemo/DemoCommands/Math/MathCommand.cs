@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorDemo.DemoCommands
+﻿namespace CommandLineProcessorDemo.DemoCommands.Math
 {
     using System.Collections.Generic;
 

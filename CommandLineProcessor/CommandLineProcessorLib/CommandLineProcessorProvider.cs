@@ -7,6 +7,7 @@
     using CommandLineProcessorCommon;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Events;
 
     using CommandLineProcessorEntity;
     using CommandLineProcessorEntity.Exceptions;
