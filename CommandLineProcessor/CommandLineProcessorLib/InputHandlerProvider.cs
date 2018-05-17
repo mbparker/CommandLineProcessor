@@ -44,7 +44,17 @@
             var inputCommand = activeCommand as IInputCommand;
             if (inputCommand != null)
             {
-                result = $"{result}: {inputCommand.Name} ({inputCommand.Prompt})";
+                ICommand commandWithName = inputCommand;
+                while (commandWithName != null && string.IsNullOrWhiteSpace(commandWithName.Name))
+                {
+                    if (!string.IsNullOrWhiteSpace(commandWithName.Name))
+                    {
+                        break;
+                    }
+
+                    commandWithName = commandWithName.Parent;
+                }
+                result = $"{result}: {commandWithName?.Name ?? string.Empty} ({inputCommand.Prompt})";
             }
 
             return result;
