@@ -1,16 +1,24 @@
 ﻿namespace CommandLineProcessorLib
 {
-    using System.Collections.Generic;
+    using CommandLineProcessorCommon.Ioc;
 
     using CommandLineProcessorContracts;
 
     public class CommandContext : ICommandContext
     {
-        public CommandContext()
+        private readonly IIocContainer container;
+
+        public CommandContext(IIocContainer container, ICommandDataStore dataStore)
         {
-            DataStore = new Dictionary<string, object>();
+            this.container = container;
+            DataStore = dataStore;
         }
 
-        public IDictionary<string, object> DataStore { get; }
+        public ICommandDataStore DataStore { get; }
+
+        public T GetService<T>()
+        {
+            return container.Resolve<T>();
+        }
     }
 }

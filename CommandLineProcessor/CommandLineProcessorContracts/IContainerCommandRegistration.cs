@@ -8,8 +8,7 @@
 
         IExecutableCommandRegistration AddExecutableCommand(
             ICommandDescriptor descriptor,
-            Func<ICommandContext, object[]> getArgumentsFunc,
-            Action<ICommandContext, object[]> executeAction);
+            Action<ICommandContext> executeAction);
 
         IInputCommandRegistration AddInputCommand(
             ICommandDescriptor descriptor,

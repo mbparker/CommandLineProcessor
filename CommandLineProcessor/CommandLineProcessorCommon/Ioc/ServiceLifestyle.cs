@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorContracts.Ioc
+﻿namespace CommandLineProcessorCommon.Ioc
 {
     public enum ServiceLifestyle
     {

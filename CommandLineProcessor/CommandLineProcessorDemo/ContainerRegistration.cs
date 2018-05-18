@@ -1,7 +1,8 @@
 ﻿namespace CommandLineProcessorDemo
 {
+    using CommandLineProcessorCommon.Ioc;
+
     using CommandLineProcessorContracts;
-    using CommandLineProcessorContracts.Ioc;
 
     using CommandLineProcessorLib;
 
@@ -16,6 +17,7 @@
             container.Register<ICommandPathCalculator, CommandPathCalculator>(ServiceLifestyle.Transient);
             container.Register<IInputHandlerService, InputHandlerProvider>(ServiceLifestyle.Transient);
             container.Register<ICommandContext, CommandContext>(ServiceLifestyle.Transient);
+            container.Register<ICommandDataStore, CommandDataStore>(ServiceLifestyle.Transient);
             container.RegisterAsFactory<ICommandContextFactory>(ServiceLifestyle.Singleton);
         }
     }

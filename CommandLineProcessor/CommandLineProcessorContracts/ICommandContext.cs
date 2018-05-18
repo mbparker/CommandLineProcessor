@@ -4,6 +4,8 @@
 
     public interface ICommandContext
     {
-        IDictionary<string, object> DataStore { get; }
+        ICommandDataStore DataStore { get; }
+
+        T GetService<T>();
     }
 }

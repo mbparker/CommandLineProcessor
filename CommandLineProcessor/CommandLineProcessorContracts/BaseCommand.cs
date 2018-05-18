@@ -1,5 +1,6 @@
 ﻿namespace CommandLineProcessorContracts
 {
+    using CommandLineProcessorCommon;
     using System.Collections.Generic;
 
     public class BaseCommand : ICommand
@@ -33,12 +34,12 @@
             get
             {
                 var path = $"{Parent?.Path ?? string.Empty}|{Parent?.PrimarySelector ?? string.Empty}";
-                if (path == "|")
+                if (path == Constants.InternalTokens.SelectorSeperator)
                 {
                     path = string.Empty;
                 }
 
-                if (path.StartsWith("|"))
+                if (path.StartsWith(Constants.InternalTokens.SelectorSeperator))
                 {
                     path = path.Remove(0, 1);
                 }

@@ -5,9 +5,7 @@
 
     using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;
-    using Castle.Windsor;
-
-    using CommandLineProcessorContracts.Ioc;
+    using Castle.Windsor;    
 
     public class IocContainer : IIocContainer
     {

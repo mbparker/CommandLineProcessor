@@ -415,7 +415,7 @@
         {
             if (ActiveCommand is IExecutableCommand exe)
             {
-                exe.Execute(state.Context, exe.GetArguments(state.Context));
+                exe.Execute(state.Context);
                 ActiveCommand = null;
             }
         }

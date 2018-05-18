@@ -37,10 +37,9 @@
 
         public IExecutableCommandRegistration AddExecutableCommand(
             ICommandDescriptor descriptor,
-            Func<ICommandContext, object[]> getArgumentsFunc,
-            Action<ICommandContext, object[]> executeAction)
+            Action<ICommandContext> executeAction)
         {
-            var command = new GenericExecutableCommand(descriptor, getArgumentsFunc, executeAction);
+            var command = new GenericExecutableCommand(descriptor, executeAction);
             command.Parent = targetCommand;
             (targetCommand as IContainerCommandEdit).AddChild(command);
             return new CommandRegistrations(registeredCommands, command);
@@ -66,10 +65,9 @@
 
         public IExecutableCommandRegistration RegisterExecutableCommand(
             ICommandDescriptor descriptor,
-            Func<ICommandContext, object[]> getArgumentsFunc,
-            Action<ICommandContext, object[]> executeAction)
+            Action<ICommandContext> executeAction)
         {
-            var command = new GenericExecutableCommand(descriptor, getArgumentsFunc, executeAction);
+            var command = new GenericExecutableCommand(descriptor, executeAction);
             registeredCommands.Add(command);
             return new CommandRegistrations(registeredCommands, command);
         }
@@ -94,10 +92,9 @@
 
         public IExecutableCommandRegistration SetChildToExecutableCommand(
             ICommandDescriptor descriptor,
-            Func<ICommandContext, object[]> getArgumentsFunc,
-            Action<ICommandContext, object[]> executeAction)
+            Action<ICommandContext> executeAction)
         {
-            var command = new GenericExecutableCommand(descriptor, getArgumentsFunc, executeAction);
+            var command = new GenericExecutableCommand(descriptor, executeAction);
             command.Parent = targetCommand;
             (targetCommand as IInputCommand).NextCommand = command;
             return new CommandRegistrations(registeredCommands, command);

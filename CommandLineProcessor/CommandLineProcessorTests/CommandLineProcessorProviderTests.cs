@@ -48,9 +48,7 @@
             systemUnderTest.ProcessInput("subinput");
             systemUnderTest.ProcessInput("^c");
 
-            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(
-                Arg.Any<ICommandContext>(),
-                Arg.Any<object[]>());
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>());
             Assert.AreSame(systemUnderTest.ActiveCommand, rootCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
         }
@@ -110,16 +108,14 @@
 
             systemUnderTest.ProcessInput("test3||subinput||~||test3||sub");
 
-            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(
-                Arg.Any<ICommandContext>(),
-                Arg.Any<object[]>());
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>());
             Assert.AreSame(systemUnderTest.ActiveCommand, inputCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForInput));
 
             systemUnderTest.ProcessInput("Hello World");
 
-            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
-            (exeCommand as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>());
+            (exeCommand as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
         }
@@ -148,16 +144,14 @@
 
             systemUnderTest.ProcessInput("sub");
 
-            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(
-                Arg.Any<ICommandContext>(),
-                Arg.Any<object[]>());
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>());
             Assert.AreSame(systemUnderTest.ActiveCommand, inputCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForInput));
 
             systemUnderTest.ProcessInput("Hello World");
 
-            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
-            (exeCommand as IExecutableCommand).Received(2).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>());
+            (exeCommand as IExecutableCommand).Received(2).Execute(Arg.Any<ICommandContext>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
         }
@@ -208,7 +202,7 @@
 
             systemUnderTest.ProcessInput("Hello World");
 
-            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
 
@@ -238,9 +232,7 @@
             systemUnderTest.ProcessInput("subinput");
             systemUnderTest.ProcessInput("^c||^c||^c");
 
-            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(
-                Arg.Any<ICommandContext>(),
-                Arg.Any<object[]>());
+            (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
         }
@@ -263,13 +255,13 @@
             systemUnderTest.ProcessInput("subinput");
             systemUnderTest.ProcessInput("`test3||subinput||hello world");
 
-            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>());
             Assert.AreSame(systemUnderTest.ActiveCommand, inputCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForInput));
 
             systemUnderTest.ProcessInput("Hello World");
 
-            (command as IExecutableCommand).Received(2).Execute(Arg.Any<ICommandContext>(), Arg.Any<object[]>());
+            (command as IExecutableCommand).Received(2).Execute(Arg.Any<ICommandContext>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
         }

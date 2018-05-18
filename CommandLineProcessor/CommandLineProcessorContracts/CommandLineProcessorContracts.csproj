@@ -50,6 +50,7 @@
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandContext.cs" />
     <Compile Include="ICommandContextFactory.cs" />
+    <Compile Include="ICommandDataStore.cs" />
     <Compile Include="ICommandDescriptor.cs" />
     <Compile Include="ICommandHistoryService.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />
@@ -63,12 +64,14 @@
     <Compile Include="IInputCommand.cs" />
     <Compile Include="IInputCommandRegistration.cs" />
     <Compile Include="IInputHandlerService.cs" />
-    <Compile Include="Ioc\IIocContainer.cs" />
     <Compile Include="IRootCommandRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Ioc\ServiceLifestyle.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommandLineProcessorCommon\CommandLineProcessorCommon.csproj">
+      <Project>{9E3EBBA4-19CB-4188-9072-8287773CD7E0}</Project>
+      <Name>CommandLineProcessorCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommandLineProcessorEntity\CommandLineProcessorEntity.csproj">
       <Project>{2f513c2d-2ee5-47b0-9712-d0e28715dd42}</Project>
       <Name>CommandLineProcessorEntity</Name>

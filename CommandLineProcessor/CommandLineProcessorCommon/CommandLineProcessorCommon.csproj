@@ -50,18 +50,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Ioc\IIocContainer.cs" />
+    <Compile Include="Ioc\ServiceLifestyle.cs" />
     <Compile Include="Ioc\Windsor\IocContainer.cs" />
     <Compile Include="Ioc\Windsor\IocContainerHolder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CommandLineProcessorContracts\CommandLineProcessorContracts.csproj">
-      <Project>{642ab68f-f0a5-4b53-8b0b-ade8a943481b}</Project>
-      <Name>CommandLineProcessorContracts</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorContracts.Ioc
+﻿namespace CommandLineProcessorCommon.Ioc
 {
     using System;
     using System.Collections.Generic;

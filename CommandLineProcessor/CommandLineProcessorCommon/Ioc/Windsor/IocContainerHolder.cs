@@ -4,8 +4,6 @@
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
 
-    using CommandLineProcessorContracts.Ioc;
-
     public static class IocContainerHolder
     {
         private static IWindsorContainer container;

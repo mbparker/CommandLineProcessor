@@ -115,7 +115,7 @@
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            commandLineProcessor.RegisterCommands(GetCommands());
+            commandLineProcessor.RegisterCommands(CreateCommands());
         }
 
         private void FormMain_Shown(object sender, EventArgs e)
@@ -138,7 +138,7 @@
             return $"{command?.Name ?? "None"} ({command?.GetType().Name ?? "N/A"})";
         }
 
-        private IEnumerable<ICommand> GetCommands()
+        private IEnumerable<ICommand> CreateCommands()
         {
             commandRegistration.RegisterInputCommand(
                 new CommandDescriptor("Exit", "Exit", "Terminates the program, with confirmation.", "EX"),
@@ -155,13 +155,12 @@
                 .RegisterInputCommand(
                     new CommandDescriptor("Echo", "Echo", "Writes out the specified text to the history window.", "E"),
                     "Enter Text",
-                    (context, input) => { context.DataStore.Add("TEXT", input); }).SetChildToExecutableCommand(
+                    (context, input) => { context.DataStore.Set("TEXT", input); }).SetChildToExecutableCommand(
                     CommandDescriptor.Empty(),
-                    context => new object[0],
-                    (context, args) =>
+                    context =>
                         {
                             textBox_CommandHistory.AppendText(
-                                "You Entered: " + (string)context.DataStore["TEXT"] + Environment.NewLine);
+                                "You Entered: " + context.DataStore.Get<string>("TEXT") + Environment.NewLine);
                         });
 
             var mathCommandRegistration = commandRegistration.RegisterContainerCommand(
@@ -173,16 +172,15 @@
                 .AddInputCommand(
                     new CommandDescriptor("Add", "Addition", "Adds two numbers and displays the result.", "A"),
                     "Enter first number",
-                    (context, input) => { context.DataStore.Add("N1", double.Parse(input)); }).SetChildToInputCommand(
+                    (context, input) => { context.DataStore.Set("N1", double.Parse(input)); }).SetChildToInputCommand(
                     CommandDescriptor.Empty(),
                     "Enter second number",
-                    (context, input) => { context.DataStore.Add("N2", double.Parse(input)); })
+                    (context, input) => { context.DataStore.Set("N2", double.Parse(input)); })
                 .SetChildToExecutableCommand(
                     CommandDescriptor.Empty(),
-                    context => new object[0],
-                    (context, args) =>
+                    context =>
                         {
-                            var result = (double)context.DataStore["N1"] + (double)context.DataStore["N2"];
+                            var result = context.DataStore.Get<double>("N1") + context.DataStore.Get<double>("N2");
                             textBox_CommandHistory.AppendText("Result: " + result.ToString() + Environment.NewLine);
                         });
             mathCommandRegistration
@@ -193,16 +191,15 @@
                         "Multiplies two numbers and displays the result.",
                         "M"),
                     "Enter first number",
-                    (context, input) => { context.DataStore.Add("N1", double.Parse(input)); }).SetChildToInputCommand(
+                    (context, input) => { context.DataStore.Set("N1", double.Parse(input)); }).SetChildToInputCommand(
                     CommandDescriptor.Empty(),
                     "Enter second number",
-                    (context, input) => { context.DataStore.Add("N2", double.Parse(input)); })
+                    (context, input) => { context.DataStore.Set("N2", double.Parse(input)); })
                 .SetChildToExecutableCommand(
                     CommandDescriptor.Empty(),
-                    context => new object[0],
-                    (context, args) =>
+                    context =>
                         {
-                            var result = (double)context.DataStore["N1"] * (double)context.DataStore["N2"];
+                            var result = context.DataStore.Get<double>("N1") * context.DataStore.Get<double>("N2");
                             textBox_CommandHistory.AppendText("Result: " + result.ToString() + Environment.NewLine);
                         });
 
