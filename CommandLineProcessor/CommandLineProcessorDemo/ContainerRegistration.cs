@@ -9,6 +9,7 @@
     {
         public static void RegisterServices(IIocContainer container)
         {
+            container.Register<IRootCommandRegistration, CommandRegistrations>(ServiceLifestyle.Singleton);
             container.Register<ICommandLineProcessorService, CommandLineProcessorProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandRepositoryService, CommandRepositoryProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandHistoryService, CommandHistoryProvider>(ServiceLifestyle.Singleton);

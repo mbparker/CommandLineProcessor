@@ -2,15 +2,31 @@
 {
     using System.Collections.Generic;
 
-    public abstract class BaseCommand : ICommand
+    public class BaseCommand : ICommand
     {
-        public virtual IEnumerable<string> AliasSelectors { get; } = new string[0];
+        public BaseCommand(ICommandDescriptor descriptor)
+        {
+            Name = descriptor.Name;
+            HelpText = descriptor.HelpText;
+            PrimarySelector = descriptor.PrimarySelector;
+            AliasSelectors = descriptor.AliasSelectors;
+        }
 
-        public virtual string HelpText { get; } = string.Empty;
+        public BaseCommand()
+        {
+            AliasSelectors = new string[0];
+            HelpText = string.Empty;
+            Name = string.Empty;
+            PrimarySelector = string.Empty;
+        }
 
-        public virtual string Name { get; } = string.Empty;
+        public IEnumerable<string> AliasSelectors { get; protected set; }
 
-        public virtual ICommand Parent { get; set; }
+        public string HelpText { get; protected set; }
+
+        public string Name { get; protected set; }
+
+        public ICommand Parent { get; set; }
 
         public string Path
         {
@@ -31,7 +47,7 @@
             }
         }
 
-        public abstract string PrimarySelector { get; }
+        public string PrimarySelector { get; protected set; }
 
         public bool CommandIs<T>()
             where T : class

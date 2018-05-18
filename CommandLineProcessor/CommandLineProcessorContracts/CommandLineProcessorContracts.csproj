@@ -56,10 +56,15 @@
     <Compile Include="ICommandPathCalculator.cs" />
     <Compile Include="ICommandRepositoryService.cs" />
     <Compile Include="IContainerCommand.cs" />
+    <Compile Include="IContainerCommandRegistration.cs" />
     <Compile Include="IExecutableCommand.cs" />
+    <Compile Include="ICommandRegistration.cs" />
+    <Compile Include="IExecutableCommandRegistration.cs" />
     <Compile Include="IInputCommand.cs" />
+    <Compile Include="IInputCommandRegistration.cs" />
     <Compile Include="IInputHandlerService.cs" />
     <Compile Include="Ioc\IIocContainer.cs" />
+    <Compile Include="IRootCommandRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ioc\ServiceLifestyle.cs" />
   </ItemGroup>

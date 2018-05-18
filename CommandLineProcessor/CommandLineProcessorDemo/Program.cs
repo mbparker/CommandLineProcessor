@@ -23,7 +23,8 @@
                 ContainerRegistration.RegisterServices(IocContainerHolder.Container);
                 var processor = IocContainerHolder.Container.Resolve<ICommandLineProcessorService>();
                 var inputHandler = IocContainerHolder.Container.Resolve<IInputHandlerService>();
-                Application.Run(new FormMain(processor, inputHandler));
+                var commandRegistration = IocContainerHolder.Container.Resolve<IRootCommandRegistration>();
+                Application.Run(new FormMain(processor, inputHandler, commandRegistration));
             }
             finally
             {

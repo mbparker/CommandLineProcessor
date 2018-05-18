@@ -4,7 +4,7 @@
 
     public interface IInputCommand : ICommand
     {
-        ICommand NextCommand { get; }
+        ICommand NextCommand { get; set; }
 
         string Prompt { get; }
 

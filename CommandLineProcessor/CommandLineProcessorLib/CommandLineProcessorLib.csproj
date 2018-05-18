@@ -41,10 +41,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandContext.cs" />
+    <Compile Include="CommandDescriptor.cs" />
     <Compile Include="CommandHistoryProvider.cs" />
     <Compile Include="CommandLineProcessorProvider.cs" />
     <Compile Include="CommandPathCalculator.cs" />
+    <Compile Include="CommandRegistrations.cs" />
     <Compile Include="CommandRepositoryProvider.cs" />
+    <Compile Include="GenericContainerCommand.cs" />
+    <Compile Include="GenericExecutableCommand.cs" />
+    <Compile Include="GenericInputCommand.cs" />
+    <Compile Include="IContainerCommandEdit.cs" />
     <Compile Include="InputHandlerProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
