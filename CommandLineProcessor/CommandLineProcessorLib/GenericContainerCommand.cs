@@ -1,6 +1,8 @@
 ﻿namespace CommandLineProcessorLib
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using CommandLineProcessorContracts;
 
@@ -8,9 +10,14 @@
     {
         private readonly List<ICommand> children;
 
-        public GenericContainerCommand(ICommandDescriptor descriptor)
+        private readonly Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc;
+
+        public GenericContainerCommand(
+            ICommandDescriptor descriptor,
+            Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc)
             : base(descriptor)
         {
+            this.getDefaultCommandFunc = getDefaultCommandFunc;
             children = new List<ICommand>();
         }
 
@@ -19,6 +26,16 @@
         public void AddChild(ICommand command)
         {
             children.Add(command);
+        }
+
+        public ICommand GetDefaultCommand(ICommandContext context)
+        {
+            return getDefaultCommandFunc?.Invoke(context, Children) ?? Children.FirstOrDefault();
+        }
+
+        public string GetDefaultCommandSelector(ICommandContext context)
+        {
+            return GetDefaultCommand(context)?.PrimarySelector;
         }
     }
 }

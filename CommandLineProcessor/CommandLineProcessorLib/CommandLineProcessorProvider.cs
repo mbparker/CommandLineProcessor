@@ -73,6 +73,8 @@
             }
         }
 
+        public ICommandContext ActiveContext => state.Context;
+
         public ICommandHistoryService HistoryService { get; }
 
         public string LastInput { get; private set; }
@@ -103,7 +105,19 @@
             {
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    throw new ArgumentException("Value is required.", nameof(input));
+                    if (ActiveCommand is IInputCommand inputCommand)
+                    {
+                        input = inputCommand.GetDefaultValue(ActiveContext);
+                    }
+                    else if (ActiveCommand is IContainerCommand containerCommand)
+                    {
+                        input = containerCommand.GetDefaultCommandSelector(ActiveContext);
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    return;
                 }
 
                 input = input.Trim();

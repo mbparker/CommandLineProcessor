@@ -1,10 +1,13 @@
 ﻿namespace CommandLineProcessorContracts
 {
     using System;
+    using System.Collections.Generic;
 
     public interface IInputCommandRegistration : ICommandRegistration
     {
-        IContainerCommandRegistration SetChildToContainerCommand(ICommandDescriptor descriptor);
+        IContainerCommandRegistration SetChildToContainerCommand(
+            ICommandDescriptor descriptor,
+            Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc);
 
         IExecutableCommandRegistration SetChildToExecutableCommand(
             ICommandDescriptor descriptor,
@@ -13,6 +16,7 @@
         IInputCommandRegistration SetChildToInputCommand(
             ICommandDescriptor descriptor,
             string promptText,
-            Action<ICommandContext, string> applyInputAction);
+            Action<ICommandContext, string> applyInputAction,
+            Func<ICommandContext, string> getDefaultFunc);
     }
 }

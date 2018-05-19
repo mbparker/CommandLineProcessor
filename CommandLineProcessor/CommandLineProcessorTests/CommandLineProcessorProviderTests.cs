@@ -67,18 +67,14 @@
         [TestCase("")]
         [TestCase(" ")]
         [TestCase(null)]
-        public void ProcessInput_WhenInvalid_RaisesErrorEvent(string input)
+        public void ProcessInput_WhenInvalid_DoesNotRaiseErrorEvent(string input)
         {
             Exception ex = null;
             systemUnderTest.ProcessInputError += (sender, args) => { ex = args.Exception; };
 
             systemUnderTest.ProcessInput(input);
 
-            Assert.That(ex, Is.Not.Null);
-            Assert.That(
-                ex,
-                Is.InstanceOf<ArgumentException>().With.Message
-                    .EqualTo($"Value is required.{Environment.NewLine}Parameter name: input"));
+            Assert.That(ex, Is.Null);
         }
 
         [Test]

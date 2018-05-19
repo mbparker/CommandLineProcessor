@@ -24,6 +24,7 @@
         {
             var result = Processor.Settings.CommandPromptRoot;
             result = AppendCommandOptions(result);
+            result = AppendDefaultValue(result);
             var levelIndicator = GetCommandLevelIndicator();
             return $"{levelIndicator}{result}: ";
         }
@@ -62,6 +63,24 @@
             return result;
         }
 
+        private string AppendDefaultValue(string promptText)
+        {
+            var activeCommand = Processor.ActiveCommand;
+            var result = promptText;
+
+            if (activeCommand is IContainerCommand containerCommand)
+            {
+                return GetDefaultValueForContainer(containerCommand, result);
+            }
+
+            if (activeCommand is IInputCommand inputCommand)
+            {
+                result = GetDefaultValueForInput(inputCommand, result);
+            }
+
+            return result;
+        }
+
         private string GetCommandLevelIndicator()
         {
             var builder = new StringBuilder();
@@ -82,6 +101,28 @@
         {
             var subCommands = string.Join(",", containerCommand.Children.Select(x => x.PrimarySelector));
             return $"{promptText}: {containerCommand.Name} ({subCommands})";
+        }
+
+        private string GetDefaultValueForContainer(IContainerCommand containerCommand, string promptText)
+        {
+            var defaultValue = containerCommand.GetDefaultCommandSelector(Processor.ActiveContext);
+            if (!string.IsNullOrWhiteSpace(defaultValue))
+            {
+                return $"{promptText} [{defaultValue}]";
+            }
+
+            return promptText;
+        }
+
+        private string GetDefaultValueForInput(IInputCommand inputCommand, string promptText)
+        {
+            var defaultValue = inputCommand.GetDefaultValue(Processor.ActiveContext);
+            if (!string.IsNullOrWhiteSpace(defaultValue))
+            {
+                return $"{promptText} [{defaultValue}]";
+            }
+
+            return promptText;
         }
     }
 }

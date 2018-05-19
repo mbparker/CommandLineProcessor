@@ -25,6 +25,8 @@
 
         ICommand ActiveCommand { get; }
 
+        ICommandContext ActiveContext { get; }
+
         ICommandHistoryService HistoryService { get; }
 
         string LastInput { get; }

@@ -149,13 +149,15 @@
                         {
                             Application.Exit();
                         }
-                    });
+                    },
+                context => "N");
 
             commandRegistration
                 .RegisterInputCommand(
                     new CommandDescriptor("Echo", "Echo", "Writes out the specified text to the history window.", "E"),
                     "Enter Text",
-                    (context, input) => { context.DataStore.Set("TEXT", input); }).SetChildToExecutableCommand(
+                    (context, input) => { context.DataStore.Set("TEXT", input); },
+                    context => "Hello World").SetChildToExecutableCommand(
                     CommandDescriptor.Empty(),
                     context =>
                         {
@@ -167,21 +169,23 @@
                 new CommandDescriptor(
                     "Math",
                     "Mathematical Operations",
-                    "Supports performing various mathematical operations."));
+                    "Supports performing various mathematical operations."),
+                (context, children) => children.Single(x => x.PrimarySelector == "Mult"));
             mathCommandRegistration
                 .AddInputCommand(
                     new CommandDescriptor("Add", "Addition", "Adds two numbers and displays the result.", "A"),
                     "Enter first number",
-                    (context, input) => { context.DataStore.Set("N1", double.Parse(input)); }).SetChildToInputCommand(
+                    (context, input) => { context.DataStore.Set("N1", double.Parse(input)); },
+                    null).SetChildToInputCommand(
                     CommandDescriptor.Empty(),
                     "Enter second number",
-                    (context, input) => { context.DataStore.Set("N2", double.Parse(input)); })
-                .SetChildToExecutableCommand(
+                    (context, input) => { context.DataStore.Set("N2", double.Parse(input)); },
+                    null).SetChildToExecutableCommand(
                     CommandDescriptor.Empty(),
                     context =>
                         {
                             var result = context.DataStore.Get<double>("N1") + context.DataStore.Get<double>("N2");
-                            textBox_CommandHistory.AppendText("Result: " + result.ToString() + Environment.NewLine);
+                            textBox_CommandHistory.AppendText($"Result: {result}{Environment.NewLine}");
                         });
             mathCommandRegistration
                 .AddInputCommand(
@@ -191,16 +195,17 @@
                         "Multiplies two numbers and displays the result.",
                         "M"),
                     "Enter first number",
-                    (context, input) => { context.DataStore.Set("N1", double.Parse(input)); }).SetChildToInputCommand(
+                    (context, input) => { context.DataStore.Set("N1", double.Parse(input)); },
+                    null).SetChildToInputCommand(
                     CommandDescriptor.Empty(),
                     "Enter second number",
-                    (context, input) => { context.DataStore.Set("N2", double.Parse(input)); })
-                .SetChildToExecutableCommand(
+                    (context, input) => { context.DataStore.Set("N2", double.Parse(input)); },
+                    null).SetChildToExecutableCommand(
                     CommandDescriptor.Empty(),
                     context =>
                         {
                             var result = context.DataStore.Get<double>("N1") * context.DataStore.Get<double>("N2");
-                            textBox_CommandHistory.AppendText("Result: " + result.ToString() + Environment.NewLine);
+                            textBox_CommandHistory.AppendText($"Result: {result}{Environment.NewLine}");
                         });
 
             return commandRegistration.RegisteredCommands;

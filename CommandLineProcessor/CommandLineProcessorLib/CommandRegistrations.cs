@@ -14,22 +14,24 @@
 
         private readonly ICommand targetCommand;
 
+        public CommandRegistrations()
+            : this(new List<ICommand>(), null)
+        {
+        }
+
         protected CommandRegistrations(List<ICommand> registeredCommands, ICommand targetCommand)
         {
             this.registeredCommands = registeredCommands;
             this.targetCommand = targetCommand;
         }
 
-        public CommandRegistrations()
-            : this(new List<ICommand>(), null)
-        {
-        }
-
         public IEnumerable<ICommand> RegisteredCommands => registeredCommands;
 
-        public IContainerCommandRegistration AddContainerCommand(ICommandDescriptor descriptor)
+        public IContainerCommandRegistration AddContainerCommand(
+            ICommandDescriptor descriptor,
+            Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc)
         {
-            var command = new GenericContainerCommand(descriptor);
+            var command = new GenericContainerCommand(descriptor, getDefaultCommandFunc);
             command.Parent = targetCommand;
             (targetCommand as IContainerCommandEdit).AddChild(command);
             return new CommandRegistrations(registeredCommands, command);
@@ -48,17 +50,20 @@
         public IInputCommandRegistration AddInputCommand(
             ICommandDescriptor descriptor,
             string promptText,
-            Action<ICommandContext, string> applyInputAction)
+            Action<ICommandContext, string> applyInputAction,
+            Func<ICommandContext, string> getDefaultFunc)
         {
-            var command = new GenericInputCommand(descriptor, promptText, applyInputAction);
+            var command = new GenericInputCommand(descriptor, promptText, applyInputAction, getDefaultFunc);
             command.Parent = targetCommand;
             (targetCommand as IContainerCommandEdit).AddChild(command);
             return new CommandRegistrations(registeredCommands, command);
         }
 
-        public IContainerCommandRegistration RegisterContainerCommand(ICommandDescriptor descriptor)
+        public IContainerCommandRegistration RegisterContainerCommand(
+            ICommandDescriptor descriptor,
+            Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc)
         {
-            var command = new GenericContainerCommand(descriptor);
+            var command = new GenericContainerCommand(descriptor, getDefaultCommandFunc);
             registeredCommands.Add(command);
             return new CommandRegistrations(registeredCommands, command);
         }
@@ -75,16 +80,19 @@
         public IInputCommandRegistration RegisterInputCommand(
             ICommandDescriptor descriptor,
             string promptText,
-            Action<ICommandContext, string> applyInputAction)
+            Action<ICommandContext, string> applyInputAction,
+            Func<ICommandContext, string> getDefaultFunc)
         {
-            var command = new GenericInputCommand(descriptor, promptText, applyInputAction);
+            var command = new GenericInputCommand(descriptor, promptText, applyInputAction, getDefaultFunc);
             registeredCommands.Add(command);
             return new CommandRegistrations(registeredCommands, command);
         }
 
-        public IContainerCommandRegistration SetChildToContainerCommand(ICommandDescriptor descriptor)
+        public IContainerCommandRegistration SetChildToContainerCommand(
+            ICommandDescriptor descriptor,
+            Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc)
         {
-            var command = new GenericContainerCommand(descriptor);
+            var command = new GenericContainerCommand(descriptor, getDefaultCommandFunc);
             command.Parent = targetCommand;
             (targetCommand as IInputCommand).NextCommand = command;
             return new CommandRegistrations(registeredCommands, command);
@@ -103,9 +111,10 @@
         public IInputCommandRegistration SetChildToInputCommand(
             ICommandDescriptor descriptor,
             string promptText,
-            Action<ICommandContext, string> applyInputAction)
+            Action<ICommandContext, string> applyInputAction,
+            Func<ICommandContext, string> getDefaultFunc)
         {
-            var command = new GenericInputCommand(descriptor, promptText, applyInputAction);
+            var command = new GenericInputCommand(descriptor, promptText, applyInputAction, getDefaultFunc);
             command.Parent = targetCommand;
             (targetCommand as IInputCommand).NextCommand = command;
             return new CommandRegistrations(registeredCommands, command);
