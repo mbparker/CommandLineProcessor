@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     public class CommandDescriptor : ICommandDescriptor
     {

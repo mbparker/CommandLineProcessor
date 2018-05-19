@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
 
+    using CommandLineProcessorContracts.Commands;
+
     public interface ICommandRepositoryService : IEnumerable<ICommand>
     {
         int Count { get; }

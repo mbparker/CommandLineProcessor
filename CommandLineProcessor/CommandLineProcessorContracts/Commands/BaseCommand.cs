@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorContracts
+﻿namespace CommandLineProcessorContracts.Commands
 {
     using CommandLineProcessorCommon;
     using System.Collections.Generic;

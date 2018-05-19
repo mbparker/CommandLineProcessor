@@ -4,6 +4,8 @@
     using System.Collections.Generic;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
+    using CommandLineProcessorContracts.Commands.Registration;
 
     public class CommandRegistrations : IRootCommandRegistration,
                                         IContainerCommandRegistration,

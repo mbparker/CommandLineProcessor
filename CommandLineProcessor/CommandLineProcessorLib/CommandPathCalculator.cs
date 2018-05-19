@@ -3,6 +3,7 @@
     using CommandLineProcessorCommon;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     public class CommandPathCalculator : ICommandPathCalculator
     {

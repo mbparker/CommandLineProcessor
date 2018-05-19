@@ -5,6 +5,7 @@
     using System.Linq;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     public class GenericContainerCommand : BaseCommand, IContainerCommand, IContainerCommandEdit
     {

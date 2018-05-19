@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorTests
+﻿namespace CommandLineProcessorTests.UnitTests
 {
     using System;
     using System.Collections.Generic;

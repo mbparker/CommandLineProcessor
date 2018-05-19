@@ -40,31 +40,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseCommand.cs" />
+    <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Events\CommandLineHelpEventArgs.cs" />
     <Compile Include="Events\CommandLineCommandChangedEventArgs.cs" />
     <Compile Include="Events\CommandLineErrorEventArgs.cs" />
     <Compile Include="Events\CommandLineProcessInputEventArgs.cs" />
     <Compile Include="CommandLineStatus.cs" />
     <Compile Include="Events\CommandLineStatusChangedEventArgs.cs" />
-    <Compile Include="ICommand.cs" />
+    <Compile Include="Commands\ICommand.cs" />
     <Compile Include="ICommandContext.cs" />
     <Compile Include="ICommandContextFactory.cs" />
     <Compile Include="ICommandDataStore.cs" />
-    <Compile Include="ICommandDescriptor.cs" />
+    <Compile Include="Commands\ICommandDescriptor.cs" />
     <Compile Include="ICommandHistoryService.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />
     <Compile Include="ICommandPathCalculator.cs" />
     <Compile Include="ICommandRepositoryService.cs" />
-    <Compile Include="IContainerCommand.cs" />
-    <Compile Include="IContainerCommandRegistration.cs" />
-    <Compile Include="IExecutableCommand.cs" />
-    <Compile Include="ICommandRegistration.cs" />
-    <Compile Include="IExecutableCommandRegistration.cs" />
-    <Compile Include="IInputCommand.cs" />
-    <Compile Include="IInputCommandRegistration.cs" />
+    <Compile Include="Commands\IContainerCommand.cs" />
+    <Compile Include="Commands\Registration\IContainerCommandRegistration.cs" />
+    <Compile Include="Commands\IExecutableCommand.cs" />
+    <Compile Include="Commands\Registration\ICommandRegistration.cs" />
+    <Compile Include="Commands\Registration\IExecutableCommandRegistration.cs" />
+    <Compile Include="Commands\IInputCommand.cs" />
+    <Compile Include="Commands\Registration\IInputCommandRegistration.cs" />
     <Compile Include="IInputHandlerService.cs" />
-    <Compile Include="IRootCommandRegistration.cs" />
+    <Compile Include="Commands\Registration\IRootCommandRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

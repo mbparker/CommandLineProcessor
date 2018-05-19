@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
 
+    using CommandLineProcessorContracts.Commands;
     using CommandLineProcessorContracts.Events;
 
     using CommandLineProcessorEntity;

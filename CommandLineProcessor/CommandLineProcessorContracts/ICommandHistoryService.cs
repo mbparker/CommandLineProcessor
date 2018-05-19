@@ -1,5 +1,7 @@
 ﻿namespace CommandLineProcessorContracts
 {
+    using CommandLineProcessorContracts.Commands;
+
     using CommandLineProcessorEntity;
 
     public interface ICommandHistoryService

@@ -6,6 +6,8 @@
     using System.Windows.Forms;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
+    using CommandLineProcessorContracts.Commands.Registration;
     using CommandLineProcessorContracts.Events;
 
     using CommandLineProcessorLib;

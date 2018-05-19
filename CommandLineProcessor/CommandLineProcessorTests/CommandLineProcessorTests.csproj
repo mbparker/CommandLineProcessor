@@ -56,14 +56,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandDataStoreTests.cs" />
-    <Compile Include="CommandHistoryProviderTests.cs" />
-    <Compile Include="CommandLineProcessorProviderTests.cs" />
-    <Compile Include="CommandPathCalculatorTests.cs" />
-    <Compile Include="CommandRepositoryProviderTests.cs" />
-    <Compile Include="InputHandlerProviderTests.cs" />
+    <Compile Include="UnitTests\CommandDataStoreTests.cs" />
+    <Compile Include="UnitTests\CommandHistoryProviderTests.cs" />
+    <Compile Include="UnitTests\CommandLineProcessorProviderTests.cs" />
+    <Compile Include="UnitTests\CommandPathCalculatorTests.cs" />
+    <Compile Include="UnitTests\CommandRepositoryProviderTests.cs" />
+    <Compile Include="UnitTests\InputHandlerProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestDataGenerators\CommandGenerator.cs" />
+    <Compile Include="TestDataGenerators\MockCommandGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,6 +1,7 @@
-﻿namespace CommandLineProcessorTests
+﻿namespace CommandLineProcessorTests.UnitTests
 {
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     using CommandLineProcessorLib;
 

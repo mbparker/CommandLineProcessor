@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorContracts
+﻿namespace CommandLineProcessorContracts.Commands
 {
     public interface ICommand : ICommandDescriptor
     {

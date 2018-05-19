@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorTests
+﻿namespace CommandLineProcessorTests.UnitTests
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -6,6 +6,7 @@
     using CommandLineProcessorCommon;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     using CommandLineProcessorEntity;
 
@@ -68,17 +69,31 @@
         }
 
         [Test]
-        public void GetPrompt_ActiveContainerCommand_ReturnsCorrectText()
+        public void GetPrompt_ActiveContainerCommandWithoutDefault_ReturnsCorrectText()
         {
             SetUpActiveCommandForContainerCommand();
-            Assert.That(systemUnderTest.GetPrompt(), Is.EqualTo($"{CommandRoot}: Test Command 3 (Sub,SubInput): "));
+            Assert.That(systemUnderTest.GetPrompt(), Is.EqualTo($"{CommandRoot}: Test Command 3 (Sub,SubInput,SubInput2): "));
         }
 
         [Test]
-        public void GetPrompt_ActiveInputCommand_ReturnsCorrectText()
+        public void GetPrompt_ActiveContainerCommandWithDefault_ReturnsCorrectText()
+        {
+            SetUpActiveCommandForContainerCommandWithDefault();
+            Assert.That(systemUnderTest.GetPrompt(), Is.EqualTo($"{CommandRoot}: Test Command (Sub,Sub2) [Sub2]: "));
+        }
+
+        [Test]
+        public void GetPrompt_ActiveInputCommandWithoutDefault_ReturnsCorrectText()
         {
             SetUpActiveCommandForInputCommand();
             Assert.That(systemUnderTest.GetPrompt(), Is.EqualTo($"{CommandRoot}: Test Command 3 (Prompt Text): "));
+        }
+
+        [Test]
+        public void GetPrompt_ActiveInputCommandWithDefault_ReturnsCorrectText()
+        {
+            SetUpActiveCommandForInputCommandWithDefault();
+            Assert.That(systemUnderTest.GetPrompt(), Is.EqualTo($"{CommandRoot}: Test Command 3 (Prompt Text) [ABC]: "));
         }
 
         [Test]
@@ -135,7 +150,7 @@
         [SetUp]
         public void SetUp()
         {
-            validCommands = CommandGenerator.GenerateValidCommandCollection().ToList();
+            validCommands = MockCommandGenerator.GenerateValidCommandCollection().ToList();
             processorMock = Substitute.For<ICommandLineProcessorService>();
             processorMock.ActiveCommand.Returns(x => activeCommandMock);
             processorMock.Settings = new CommandLineSettings { CommandPromptRoot = CommandRoot };
@@ -149,10 +164,21 @@
             activeCommandMock = validCommands.Single(x => x.PrimarySelector.ToUpper() == "TEST3");
         }
 
+        private void SetUpActiveCommandForContainerCommandWithDefault()
+        {
+            activeCommandMock = validCommands.Single(x => x.PrimarySelector.ToUpper() == "TEST");
+        }
+
         private void SetUpActiveCommandForInputCommand()
         {
             var containerCmd = validCommands.Single(x => x.PrimarySelector.ToUpper() == "TEST3") as IContainerCommand;
             activeCommandMock = containerCmd?.Children.First(x => x.PrimarySelector.ToUpper() == "SUBINPUT");
+        }
+
+        private void SetUpActiveCommandForInputCommandWithDefault()
+        {
+            var containerCmd = validCommands.Single(x => x.PrimarySelector.ToUpper() == "TEST3") as IContainerCommand;
+            activeCommandMock = containerCmd?.Children.First(x => x.PrimarySelector.ToUpper() == "SUBINPUT2");
         }
     }
 }

@@ -8,6 +8,7 @@
     using CommandLineProcessorCommon;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     using CommandLineProcessorEntity.Exceptions;
 

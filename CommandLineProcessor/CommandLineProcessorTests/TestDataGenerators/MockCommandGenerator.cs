@@ -3,11 +3,12 @@
     using System.Collections.Generic;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     using NSubstitute;
     using NSubstitute.ReturnsExtensions;
 
-    public static class CommandGenerator
+    public static class MockCommandGenerator
     {
         public static IEnumerable<ICommand> GenerateCommandCollectionWithDuplicateSelectors()
         {
@@ -34,6 +35,7 @@
             command.AliasSelectors.Returns(new string[0]);
             command.Parent.ReturnsNull();
             command.Path.Returns(string.Empty);
+            command.Name.Returns("Test Command");
             command.CommandIs<IContainerCommand>().Returns(true);
 
             var subCommand1 = Substitute.For<IExecutableCommand>();
@@ -50,6 +52,7 @@
             subCommand2.CommandIs<IExecutableCommand>().Returns(true);
 
             command.Children.Returns(new[] { subCommand1, subCommand2 });
+            command.GetDefaultCommandSelector(Arg.Any<ICommandContext>()).Returns("Sub2");
             result.Add(command);
 
             var executableCommand = Substitute.For<IExecutableCommand>();
@@ -93,7 +96,17 @@
 
             subCommand4.NextCommand.Returns(subCommand5);
 
-            command.Children.Returns(new ICommand[] { subCommand3, subCommand4 });
+            var subCommand6 = Substitute.For<IInputCommand>();
+            subCommand6.PrimarySelector.Returns("SubInput2");
+            subCommand6.AliasSelectors.Returns(new[] { "SI2" });
+            subCommand6.Parent.Returns(command);
+            subCommand6.Path.Returns("TEst3");
+            subCommand6.Prompt.Returns("Prompt Text");
+            subCommand6.Name.Returns(x => subCommand4.Parent.Name);
+            subCommand6.CommandIs<IInputCommand>().Returns(true);
+            subCommand6.GetDefaultValue(Arg.Any<ICommandContext>()).Returns("ABC");
+
+            command.Children.Returns(new ICommand[] { subCommand3, subCommand4, subCommand6 });
             result.Add(command);
 
             return result;

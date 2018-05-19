@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorContracts
+﻿namespace CommandLineProcessorContracts.Commands.Registration
 {
     public interface IExecutableCommandRegistration : ICommandRegistration
     {        

@@ -3,6 +3,7 @@
     using System;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     public class GenericInputCommand : BaseCommand, IInputCommand
     {

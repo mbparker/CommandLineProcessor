@@ -2,6 +2,8 @@
 {
     using System;
 
+    using CommandLineProcessorContracts.Commands;
+
     public class CommandLineCommandChangedEventArgs : EventArgs
     {
         public CommandLineCommandChangedEventArgs(ICommand priorCommand, ICommand activeCommand)

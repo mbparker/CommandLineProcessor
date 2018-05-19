@@ -3,6 +3,7 @@
     using CommandLineProcessorCommon.Ioc;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands.Registration;
 
     using CommandLineProcessorLib;
 

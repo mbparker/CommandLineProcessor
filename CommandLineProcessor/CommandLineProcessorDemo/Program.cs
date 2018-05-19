@@ -6,6 +6,7 @@
     using CommandLineProcessorCommon.Ioc.Windsor;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands.Registration;
 
     static class Program
     {

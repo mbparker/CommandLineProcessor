@@ -3,6 +3,7 @@
     using System.Collections.Generic;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     using CommandLineProcessorEntity;
 

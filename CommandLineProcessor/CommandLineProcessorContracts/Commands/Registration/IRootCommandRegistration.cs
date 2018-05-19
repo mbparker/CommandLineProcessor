@@ -1,7 +1,9 @@
-﻿namespace CommandLineProcessorContracts
+﻿namespace CommandLineProcessorContracts.Commands.Registration
 {
     using System;
     using System.Collections.Generic;
+
+    using CommandLineProcessorContracts.Commands;
 
     public interface IRootCommandRegistration : ICommandRegistration
     {

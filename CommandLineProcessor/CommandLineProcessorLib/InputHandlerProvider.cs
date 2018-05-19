@@ -6,6 +6,7 @@
     using CommandLineProcessorCommon;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
 
     public class InputHandlerProvider : IInputHandlerService
     {

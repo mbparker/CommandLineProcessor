@@ -1,10 +1,11 @@
-﻿namespace CommandLineProcessorTests
+﻿namespace CommandLineProcessorTests.UnitTests
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
     using CommandLineProcessorContracts.Events;
 
     using CommandLineProcessorLib;
@@ -75,6 +76,43 @@
             systemUnderTest.ProcessInput(input);
 
             Assert.That(ex, Is.Null);
+        }
+
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase(null)]
+        public void ProcessInput_WhenInvalidAndActiveContainerCommand_GetsDefault(string input)
+        {
+            systemUnderTest.RegisterCommands(validCommandCollection);
+
+            var command = validCommandCollection.Single(x => x.PrimarySelector.ToUpper() == "TEST3");
+            SetUpCommand(command);
+            var containerCommand = command as IContainerCommand;
+            systemUnderTest.ProcessInput("test3");
+
+            systemUnderTest.ProcessInput(input);
+
+            containerCommand.Received(1).GetDefaultCommandSelector(Arg.Any<ICommandContext>());
+        }
+
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase(null)]
+        public void ProcessInput_WhenInvalidAndActiveInputCommand_GetsDefault(string input)
+        {
+            systemUnderTest.RegisterCommands(validCommandCollection);
+
+            var command = validCommandCollection.Single(x => x.PrimarySelector.ToUpper() == "TEST3");
+            SetUpCommand(command);
+            command = (command as IContainerCommand).Children.First(x => x.PrimarySelector.ToUpper() == "SUBINPUT");
+            SetUpCommand(command);
+            var inputCommand = command as IInputCommand;
+            systemUnderTest.ProcessInput("test3");
+            systemUnderTest.ProcessInput("subinput");
+
+            systemUnderTest.ProcessInput(input);
+
+            inputCommand.Received(1).GetDefaultValue(Arg.Any<ICommandContext>());
         }
 
         [Test]
@@ -295,14 +333,14 @@
                 () =>
                     {
                         systemUnderTest.RegisterCommands(
-                            CommandGenerator.GenerateCommandCollectionWithDuplicateSelectors());
+                            MockCommandGenerator.GenerateCommandCollectionWithDuplicateSelectors());
                     });
         }
 
         [Test]
         public void RegisterCommands_WhenInvokedWithInvalidData_FiresErrorEventResetsStatus()
         {
-            var invalidCommands = CommandGenerator.GenerateCommandCollectionWithDuplicateSelectors();
+            var invalidCommands = MockCommandGenerator.GenerateCommandCollectionWithDuplicateSelectors();
             var sourceError = new Exception("Test Exception");
             Exception actualError = null;
             systemUnderTest.CommandRegistrationError += (sender, args) => { actualError = args.Exception; };
@@ -317,7 +355,7 @@
         [SetUp]
         public void SetUp()
         {
-            validCommandCollection = CommandGenerator.GenerateValidCommandCollection().ToList();
+            validCommandCollection = MockCommandGenerator.GenerateValidCommandCollection().ToList();
             commandRepositoryMock = Substitute.For<ICommandRepositoryService>();
             commandPathCalculatorMock = Substitute.For<ICommandPathCalculator>();
             commandContextMock = Substitute.For<ICommandContext>();

@@ -7,6 +7,7 @@
     using CommandLineProcessorCommon;
 
     using CommandLineProcessorContracts;
+    using CommandLineProcessorContracts.Commands;
     using CommandLineProcessorContracts.Events;
 
     using CommandLineProcessorEntity;
@@ -102,7 +103,7 @@
         public void ProcessInput(string input)
         {
             try
-            {
+            {                
                 if (string.IsNullOrWhiteSpace(input))
                 {
                     if (ActiveCommand is IInputCommand inputCommand)
@@ -113,7 +114,7 @@
                     {
                         input = containerCommand.GetDefaultCommandSelector(ActiveContext);
                     }
-                }
+                }                
 
                 if (string.IsNullOrWhiteSpace(input))
                 {

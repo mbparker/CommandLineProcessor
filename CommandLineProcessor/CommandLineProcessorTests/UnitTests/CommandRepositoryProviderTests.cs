@@ -1,11 +1,10 @@
-﻿namespace CommandLineProcessorTests
+﻿namespace CommandLineProcessorTests.UnitTests
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    using CommandLineProcessorContracts;
-
+    using CommandLineProcessorContracts.Commands;
     using CommandLineProcessorEntity.Exceptions;
 
     using CommandLineProcessorLib;
@@ -26,7 +25,7 @@
         {
             systemUnderTest.Load(mockCommandList);
 
-            Assert.That(systemUnderTest.Count, Is.EqualTo(14));
+            Assert.That(systemUnderTest.Count, Is.EqualTo(16));
         }
 
         [Test]
@@ -81,7 +80,7 @@
         public void Load_WhenInvokedWithDuplicateSelectors_Throws()
         {
             Assert.That(
-                () => { systemUnderTest.Load(CommandGenerator.GenerateCommandCollectionWithDuplicateSelectors()); },
+                () => { systemUnderTest.Load(MockCommandGenerator.GenerateCommandCollectionWithDuplicateSelectors()); },
                 Throws.InstanceOf<DuplicateCommandSelectorException>().With.Message
                     .EqualTo("Cannot add 'T'. Command Selector values must be unique."));
         }
@@ -108,7 +107,7 @@
         public void SetUp()
         {
             systemUnderTest = new CommandRepositoryProvider();
-            mockCommandList = new List<ICommand>(CommandGenerator.GenerateValidCommandCollection());
+            mockCommandList = new List<ICommand>(MockCommandGenerator.GenerateValidCommandCollection());
         }
 
         [Test]

@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
 
+    using CommandLineProcessorContracts.Commands;
+
     public class CommandLineHelpEventArgs : EventArgs
     {
         public CommandLineHelpEventArgs(ICommandDescriptor commandInfo, IEnumerable<ICommandDescriptor> subCommandInfo)
