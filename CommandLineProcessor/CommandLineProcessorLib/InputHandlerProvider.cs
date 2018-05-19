@@ -28,33 +28,35 @@
             return $"{levelIndicator}{result}: ";
         }
 
+        private static string GetCommandOptionsForInput(IInputCommand inputCommand, string promptText)
+        {
+            ICommand commandWithName = inputCommand;
+            while (commandWithName != null && string.IsNullOrWhiteSpace(commandWithName.Name))
+            {
+                if (!string.IsNullOrWhiteSpace(commandWithName.Name))
+                {
+                    break;
+                }
+
+                commandWithName = commandWithName.Parent;
+            }
+
+            return $"{promptText}: {commandWithName?.Name ?? string.Empty} ({inputCommand.Prompt})";
+        }
+
         private string AppendCommandOptions(string prompt)
         {
             var activeCommand = Processor.ActiveCommand;
             var result = prompt;
 
-            var containerCommand = activeCommand as IContainerCommand;
-            if (containerCommand != null)
+            if (activeCommand is IContainerCommand containerCommand)
             {
-                var subCommands = string.Join(",", containerCommand.Children.Select(x => x.PrimarySelector));
-                result = $"{result}: {containerCommand.Name} ({subCommands})";
-                return result;
+                return GetCommandOptionsForContainer(containerCommand, result);
             }
 
-            var inputCommand = activeCommand as IInputCommand;
-            if (inputCommand != null)
+            if (activeCommand is IInputCommand inputCommand)
             {
-                ICommand commandWithName = inputCommand;
-                while (commandWithName != null && string.IsNullOrWhiteSpace(commandWithName.Name))
-                {
-                    if (!string.IsNullOrWhiteSpace(commandWithName.Name))
-                    {
-                        break;
-                    }
-
-                    commandWithName = commandWithName.Parent;
-                }
-                result = $"{result}: {commandWithName?.Name ?? string.Empty} ({inputCommand.Prompt})";
+                result = GetCommandOptionsForInput(inputCommand, result);
             }
 
             return result;
@@ -74,6 +76,12 @@
             }
 
             return builder.ToString();
+        }
+
+        private string GetCommandOptionsForContainer(IContainerCommand containerCommand, string promptText)
+        {
+            var subCommands = string.Join(",", containerCommand.Children.Select(x => x.PrimarySelector));
+            return $"{promptText}: {containerCommand.Name} ({subCommands})";
         }
     }
 }

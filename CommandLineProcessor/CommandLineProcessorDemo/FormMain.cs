@@ -265,6 +265,7 @@
             {
                 e.Handled = true;
                 e.SuppressKeyPress = true;
+                textBox_CommandLine.SelectionStart = textBox_CommandLine.Text.Length;
             }
         }
 
