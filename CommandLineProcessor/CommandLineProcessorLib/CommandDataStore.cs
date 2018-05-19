@@ -9,9 +9,14 @@
     {
         private readonly IDictionary<string, object> innerStore;
 
-        public CommandDataStore()
+        public CommandDataStore(IDictionary<string, object> innerStore)
         {
-            innerStore = new Dictionary<string, object>();
+            this.innerStore = innerStore;
+        }
+
+        public CommandDataStore()
+            : this(new Dictionary<string, object>())
+        {
         }
 
         public void Clear()
