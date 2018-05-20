@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
 
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands;
@@ -237,6 +238,42 @@
                 promptText,
                 applyInputAction,
                 getDefaultFunc);
+        }
+
+        public IInputCommandRegistration RegisterInputCommand<T>(
+            Expression<Action<T>> applyInputExpression,
+            T instance = null)
+            where T : class
+        {
+            if (applyInputExpression.Body is MethodCallExpression methodExpression)
+            {
+                if (methodExpression.Arguments.Count == 2
+                    && methodExpression.Arguments[0].Type.IsAssignableFrom(typeof(ICommandContext))
+                    && methodExpression.Arguments[1].Type.IsAssignableFrom(typeof(string)))
+                {
+                    // TODO: Pull descriptor info from attributes on the class
+                    var command = new GenericInputCommand(
+                        "test",
+                        new string[0],
+                        "test",
+                        string.Empty,
+                        "enter something",
+                        (context, input) =>
+                            {
+                                if (instance == null)
+                                {
+                                    instance = context.GetService<T>();
+                                }
+
+                                methodExpression.Method.Invoke(instance, new object[] { context, input });
+                            },
+                        null);
+                    registeredCommands.Add(command);
+                    return new CommandRegistrations(registeredCommands, command);
+                }
+            }
+
+            throw new Exception($"The member specified on {typeof(T).Name} is not compatible with this command.");
         }
 
         public IContainerCommandRegistration SetChildToContainerCommand(

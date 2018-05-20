@@ -10,6 +10,21 @@
     using CommandLineProcessorContracts.Commands.Registration;
     using CommandLineProcessorContracts.Events;
 
+    public class TestCommandLogic
+    {
+        private readonly TextBox textBox;
+
+        public TestCommandLogic(TextBox textBox)
+        {
+            this.textBox = textBox;
+        }
+
+        public void ApplyInputMethod(ICommandContext context, string input)
+        {
+            textBox.AppendText($"{input}{Environment.NewLine}");
+        }
+    }
+
     public partial class FormMain : Form
     {
         private readonly ICommandLineProcessorService commandLineProcessor;
@@ -87,6 +102,10 @@
 
         private IEnumerable<ICommand> CreateCommands()
         {
+            commandRegistration.RegisterInputCommand(
+                x => x.ApplyInputMethod(null, null),
+                new TestCommandLogic(textBox_CommandHistory));
+
             commandRegistration.RegisterInputCommand(
                 "Exit",
                 new[] { "EX" },

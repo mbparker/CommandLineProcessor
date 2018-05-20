@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
 
     public interface IRootCommandRegistration : ICommandRegistration
     {
@@ -47,5 +48,8 @@
             string promptText,
             Action<ICommandContext, string> applyInputAction,
             Func<ICommandContext, string> getDefaultFunc);
+
+        IInputCommandRegistration RegisterInputCommand<T>(Expression<Action<T>> applyInputExpression, T instance = null)
+            where T : class;
     }
 }
