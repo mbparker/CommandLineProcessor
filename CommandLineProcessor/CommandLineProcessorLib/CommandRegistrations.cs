@@ -245,11 +245,11 @@
             T instance = null)
             where T : class
         {
-            if (applyInputExpression.Body is MethodCallExpression methodExpression)
+            if (applyInputExpression.Body is MethodCallExpression applyInputMethodExpression)
             {
-                if (methodExpression.Arguments.Count == 2
-                    && methodExpression.Arguments[0].Type.IsAssignableFrom(typeof(ICommandContext))
-                    && methodExpression.Arguments[1].Type.IsAssignableFrom(typeof(string)))
+                if (applyInputMethodExpression.Arguments.Count == 2
+                    && applyInputMethodExpression.Arguments[0].Type.IsAssignableFrom(typeof(ICommandContext))
+                    && applyInputMethodExpression.Arguments[1].Type.IsAssignableFrom(typeof(string)))
                 {
                     // TODO: Pull descriptor info from attributes on the class
                     var command = new GenericInputCommand(
@@ -265,7 +265,7 @@
                                     instance = context.GetService<T>();
                                 }
 
-                                methodExpression.Method.Invoke(instance, new object[] { context, input });
+                                applyInputMethodExpression.Method.Invoke(instance, new object[] { context, input });
                             },
                         null);
                     registeredCommands.Add(command);
