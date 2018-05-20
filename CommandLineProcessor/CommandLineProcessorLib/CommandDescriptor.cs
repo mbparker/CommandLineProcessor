@@ -14,11 +14,6 @@
             AliasSelectors = aliasSelectors;
         }
 
-        protected CommandDescriptor()
-            : this(null, null, null)
-        {
-        }
-
         public IEnumerable<string> AliasSelectors { get; }
 
         public string HelpText { get; }
@@ -26,10 +21,5 @@
         public string Name { get; }
 
         public string PrimarySelector { get; }
-
-        public static CommandDescriptor Empty()
-        {
-            return new CommandDescriptor();
-        }
     }
 }
