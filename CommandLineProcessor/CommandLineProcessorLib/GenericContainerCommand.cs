@@ -14,9 +14,12 @@
         private readonly Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc;
 
         public GenericContainerCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            IEnumerable<string> aliasSelectors,
+            string name,
+            string helpText,
             Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc)
-            : base(descriptor)
+            : base(primarySelector, aliasSelectors, name, helpText)
         {
             this.getDefaultCommandFunc = getDefaultCommandFunc;
             children = new List<ICommand>();

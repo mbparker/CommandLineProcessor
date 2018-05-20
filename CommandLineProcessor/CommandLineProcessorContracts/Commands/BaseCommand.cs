@@ -1,24 +1,17 @@
 ﻿namespace CommandLineProcessorContracts.Commands
 {
-    using CommandLineProcessorCommon;
     using System.Collections.Generic;
+
+    using CommandLineProcessorCommon;
 
     public class BaseCommand : ICommand
     {
-        public BaseCommand(ICommandDescriptor descriptor)
+        public BaseCommand(string primarySelector, IEnumerable<string> aliasSelectors, string name, string helpText)
         {
-            Name = descriptor.Name;
-            HelpText = descriptor.HelpText;
-            PrimarySelector = descriptor.PrimarySelector;
-            AliasSelectors = descriptor.AliasSelectors;
-        }
-
-        public BaseCommand()
-        {
-            AliasSelectors = new string[0];
-            HelpText = string.Empty;
-            Name = string.Empty;
-            PrimarySelector = string.Empty;
+            PrimarySelector = primarySelector;
+            AliasSelectors = aliasSelectors;
+            Name = name;
+            HelpText = helpText;
         }
 
         public IEnumerable<string> AliasSelectors { get; protected set; }

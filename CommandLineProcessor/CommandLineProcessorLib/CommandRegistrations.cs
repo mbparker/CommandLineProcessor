@@ -37,7 +37,10 @@
             Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc)
         {
             var command = new GenericContainerCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
+                primarySelector,
+                aliasSelectors,
+                name,
+                helpText,
                 getDefaultCommandFunc);
             command.Parent = targetCommand;
             (targetCommand as IContainerCommandEdit).AddChild(command);
@@ -74,9 +77,7 @@
             string helpText,
             Action<ICommandContext> executeAction)
         {
-            var command = new GenericExecutableCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
-                executeAction);
+            var command = new GenericExecutableCommand(primarySelector, aliasSelectors, name, helpText, executeAction);
             command.Parent = targetCommand;
             (targetCommand as IContainerCommandEdit).AddChild(command);
             return new CommandRegistrations(registeredCommands, command);
@@ -101,7 +102,10 @@
             Func<ICommandContext, string> getDefaultFunc)
         {
             var command = new GenericInputCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
+                primarySelector,
+                aliasSelectors,
+                name,
+                helpText,
                 promptText,
                 applyInputAction,
                 getDefaultFunc);
@@ -157,7 +161,10 @@
             Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc)
         {
             var command = new GenericContainerCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
+                primarySelector,
+                aliasSelectors,
+                name,
+                helpText,
                 getDefaultCommandFunc);
             registeredCommands.Add(command);
             return new CommandRegistrations(registeredCommands, command);
@@ -179,9 +186,7 @@
             string helpText,
             Action<ICommandContext> executeAction)
         {
-            var command = new GenericExecutableCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
-                executeAction);
+            var command = new GenericExecutableCommand(primarySelector, aliasSelectors, name, helpText, executeAction);
             registeredCommands.Add(command);
             return new CommandRegistrations(registeredCommands, command);
         }
@@ -205,7 +210,10 @@
             Func<ICommandContext, string> getDefaultFunc)
         {
             var command = new GenericInputCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
+                primarySelector,
+                aliasSelectors,
+                name,
+                helpText,
                 promptText,
                 applyInputAction,
                 getDefaultFunc);
@@ -239,7 +247,10 @@
             Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc)
         {
             var command = new GenericContainerCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
+                primarySelector,
+                aliasSelectors,
+                name,
+                helpText,
                 getDefaultCommandFunc);
             command.Parent = targetCommand;
             (targetCommand as IInputCommand).NextCommand = command;
@@ -284,9 +295,7 @@
             string helpText,
             Action<ICommandContext> executeAction)
         {
-            var command = new GenericExecutableCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
-                executeAction);
+            var command = new GenericExecutableCommand(primarySelector, aliasSelectors, name, helpText, executeAction);
             command.Parent = targetCommand;
             (targetCommand as IInputCommand).NextCommand = command;
             return new CommandRegistrations(registeredCommands, command);
@@ -316,7 +325,10 @@
             Func<ICommandContext, string> getDefaultFunc)
         {
             var command = new GenericInputCommand(
-                new CommandDescriptor(primarySelector, name, helpText, aliasSelectors),
+                primarySelector,
+                aliasSelectors,
+                name,
+                helpText,
                 promptText,
                 applyInputAction,
                 getDefaultFunc);
@@ -339,7 +351,8 @@
                 name,
                 helpText,
                 promptText,
-                applyInputAction);
+                applyInputAction,
+                null);
         }
 
         public IInputCommandRegistration SetChildToInputCommand(

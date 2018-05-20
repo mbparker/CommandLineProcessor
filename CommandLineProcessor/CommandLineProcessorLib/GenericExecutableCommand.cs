@@ -1,6 +1,7 @@
 ﻿namespace CommandLineProcessorLib
 {
     using System;
+    using System.Collections.Generic;
 
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands;
@@ -10,9 +11,12 @@
         private readonly Action<ICommandContext> executeAction;
 
         public GenericExecutableCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            IEnumerable<string> aliasSelectors,
+            string name,
+            string helpText,
             Action<ICommandContext> executeAction)
-            : base(descriptor)
+            : base(primarySelector, aliasSelectors, name, helpText)
         {
             this.executeAction = executeAction;
         }

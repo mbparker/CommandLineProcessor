@@ -1,6 +1,7 @@
 ﻿namespace CommandLineProcessorLib
 {
     using System;
+    using System.Collections.Generic;
 
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands;
@@ -12,11 +13,14 @@
         private readonly Func<ICommandContext, string> getDefaultFunc;
 
         public GenericInputCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            IEnumerable<string> aliasSelectors,
+            string name,
+            string helpText,
             string promptText,
             Action<ICommandContext, string> applyInputAction,
             Func<ICommandContext, string> getDefaultFunc)
-            : base(descriptor)
+            : base(primarySelector, aliasSelectors, name, helpText)
         {
             Prompt = promptText;
             this.applyInputAction = applyInputAction;
