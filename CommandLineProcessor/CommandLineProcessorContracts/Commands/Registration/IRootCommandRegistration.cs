@@ -3,20 +3,47 @@
     using System;
     using System.Collections.Generic;
 
-    using CommandLineProcessorContracts.Commands;
-
     public interface IRootCommandRegistration : ICommandRegistration
     {
         IContainerCommandRegistration RegisterContainerCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            string[] aliasSelectors,
+            string name,
+            string helpText,
+            Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc);
+
+        IContainerCommandRegistration RegisterContainerCommand(
+            string primarySelector,
+            string name,
+            string helpText,
             Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc);
 
         IExecutableCommandRegistration RegisterExecutableCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            string[] aliasSelectors,
+            string name,
+            string helpText,
+            Action<ICommandContext> executeAction);
+
+        IExecutableCommandRegistration RegisterExecutableCommand(
+            string primarySelector,
+            string name,
+            string helpText,
             Action<ICommandContext> executeAction);
 
         IInputCommandRegistration RegisterInputCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            string[] aliasSelectors,
+            string name,
+            string helpText,
+            string promptText,
+            Action<ICommandContext, string> applyInputAction,
+            Func<ICommandContext, string> getDefaultFunc);
+
+        IInputCommandRegistration RegisterInputCommand(
+            string primarySelector,
+            string name,
+            string helpText,
             string promptText,
             Action<ICommandContext, string> applyInputAction,
             Func<ICommandContext, string> getDefaultFunc);

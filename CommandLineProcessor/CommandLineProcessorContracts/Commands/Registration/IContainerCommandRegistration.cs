@@ -3,22 +3,72 @@
     using System;
     using System.Collections.Generic;
 
-    using CommandLineProcessorContracts.Commands;
-
     public interface IContainerCommandRegistration : ICommandRegistration
     {
         IContainerCommandRegistration AddContainerCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            string[] aliasSelectors,
+            string name,
+            string helpText,
             Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc);
 
+        IContainerCommandRegistration AddContainerCommand(
+            string primarySelector,
+            string[] aliasSelectors,
+            string name,
+            string helpText);
+
+        IContainerCommandRegistration AddContainerCommand(
+            string primarySelector,
+            string name,
+            string helpText,
+            Func<ICommandContext, IEnumerable<ICommand>, ICommand> getDefaultCommandFunc);
+
+        IContainerCommandRegistration AddContainerCommand(string primarySelector, string name, string helpText);
+
         IExecutableCommandRegistration AddExecutableCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            string[] aliasSelectors,
+            string name,
+            string helpText,
+            Action<ICommandContext> executeAction);
+
+        IExecutableCommandRegistration AddExecutableCommand(
+            string primarySelector,
+            string name,
+            string helpText,
             Action<ICommandContext> executeAction);
 
         IInputCommandRegistration AddInputCommand(
-            ICommandDescriptor descriptor,
+            string primarySelector,
+            string[] aliasSelectors,
+            string name,
+            string helpText,
             string promptText,
             Action<ICommandContext, string> applyInputAction,
             Func<ICommandContext, string> getDefaultFunc);
+
+        IInputCommandRegistration AddInputCommand(
+            string primarySelector,
+            string[] aliasSelectors,
+            string name,
+            string helpText,
+            string promptText,
+            Action<ICommandContext, string> applyInputAction);
+
+        IInputCommandRegistration AddInputCommand(
+            string primarySelector,
+            string name,
+            string helpText,
+            string promptText,
+            Action<ICommandContext, string> applyInputAction,
+            Func<ICommandContext, string> getDefaultFunc);
+
+        IInputCommandRegistration AddInputCommand(
+            string primarySelector,
+            string name,
+            string helpText,
+            string promptText,
+            Action<ICommandContext, string> applyInputAction);
     }
 }
