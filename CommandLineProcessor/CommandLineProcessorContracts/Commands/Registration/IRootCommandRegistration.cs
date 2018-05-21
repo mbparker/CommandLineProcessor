@@ -37,7 +37,7 @@
             string[] aliasSelectors,
             string name,
             string helpText,
-            string promptText,
+            Func<ICommandContext, string> getPromptTextFunc,
             Action<ICommandContext, string> applyInputAction,
             Func<ICommandContext, string> getDefaultFunc);
 
@@ -45,11 +45,16 @@
             string primarySelector,
             string name,
             string helpText,
-            string promptText,
+            Func<ICommandContext, string> getPromptTextFunc,
             Action<ICommandContext, string> applyInputAction,
             Func<ICommandContext, string> getDefaultFunc);
 
-        IInputCommandRegistration RegisterInputCommand<T>(Expression<Action<T>> applyInputExpression, T instance = null)
-            where T : class;
+        IInputCommandRegistration RegisterInputCommand<TCommand, TDescriptorContainer>(
+            Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
+            Expression<Action<TCommand>> getPromptTextExpression,
+            Expression<Action<TCommand>> applyInputExpression,
+            Expression<Action<TCommand>> getDefaultExpression,
+            TCommand instance = null)
+            where TCommand : class where TDescriptorContainer : class;
     }
 }

@@ -44,7 +44,7 @@
             string[] aliasSelectors,
             string name,
             string helpText,
-            string promptText,
+            Func<ICommandContext, string> getPromptTextFunc,
             Action<ICommandContext, string> applyInputAction,
             Func<ICommandContext, string> getDefaultFunc);
 
@@ -53,14 +53,14 @@
             string[] aliasSelectors,
             string name,
             string helpText,
-            string promptText,
+            Func<ICommandContext, string> getPromptTextFunc,
             Action<ICommandContext, string> applyInputAction);
 
         IInputCommandRegistration AddInputCommand(
             string primarySelector,
             string name,
             string helpText,
-            string promptText,
+            Func<ICommandContext, string> getPromptTextFunc,
             Action<ICommandContext, string> applyInputAction,
             Func<ICommandContext, string> getDefaultFunc);
 
@@ -68,7 +68,7 @@
             string primarySelector,
             string name,
             string helpText,
-            string promptText,
+            Func<ICommandContext, string> getPromptTextFunc,
             Action<ICommandContext, string> applyInputAction);
     }
 }

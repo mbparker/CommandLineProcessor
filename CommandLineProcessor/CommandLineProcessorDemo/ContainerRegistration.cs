@@ -20,6 +20,8 @@
             container.Register<ICommandContext, CommandContext>(ServiceLifestyle.Transient);
             container.Register<ICommandDataStore, CommandDataStore>(ServiceLifestyle.Transient);
             container.RegisterAsFactory<ICommandContextFactory>(ServiceLifestyle.Singleton);
+            container.Register<ICommandHistoryAccess, CommandHistoryAccess>(ServiceLifestyle.Singleton);
+            container.Register<TestCommandLogic>(ServiceLifestyle.Transient);
         }
     }
 }

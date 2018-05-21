@@ -83,7 +83,7 @@
             subCommand4.AliasSelectors.Returns(new[] { "SI" });
             subCommand4.Parent.Returns(command);
             subCommand4.Path.Returns("TEst3");
-            subCommand4.Prompt.Returns("Prompt Text");
+            subCommand4.GetPromptText(Arg.Any<ICommandContext>()).Returns("Prompt Text");
             subCommand4.Name.Returns(x => subCommand4.Parent.Name);
             subCommand4.CommandIs<IInputCommand>().Returns(true);
 
@@ -101,7 +101,7 @@
             subCommand6.AliasSelectors.Returns(new[] { "SI2" });
             subCommand6.Parent.Returns(command);
             subCommand6.Path.Returns("TEst3");
-            subCommand6.Prompt.Returns("Prompt Text");
+            subCommand6.GetPromptText(Arg.Any<ICommandContext>()).Returns("Prompt Text");
             subCommand6.Name.Returns(x => subCommand4.Parent.Name);
             subCommand6.CommandIs<IInputCommand>().Returns(true);
             subCommand6.GetDefaultValue(Arg.Any<ICommandContext>()).Returns("ABC");

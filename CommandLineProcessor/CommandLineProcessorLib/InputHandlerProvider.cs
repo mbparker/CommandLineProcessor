@@ -30,22 +30,6 @@
             return $"{levelIndicator}{result}: ";
         }
 
-        private static string GetCommandOptionsForInput(IInputCommand inputCommand, string promptText)
-        {
-            ICommand commandWithName = inputCommand;
-            while (commandWithName != null && string.IsNullOrWhiteSpace(commandWithName.Name))
-            {
-                if (!string.IsNullOrWhiteSpace(commandWithName.Name))
-                {
-                    break;
-                }
-
-                commandWithName = commandWithName.Parent;
-            }
-
-            return $"{promptText}: {commandWithName?.Name ?? string.Empty} ({inputCommand.Prompt})";
-        }
-
         private string AppendCommandOptions(string prompt)
         {
             var activeCommand = Processor.ActiveCommand;
@@ -102,6 +86,23 @@
         {
             var subCommands = string.Join(",", containerCommand.Children.Select(x => x.PrimarySelector));
             return $"{promptText}: {containerCommand.Name} ({subCommands})";
+        }
+
+        private string GetCommandOptionsForInput(IInputCommand inputCommand, string promptText)
+        {
+            ICommand commandWithName = inputCommand;
+            while (commandWithName != null && string.IsNullOrWhiteSpace(commandWithName.Name))
+            {
+                if (!string.IsNullOrWhiteSpace(commandWithName.Name))
+                {
+                    break;
+                }
+
+                commandWithName = commandWithName.Parent;
+            }
+
+            return
+                $"{promptText}: {commandWithName?.Name ?? string.Empty} ({inputCommand.GetPromptText(Processor.ActiveContext)})";
         }
 
         private string GetDefaultValueForContainer(IContainerCommand containerCommand, string promptText)

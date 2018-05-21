@@ -10,23 +10,53 @@
     using CommandLineProcessorContracts.Commands.Registration;
     using CommandLineProcessorContracts.Events;
 
+    public class CommandDescriptor : ICommandDescriptor
+    {
+        public IEnumerable<string> AliasSelectors { get; set; }
+
+        public string HelpText { get; set; }
+
+        public string Name { get; set; }
+
+        public string PrimarySelector { get; set; }
+    }
+
     public class TestCommandLogic
     {
-        private readonly TextBox textBox;
+        private readonly ICommandHistoryAccess commandHistoryAccess;
 
-        public TestCommandLogic(TextBox textBox)
+        public TestCommandLogic(ICommandHistoryAccess commandHistoryAccess)
         {
-            this.textBox = textBox;
+            this.commandHistoryAccess = commandHistoryAccess;
         }
+
+        public ICommandDescriptor Descriptor =>
+            new CommandDescriptor
+                {
+                    PrimarySelector = "Test", AliasSelectors = new string[0], Name = "Test Custom Command",
+                    HelpText = "This is the test custom command"
+                };
 
         public void ApplyInputMethod(ICommandContext context, string input)
         {
-            textBox.AppendText($"{input}{Environment.NewLine}");
+            commandHistoryAccess.CommandHistoryControl.AppendText($"{input}{Environment.NewLine}");
+        }
+
+        public string GetDefault(ICommandContext context)
+        {
+            return "something";
+        }
+
+        public string GetPromptText(ICommandContext context)
+        {
+            return "Type something and I'll repeat it.";
         }
     }
 
     public partial class FormMain : Form
     {
+        private readonly ICommandHistoryAccess commandHistoryAccess;
+
         private readonly ICommandLineProcessorService commandLineProcessor;
 
         private readonly IRootCommandRegistration commandRegistration;
@@ -36,7 +66,8 @@
         public FormMain(
             ICommandLineProcessorService commandLineProcessor,
             IInputHandlerService inputHandler,
-            IRootCommandRegistration commandRegistration)
+            IRootCommandRegistration commandRegistration,
+            ICommandHistoryAccess commandHistoryAccess)
         {
             InitializeComponent();
             this.commandLineProcessor = commandLineProcessor;
@@ -50,6 +81,7 @@
             this.inputHandler = inputHandler;
             this.inputHandler.Processor = commandLineProcessor;
             this.commandRegistration = commandRegistration;
+            this.commandHistoryAccess = commandHistoryAccess;
         }
 
         private void CommandLineProcessor_ActiveCommandChanged(object sender, CommandLineCommandChangedEventArgs e)
@@ -102,16 +134,18 @@
 
         private IEnumerable<ICommand> CreateCommands()
         {
-            commandRegistration.RegisterInputCommand(
+            commandRegistration.RegisterInputCommand<TestCommandLogic, TestCommandLogic>(
+                x => x.Descriptor,
+                x => x.GetPromptText(null),
                 x => x.ApplyInputMethod(null, null),
-                new TestCommandLogic(textBox_CommandHistory));
+                x => x.GetDefault(null));
 
             commandRegistration.RegisterInputCommand(
                 "Exit",
                 new[] { "EX" },
                 "Exit",
                 "Terminates the program, with confirmation.",
-                "Are you sure you want to exit? (Y/N)",
+                context => "Are you sure you want to exit? (Y/N)",
                 (context, input) =>
                     {
                         if (input.ToUpper().StartsWith("Y"))
@@ -127,7 +161,7 @@
                     new[] { "E" },
                     "Echo",
                     "Writes out the specified text to the history window.",
-                    "Enter Text",
+                    context => "Enter Text",
                     (context, input) => { context.DataStore.Set("TEXT", input); },
                     context => "Hello World").SetChildToExecutableCommand(
                     context =>
@@ -147,9 +181,9 @@
                     new[] { "A" },
                     "Addition",
                     "Adds two numbers and displays the result.",
-                    "Enter first number",
+                    context => "Enter first number",
                     (context, input) => { context.DataStore.Set("N1", double.Parse(input)); }).SetChildToInputCommand(
-                    "Enter second number",
+                    context => "Enter second number",
                     (context, input) => { context.DataStore.Set("N2", double.Parse(input)); })
                 .SetChildToExecutableCommand(
                     context =>
@@ -163,9 +197,9 @@
                     new[] { "M" },
                     "Multiplication",
                     "Multiplies two numbers and displays the result.",
-                    "Enter first number",
+                    context => "Enter first number",
                     (context, input) => { context.DataStore.Set("N1", double.Parse(input)); }).SetChildToInputCommand(
-                    "Enter second number",
+                    context => "Enter second number",
                     (context, input) => { context.DataStore.Set("N2", double.Parse(input)); })
                 .SetChildToExecutableCommand(
                     context =>
@@ -207,6 +241,7 @@
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            commandHistoryAccess.CommandHistoryControl = textBox_CommandHistory;
             commandLineProcessor.RegisterCommands(CreateCommands());
         }
 

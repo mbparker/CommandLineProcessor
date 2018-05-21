@@ -5,7 +5,7 @@
 
     using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;
-    using Castle.Windsor;    
+    using Castle.Windsor;
 
     public class IocContainer : IIocContainer
     {
@@ -14,6 +14,13 @@
         public IocContainer(IWindsorContainer innerContainer)
         {
             this.innerContainer = innerContainer;
+        }
+
+        public void Register<TService>(ServiceLifestyle lifestyle)
+            where TService : class
+        {
+            var registration = Component.For<TService>();
+            Register(registration, lifestyle);
         }
 
         public void Register<TService, TImplementation>(ServiceLifestyle lifestyle)

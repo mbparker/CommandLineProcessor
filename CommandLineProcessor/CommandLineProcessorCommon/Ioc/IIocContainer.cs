@@ -5,6 +5,9 @@
 
     public interface IIocContainer
     {
+        void Register<TService>(ServiceLifestyle lifestyle)
+            where TService : class;
+
         void Register<TService, TImplementation>(ServiceLifestyle lifestyle)
             where TService : class where TImplementation : TService;
 
