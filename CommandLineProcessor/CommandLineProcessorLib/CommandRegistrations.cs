@@ -224,7 +224,7 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getDefaultExpression, instance);
+            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getPromptTextExpression, instance);
             var applyInputAction = GetApplyInputActionForInputCommand(applyInputExpression, instance);
             var getDefaultFunc = GetDefaultFuncForInputCommand(getDefaultExpression, instance);
 
@@ -656,7 +656,7 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getDefaultExpression, instance);
+            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getPromptTextExpression, instance);
             var applyInputAction = GetApplyInputActionForInputCommand(applyInputExpression, instance);
             var getDefaultFunc = GetDefaultFuncForInputCommand(getDefaultExpression, instance);
 

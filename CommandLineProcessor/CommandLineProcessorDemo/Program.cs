@@ -25,7 +25,7 @@
                 var processor = IocContainerHolder.Container.Resolve<ICommandLineProcessorService>();
                 var inputHandler = IocContainerHolder.Container.Resolve<IInputHandlerService>();
                 var commandRegistration = IocContainerHolder.Container.Resolve<IRootCommandRegistration>();
-                var commahdHistoryAccess = IocContainerHolder.Container.Resolve<ICommandHistoryAccess>();
+                var commahdHistoryAccess = IocContainerHolder.Container.Resolve<ICommandHistoryControlAccess>();
                 Application.Run(new FormMain(processor, inputHandler, commandRegistration, commahdHistoryAccess));
             }
             finally

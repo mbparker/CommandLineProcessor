@@ -5,6 +5,8 @@
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands.Registration;
 
+    using CommandLineProcessorDemo.DemoCommands;
+
     using CommandLineProcessorLib;
 
     public static class ContainerRegistration
@@ -20,9 +22,11 @@
             container.Register<ICommandContext, CommandContext>(ServiceLifestyle.Transient);
             container.Register<ICommandDataStore, CommandDataStore>(ServiceLifestyle.Transient);
             container.RegisterAsFactory<ICommandContextFactory>(ServiceLifestyle.Singleton);
-            container.Register<ICommandHistoryAccess, CommandHistoryAccess>(ServiceLifestyle.Singleton);
-            container.Register<DemoCommandsLogic>(ServiceLifestyle.Transient);
-            container.Register<DemoCommandsDescriptors>(ServiceLifestyle.Transient);
+            container.Register<ICommandHistoryAccess, ICommandHistoryControlAccess, CommandHistoryAccess>(ServiceLifestyle.Singleton);
+            container.Register<EchoCommand>(ServiceLifestyle.Transient);
+            container.Register<ExitCommand>(ServiceLifestyle.Transient);
+            container.Register<MathCommand>(ServiceLifestyle.Transient);
+            container.Register<CommandDescriptors>(ServiceLifestyle.Transient);
         }
     }
 }

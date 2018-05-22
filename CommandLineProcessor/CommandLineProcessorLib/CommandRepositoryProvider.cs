@@ -121,7 +121,9 @@
             }
             catch (ArgumentException e)
             {
-                throw new DuplicateCommandSelectorException($"Cannot add '{selectorText}'. Command Selector values must be unique.", e);
+                throw new DuplicateCommandSelectorException(
+                    $"Cannot add '{selectorText}'. Command Selector values must be unique.",
+                    e);
             }
         }
 

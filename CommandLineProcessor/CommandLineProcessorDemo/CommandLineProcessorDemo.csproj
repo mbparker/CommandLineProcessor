@@ -58,7 +58,11 @@
   <ItemGroup>
     <Compile Include="CommandHistoryAccess.cs" />
     <Compile Include="ContainerRegistration.cs" />
-    <Compile Include="DemoCommands.cs" />
+    <Compile Include="DemoCommands\CommandDescriptors.cs" />
+    <Compile Include="DemoCommands\CommandRegistration.cs" />
+    <Compile Include="DemoCommands\EchoCommand.cs" />
+    <Compile Include="DemoCommands\ExitCommand.cs" />
+    <Compile Include="DemoCommands\MathCommand.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +70,7 @@
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
     <Compile Include="ICommandHistoryAccess.cs" />
+    <Compile Include="ICommandHistoryControlAccess.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormMain.resx">

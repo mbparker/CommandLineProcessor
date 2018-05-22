@@ -6,6 +6,8 @@
 
     public class BaseCommand : ICommand
     {
+        private IEnumerable<string> aliasSelectors;
+
         public BaseCommand(string primarySelector, IEnumerable<string> aliasSelectors, string name, string helpText)
         {
             PrimarySelector = primarySelector;
@@ -14,7 +16,19 @@
             HelpText = helpText;
         }
 
-        public IEnumerable<string> AliasSelectors { get; protected set; }
+        public IEnumerable<string> AliasSelectors
+        {
+            get => aliasSelectors;
+            protected set
+            {
+                if (value == null)
+                {
+                    value = new string[0];
+                }
+
+                aliasSelectors = value;
+            }
+        }
 
         public string HelpText { get; protected set; }
 

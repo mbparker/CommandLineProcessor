@@ -8,11 +8,13 @@
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands;
     using CommandLineProcessorContracts.Commands.Registration;
-    using CommandLineProcessorContracts.Events;    
+    using CommandLineProcessorContracts.Events;
+
+    using CommandLineProcessorDemo.DemoCommands;
 
     public partial class FormMain : Form
     {
-        private readonly ICommandHistoryAccess commandHistoryAccess;
+        private readonly ICommandHistoryControlAccess commandHistoryAccess;
 
         private readonly ICommandLineProcessorService commandLineProcessor;
 
@@ -24,7 +26,7 @@
             ICommandLineProcessorService commandLineProcessor,
             IInputHandlerService inputHandler,
             IRootCommandRegistration commandRegistration,
-            ICommandHistoryAccess commandHistoryAccess)
+            ICommandHistoryControlAccess commandHistoryAccess)
         {
             InitializeComponent();
             this.commandLineProcessor = commandLineProcessor;
@@ -91,81 +93,7 @@
 
         private IEnumerable<ICommand> CreateCommands()
         {
-            commandRegistration.RegisterInputCommand<DemoCommandsLogic, DemoCommandsDescriptors>(
-                x => x.Descriptor,
-                x => x.GetPromptText(null),
-                x => x.ApplyInputMethod(null, null),
-                x => x.GetDefault(null));
-
-            commandRegistration.RegisterInputCommand(
-                "Exit",
-                new[] { "EX" },
-                "Exit",
-                "Terminates the program, with confirmation.",
-                context => "Are you sure you want to exit? (Y/N)",
-                (context, input) =>
-                    {
-                        if (input.ToUpper().StartsWith("Y"))
-                        {
-                            Application.Exit();
-                        }
-                    },
-                context => "N");
-
-            commandRegistration
-                .RegisterInputCommand(
-                    "Echo",
-                    new[] { "E" },
-                    "Echo",
-                    "Writes out the specified text to the history window.",
-                    context => "Enter Text",
-                    (context, input) => { context.DataStore.Set("TEXT", input); },
-                    context => "Hello World").SetChildToExecutableCommand(
-                    context =>
-                        {
-                            textBox_CommandHistory.AppendText(
-                                "You Entered: " + context.DataStore.Get<string>("TEXT") + Environment.NewLine);
-                        });
-
-            var mathCommandRegistration = commandRegistration.RegisterContainerCommand(
-                "Math",
-                "Mathematical Operations",
-                "Supports performing various mathematical operations.",
-                (context, children) => children.Single(x => x.PrimarySelector == "Mult"));
-            mathCommandRegistration
-                .AddInputCommand(
-                    "Add",
-                    new[] { "A" },
-                    "Addition",
-                    "Adds two numbers and displays the result.",
-                    context => "Enter first number",
-                    (context, input) => { context.DataStore.Set("N1", double.Parse(input)); }).SetChildToInputCommand(
-                    context => "Enter second number",
-                    (context, input) => { context.DataStore.Set("N2", double.Parse(input)); })
-                .SetChildToExecutableCommand(
-                    context =>
-                        {
-                            var result = context.DataStore.Get<double>("N1") + context.DataStore.Get<double>("N2");
-                            textBox_CommandHistory.AppendText($"Result: {result}{Environment.NewLine}");
-                        });
-            mathCommandRegistration
-                .AddInputCommand(
-                    "Mult",
-                    new[] { "M" },
-                    "Multiplication",
-                    "Multiplies two numbers and displays the result.",
-                    context => "Enter first number",
-                    (context, input) => { context.DataStore.Set("N1", double.Parse(input)); }).SetChildToInputCommand(
-                    context => "Enter second number",
-                    (context, input) => { context.DataStore.Set("N2", double.Parse(input)); })
-                .SetChildToExecutableCommand(
-                    context =>
-                        {
-                            var result = context.DataStore.Get<double>("N1") * context.DataStore.Get<double>("N2");
-                            textBox_CommandHistory.AppendText($"Result: {result}{Environment.NewLine}");
-                        });
-
-            return commandRegistration.RegisteredCommands;
+            return CommandRegistration.Register(commandRegistration);
         }
 
         private void DisplayActiveCommandHelp(
@@ -198,7 +126,7 @@
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            commandHistoryAccess.CommandHistoryControl = textBox_CommandHistory;
+            commandHistoryAccess.HistoryControl = textBox_CommandHistory;
             commandLineProcessor.RegisterCommands(CreateCommands());
         }
 
