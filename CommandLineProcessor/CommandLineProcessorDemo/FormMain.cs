@@ -8,50 +8,7 @@
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands;
     using CommandLineProcessorContracts.Commands.Registration;
-    using CommandLineProcessorContracts.Events;
-
-    public class CommandDescriptor : ICommandDescriptor
-    {
-        public IEnumerable<string> AliasSelectors { get; set; }
-
-        public string HelpText { get; set; }
-
-        public string Name { get; set; }
-
-        public string PrimarySelector { get; set; }
-    }
-
-    public class TestCommandLogic
-    {
-        private readonly ICommandHistoryAccess commandHistoryAccess;
-
-        public TestCommandLogic(ICommandHistoryAccess commandHistoryAccess)
-        {
-            this.commandHistoryAccess = commandHistoryAccess;
-        }
-
-        public ICommandDescriptor Descriptor =>
-            new CommandDescriptor
-                {
-                    PrimarySelector = "Test", AliasSelectors = new string[0], Name = "Test Custom Command",
-                    HelpText = "This is the test custom command"
-                };
-
-        public void ApplyInputMethod(ICommandContext context, string input)
-        {
-            commandHistoryAccess.CommandHistoryControl.AppendText($"{input}{Environment.NewLine}");
-        }
-
-        public string GetDefault(ICommandContext context)
-        {
-            return "something";
-        }
-
-        public string GetPromptText(ICommandContext context)
-        {
-            return "Type something and I'll repeat it.";
-        }
-    }
+    using CommandLineProcessorContracts.Events;    
 
     public partial class FormMain : Form
     {
@@ -134,7 +91,7 @@
 
         private IEnumerable<ICommand> CreateCommands()
         {
-            commandRegistration.RegisterInputCommand<TestCommandLogic, TestCommandLogic>(
+            commandRegistration.RegisterInputCommand<DemoCommandsLogic, DemoCommandsDescriptors>(
                 x => x.Descriptor,
                 x => x.GetPromptText(null),
                 x => x.ApplyInputMethod(null, null),

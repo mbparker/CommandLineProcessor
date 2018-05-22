@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="CommandHistoryAccess.cs" />
     <Compile Include="ContainerRegistration.cs" />
+    <Compile Include="DemoCommands.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>

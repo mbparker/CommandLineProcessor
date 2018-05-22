@@ -21,7 +21,8 @@
             container.Register<ICommandDataStore, CommandDataStore>(ServiceLifestyle.Transient);
             container.RegisterAsFactory<ICommandContextFactory>(ServiceLifestyle.Singleton);
             container.Register<ICommandHistoryAccess, CommandHistoryAccess>(ServiceLifestyle.Singleton);
-            container.Register<TestCommandLogic>(ServiceLifestyle.Transient);
+            container.Register<DemoCommandsLogic>(ServiceLifestyle.Transient);
+            container.Register<DemoCommandsDescriptors>(ServiceLifestyle.Transient);
         }
     }
 }
