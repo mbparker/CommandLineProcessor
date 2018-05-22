@@ -26,7 +26,7 @@
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> getDefaultCommandExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class;
+            where TCommand : class;
 
         IContainerCommandRegistration SetChildToContainerCommand<TCommand>(
             Expression<Action<TCommand>> getDefaultCommandExpression,
@@ -52,7 +52,7 @@
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> executeExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class;
+            where TCommand : class;
 
         IExecutableCommandRegistration SetChildToExecutableCommand<TCommand>(
             Expression<Action<TCommand>> executeExpression,
@@ -106,7 +106,7 @@
             Expression<Action<TCommand>> applyInputExpression,
             Expression<Action<TCommand>> getDefaultExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class;
+            where TCommand : class;
 
         IInputCommandRegistration SetChildToInputCommand<TCommand>(
             Expression<Action<TCommand>> getPromptTextExpression,

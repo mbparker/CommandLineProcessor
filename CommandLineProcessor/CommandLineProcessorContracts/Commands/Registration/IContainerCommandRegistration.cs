@@ -23,7 +23,7 @@
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> getDefaultCommandExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class;
+            where TCommand : class;
 
         IExecutableCommandRegistration AddExecutableCommand(
             string primarySelector,
@@ -42,7 +42,7 @@
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> executeExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class;
+            where TCommand : class;
 
         IInputCommandRegistration AddInputCommand(
             string primarySelector,
@@ -82,13 +82,13 @@
             Expression<Action<TCommand>> applyInputExpression,
             Expression<Action<TCommand>> getDefaultExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class;
+            where TCommand : class;
 
         IInputCommandRegistration AddInputCommand<TCommand, TDescriptorContainer>(
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> getPromptTextExpression,
             Expression<Action<TCommand>> applyInputExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class;
+            where TCommand : class;
     }
 }

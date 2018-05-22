@@ -2,8 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Text;
 
     using CommandLineProcessorCommon.Ioc;
 
@@ -35,6 +37,19 @@
             this.registeredCommands = registeredCommands;
             this.targetCommand = targetCommand;
             this.iocContainer = iocContainer;
+        }
+
+        private interface ICommandDelegateMethodSignatures
+        {
+            void ApplyInput(ICommandContext context, string inputText);
+
+            void Execute(ICommandContext context);
+
+            ICommand GetDefaultCommand(ICommandContext context, IEnumerable<ICommand> commands);
+
+            string GetDefaultValue(ICommandContext context);
+
+            string GetPromptText(ICommandContext context);
         }
 
         public IEnumerable<ICommand> RegisteredCommands => registeredCommands;
@@ -69,8 +84,8 @@
         public IContainerCommandRegistration AddContainerCommand<TCommand, TDescriptorContainer>(
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> getDefaultCommandExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             var getDefaultCommandFunc = GetDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
 
@@ -110,8 +125,8 @@
         public IExecutableCommandRegistration AddExecutableCommand<TCommand, TDescriptorContainer>(
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> executeExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             var executeAction = GetExecuteActionForExecuteCommand(executeExpression, instance);
 
@@ -206,8 +221,8 @@
             Expression<Action<TCommand>> getPromptTextExpression,
             Expression<Action<TCommand>> applyInputExpression,
             Expression<Action<TCommand>> getDefaultExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             var getPromptTextFunc = GetPromptTextFuncForInputCommand(getDefaultExpression, instance);
             var applyInputAction = GetApplyInputActionForInputCommand(applyInputExpression, instance);
@@ -230,8 +245,8 @@
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> getPromptTextExpression,
             Expression<Action<TCommand>> applyInputExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             return AddInputCommand(getDescriptorFunc, getPromptTextExpression, applyInputExpression, null, instance);
         }
@@ -265,8 +280,8 @@
         public IContainerCommandRegistration RegisterContainerCommand<TCommand, TDescriptorContainer>(
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> getDefaultCommandExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             var getDefaultCommandFunc = GetDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
 
@@ -306,7 +321,7 @@
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> executeExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class
+            where TCommand : class
         {
             var executeAction = GetExecuteActionForExecuteCommand(executeExpression, instance);
 
@@ -394,9 +409,9 @@
             Expression<Action<TCommand>> applyInputExpression,
             Expression<Action<TCommand>> getDefaultExpression,
             TCommand instance = null)
-            where TCommand : class where TDescriptorContainer : class
+            where TCommand : class
         {
-            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getDefaultExpression, instance);
+            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getPromptTextExpression, instance);
             var applyInputAction = GetApplyInputActionForInputCommand(applyInputExpression, instance);
             var getDefaultFunc = GetDefaultFuncForInputCommand(getDefaultExpression, instance);
 
@@ -417,8 +432,8 @@
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> getPromptTextExpression,
             Expression<Action<TCommand>> applyInputExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             return RegisterInputCommand(
                 getDescriptorFunc,
@@ -464,8 +479,8 @@
         public IContainerCommandRegistration SetChildToContainerCommand<TCommand, TDescriptorContainer>(
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> getDefaultCommandExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             var getDefaultCommandFunc = GetDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
 
@@ -522,8 +537,8 @@
         public IExecutableCommandRegistration SetChildToExecutableCommand<TCommand, TDescriptorContainer>(
             Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc,
             Expression<Action<TCommand>> executeExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             var executeAction = GetExecuteActionForExecuteCommand(executeExpression, instance);
 
@@ -638,8 +653,8 @@
             Expression<Action<TCommand>> getPromptTextExpression,
             Expression<Action<TCommand>> applyInputExpression,
             Expression<Action<TCommand>> getDefaultExpression,
-            TCommand instance = default(TCommand))
-            where TCommand : class where TDescriptorContainer : class
+            TCommand instance = null)
+            where TCommand : class
         {
             var getPromptTextFunc = GetPromptTextFuncForInputCommand(getDefaultExpression, instance);
             var applyInputAction = GetApplyInputActionForInputCommand(applyInputExpression, instance);
@@ -686,37 +701,30 @@
             return SetChildToInputCommand(getPromptTextExpression, applyInputExpression, null, instance);
         }
 
+        private string GenerateMethodSignatureText(MethodCallExpression methodExpression)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"{methodExpression.Method.ReturnType.Name} ");
+            builder.Append($"{methodExpression.Method.Name}(");
+            builder.Append(string.Join(", ", methodExpression.Arguments.Select(x => x.Type.Name)));
+            builder.Append(")");
+            return builder.ToString();
+        }
+
         private Action<ICommandContext, string> GetApplyInputActionForInputCommand<TCommand>(
             Expression<Action<TCommand>> applyInputExpression,
             TCommand instance)
             where TCommand : class
         {
-            if (applyInputExpression == null)
-            {
-                throw new ArgumentNullException(nameof(applyInputExpression));
-            }
+            var method = ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
+                applyInputExpression,
+                x => x.ApplyInput(null, null));
 
-            if (applyInputExpression.Body is MethodCallExpression applyInputMethodExpression)
-            {
-                if (!(applyInputMethodExpression.Arguments.Count == 2
-                      && applyInputMethodExpression.Arguments[0].Type.IsAssignableFrom(typeof(ICommandContext))
-                      && applyInputMethodExpression.Arguments[1].Type.IsAssignableFrom(typeof(string))))
+            return (context, input) =>
                 {
-                    throw new ArgumentException(
-                        $"Method selected in expression does not have a compatible signature. Expected: void Foo(ICommandContext context, string input)",
-                        nameof(applyInputExpression));
-                }
-
-                return (context, input) =>
-                    {
-                        var target = instance ?? context.GetService<TCommand>();
-                        applyInputMethodExpression.Method.Invoke(target, new object[] { context, input });
-                    };
-            }
-
-            throw new ArgumentException(
-                $"Expression must be a {nameof(MethodCallExpression)}",
-                nameof(applyInputExpression));
+                    var target = instance ?? context.GetService<TCommand>();
+                    method.Invoke(target, new object[] { context, input });
+                };
         }
 
         private Func<ICommandContext, IEnumerable<ICommand>, ICommand>
@@ -725,36 +733,15 @@
                 TCommand instance)
             where TCommand : class
         {
-            if (getDefaultCommandExpression == null)
-            {
-                throw new ArgumentNullException(nameof(getDefaultCommandExpression));
-            }
+            var method = ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
+                getDefaultCommandExpression,
+                x => x.GetDefaultCommand(null, null));
 
-            if (getDefaultCommandExpression.Body is MethodCallExpression getDefaultCommandMethodExpression)
-            {
-                if (!(getDefaultCommandMethodExpression.Arguments.Count == 2
-                      && getDefaultCommandMethodExpression.Arguments[0].Type.IsAssignableFrom(typeof(ICommandContext))
-                      && getDefaultCommandMethodExpression.Arguments[1].Type
-                          .IsAssignableFrom(typeof(IEnumerable<ICommand>))
-                      && getDefaultCommandMethodExpression.Method.ReturnType.IsAssignableFrom(typeof(ICommand))))
+            return (context, commands) =>
                 {
-                    throw new ArgumentException(
-                        $"Method selected in expression does not have a compatible signature. Expected: ICommand Foo(ICommandContext context, IEnumerable<ICommand> commands)",
-                        nameof(getDefaultCommandExpression));
-                }
-
-                return (context, commands) =>
-                    {
-                        var target = instance ?? context.GetService<TCommand>();
-                        return (ICommand)getDefaultCommandMethodExpression.Method.Invoke(
-                            target,
-                            new object[] { context, commands });
-                    };
-            }
-
-            throw new ArgumentException(
-                $"Expression must be a {nameof(MethodCallExpression)}",
-                nameof(getDefaultCommandExpression));
+                    var target = instance ?? context.GetService<TCommand>();
+                    return (ICommand)method.Invoke(target, new object[] { context, commands });
+                };
         }
 
         private Func<ICommandContext, string> GetDefaultFuncForInputCommand<TCommand>(
@@ -764,27 +751,16 @@
         {
             if (getDefaultExpression != null)
             {
-                if (getDefaultExpression.Body is MethodCallExpression getDefaultMethodExpression)
-                {
-                    if (!(getDefaultMethodExpression.Arguments.Count == 1
-                          && getDefaultMethodExpression.Arguments[0].Type.IsAssignableFrom(typeof(ICommandContext))
-                          && getDefaultMethodExpression.Method.ReturnType.IsAssignableFrom(typeof(string))))
+                var method =
+                    ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
+                        getDefaultExpression,
+                        x => x.GetDefaultValue(null));
+
+                return context =>
                     {
-                        throw new ArgumentException(
-                            $"Method selected in expression does not have a compatible signature. Expected: string Foo(ICommandContext context)",
-                            nameof(getDefaultExpression));
-                    }
-
-                    return context =>
-                        {
-                            var target = instance ?? context.GetService<TCommand>();
-                            return (string)getDefaultMethodExpression.Method.Invoke(target, new object[] { context });
-                        };
-                }
-
-                throw new ArgumentException(
-                    $"Expression must be a {nameof(MethodCallExpression)}",
-                    nameof(getDefaultExpression));
+                        var target = instance ?? context.GetService<TCommand>();
+                        return (string)method.Invoke(target, new object[] { context });
+                    };
             }
 
             return null;
@@ -795,31 +771,16 @@
             TCommand instance)
             where TCommand : class
         {
-            if (executeExpression == null)
-            {
-                throw new ArgumentNullException(nameof(executeExpression));
-            }
+            var method =
+                ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
+                    executeExpression,
+                    x => x.Execute(null));
 
-            if (executeExpression.Body is MethodCallExpression executeMethodExpression)
-            {
-                if (!(executeMethodExpression.Arguments.Count == 1 && executeMethodExpression.Arguments[0].Type
-                          .IsAssignableFrom(typeof(ICommandContext))))
+            return context =>
                 {
-                    throw new ArgumentException(
-                        $"Method selected in expression does not have a compatible signature. Expected: void Foo(ICommandContext context)",
-                        nameof(executeExpression));
-                }
-
-                return context =>
-                    {
-                        var target = instance ?? context.GetService<TCommand>();
-                        executeMethodExpression.Method.Invoke(target, new object[] { context });
-                    };
-            }
-
-            throw new ArgumentException(
-                $"Expression must be a {nameof(MethodCallExpression)}",
-                nameof(executeExpression));
+                    var target = instance ?? context.GetService<TCommand>();
+                    method.Invoke(target, new object[] { context });
+                };
         }
 
         private Func<ICommandContext, string> GetPromptTextFuncForInputCommand<TCommand>(
@@ -827,32 +788,15 @@
             TCommand instance)
             where TCommand : class
         {
-            if (getPromptTextExpression == null)
-            {
-                throw new ArgumentNullException(nameof(getPromptTextExpression));
-            }
+            var method = ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
+                getPromptTextExpression,
+                x => x.GetPromptText(null));
 
-            if (getPromptTextExpression.Body is MethodCallExpression getPromptTextMethodExpression)
-            {
-                if (!(getPromptTextMethodExpression.Arguments.Count == 1
-                      && getPromptTextMethodExpression.Arguments[0].Type.IsAssignableFrom(typeof(ICommandContext))
-                      && getPromptTextMethodExpression.Method.ReturnType.IsAssignableFrom(typeof(string))))
+            return context =>
                 {
-                    throw new ArgumentException(
-                        $"Method selected in expression does not have a compatible signature. Expected: string Foo(ICommandContext context)",
-                        nameof(getPromptTextExpression));
-                }
-
-                return context =>
-                    {
-                        var target = instance ?? context.GetService<TCommand>();
-                        return (string)getPromptTextMethodExpression.Method.Invoke(target, new object[] { context });
-                    };
-            }
-
-            throw new ArgumentException(
-                $"Expression must be a {nameof(MethodCallExpression)}",
-                nameof(getPromptTextExpression));
+                    var target = instance ?? context.GetService<TCommand>();
+                    return (string)method.Invoke(target, new object[] { context });
+                };
         }
 
         private MethodInfo ValidateMethodCallExpressionAndReturnMethodInfo<TValidate, TExpected>(
@@ -883,9 +827,9 @@
                     nameof(knownCompatibleExpression));
             }
 
-            bool signatureMatches = true;            
+            bool signatureMatches = true;
             if (methodExpressionToValidate.Arguments.Count == knownGoodMethodExpression.Arguments.Count)
-            {                
+            {
                 for (int i = 0; i < knownGoodMethodExpression.Arguments.Count; i++)
                 {
                     if (!methodExpressionToValidate.Arguments[i].Type
@@ -901,7 +845,9 @@
             {
                 signatureMatches =
                     methodExpressionToValidate.Method.ReturnType.IsAssignableFrom(
-                        knownGoodMethodExpression.Method.ReturnType);
+                        knownGoodMethodExpression.Method.ReturnType)
+                    || (methodExpressionToValidate.Method.ReturnType == typeof(void)
+                        && knownGoodMethodExpression.Method.ReturnType == typeof(void));
             }
 
             if (signatureMatches)
@@ -910,39 +856,7 @@
             }
 
             throw new ArgumentException(
-                $"Method selected in expression does not have a compatible signature. Expected: {GetMethodSignatureText(knownGoodMethodExpression)} but received {GetMethodSignatureText(methodExpressionToValidate)}",
-                nameof(expressionToValidate));            
-        }
-
-        private string GetMethodSignatureText(MethodCallExpression methodExpression)
-        {
-            throw new NotImplementedException();
-        }
-
-        private class ExpectedMethodSignatures
-        {
-            public void ApplyInput(ICommandContext context, string input)
-            {
-            }
-
-            public string GetPromptText(ICommandContext context)
-            {
-                return null;
-            }
-
-            public void Execute(ICommandContext context)
-            {
-            }
-
-            public string GetDefaultText(ICommandContext context)
-            {
-                return null;
-            }
-
-            public ICommand GetDefaultCommand(ICommandContext context, IEnumerable<ICommand> commands)
-            {
-                return null;
-            }
+                $"Method selected in expression does not have a compatible signature. Expected signature of: {GenerateMethodSignatureText(knownGoodMethodExpression)} but received {GenerateMethodSignatureText(methodExpressionToValidate)}");
         }
     }
 }
