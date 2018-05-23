@@ -2,10 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Linq.Expressions;
-    using System.Reflection;
-    using System.Text;
 
     using CommandLineProcessorCommon.Ioc;
 
@@ -20,23 +17,27 @@
     {
         private readonly IIocContainer iocContainer;
 
+        private readonly ICommandMethodFactoryService methodFactoryService;
+
         private readonly List<ICommand> registeredCommands;
 
         private readonly ICommand targetCommand;
 
-        public CommandRegistrations(IIocContainer iocContainer)
-            : this(new List<ICommand>(), null, iocContainer)
+        public CommandRegistrations(IIocContainer iocContainer, ICommandMethodFactoryService methodFactoryService)
+            : this(new List<ICommand>(), null, iocContainer, methodFactoryService)
         {
         }
 
         protected CommandRegistrations(
             List<ICommand> registeredCommands,
             ICommand targetCommand,
-            IIocContainer iocContainer)
+            IIocContainer iocContainer,
+            ICommandMethodFactoryService methodFactoryService)
         {
             this.registeredCommands = registeredCommands;
             this.targetCommand = targetCommand;
             this.iocContainer = iocContainer;
+            this.methodFactoryService = methodFactoryService;
         }
 
         private interface ICommandDelegateMethodSignatures
@@ -69,7 +70,7 @@
                 getDefaultCommandFunc);
             command.Parent = targetCommand;
             (targetCommand as IContainerCommandEdit).AddChild(command);
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IContainerCommandRegistration AddContainerCommand(
@@ -87,10 +88,10 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var getDefaultCommandFunc = GetDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
+            var getDefaultCommandFunc =
+                methodFactoryService.CreateDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
 
-            var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-            var descriptor = getDescriptorFunc(descriptorContainer);
+            var descriptor = ThrowIfNullDescriptor(GetCommandDescriptor(getDescriptorFunc));
 
             return AddContainerCommand(
                 descriptor.PrimarySelector,
@@ -110,7 +111,7 @@
             var command = new GenericExecutableCommand(primarySelector, aliasSelectors, name, helpText, executeAction);
             command.Parent = targetCommand;
             (targetCommand as IContainerCommandEdit).AddChild(command);
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IExecutableCommandRegistration AddExecutableCommand(
@@ -128,10 +129,9 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var executeAction = GetExecuteActionForExecuteCommand(executeExpression, instance);
+            var executeAction = methodFactoryService.CreateExecuteActionForExecuteCommand(executeExpression, instance);
 
-            var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-            var descriptor = getDescriptorFunc(descriptorContainer);
+            var descriptor = ThrowIfNullDescriptor(GetCommandDescriptor(getDescriptorFunc));
 
             return AddExecutableCommand(
                 descriptor.PrimarySelector,
@@ -160,7 +160,7 @@
                 getDefaultFunc);
             command.Parent = targetCommand;
             (targetCommand as IContainerCommandEdit).AddChild(command);
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IInputCommandRegistration AddInputCommand(
@@ -224,12 +224,13 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getPromptTextExpression, instance);
-            var applyInputAction = GetApplyInputActionForInputCommand(applyInputExpression, instance);
-            var getDefaultFunc = GetDefaultFuncForInputCommand(getDefaultExpression, instance);
+            var getPromptTextFunc =
+                methodFactoryService.CreatePromptTextFuncForInputCommand(getPromptTextExpression, instance);
+            var applyInputAction =
+                methodFactoryService.CreateApplyInputActionForInputCommand(applyInputExpression, instance);
+            var getDefaultFunc = methodFactoryService.CreateDefaultFuncForInputCommand(getDefaultExpression, instance);
 
-            var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-            var descriptor = getDescriptorFunc(descriptorContainer);
+            var descriptor = ThrowIfNullDescriptor(GetCommandDescriptor(getDescriptorFunc));
 
             return AddInputCommand(
                 descriptor.PrimarySelector,
@@ -265,7 +266,7 @@
                 helpText,
                 getDefaultCommandFunc);
             registeredCommands.Add(command);
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IContainerCommandRegistration RegisterContainerCommand(
@@ -283,10 +284,10 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var getDefaultCommandFunc = GetDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
+            var getDefaultCommandFunc =
+                methodFactoryService.CreateDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
 
-            var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-            var descriptor = getDescriptorFunc(descriptorContainer);
+            var descriptor = ThrowIfNullDescriptor(GetCommandDescriptor(getDescriptorFunc));
 
             return RegisterContainerCommand(
                 descriptor.PrimarySelector,
@@ -305,7 +306,7 @@
         {
             var command = new GenericExecutableCommand(primarySelector, aliasSelectors, name, helpText, executeAction);
             registeredCommands.Add(command);
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IExecutableCommandRegistration RegisterExecutableCommand(
@@ -323,10 +324,9 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var executeAction = GetExecuteActionForExecuteCommand(executeExpression, instance);
+            var executeAction = methodFactoryService.CreateExecuteActionForExecuteCommand(executeExpression, instance);
 
-            var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-            var descriptor = getDescriptorFunc(descriptorContainer);
+            var descriptor = ThrowIfNullDescriptor(GetCommandDescriptor(getDescriptorFunc));
 
             return RegisterExecutableCommand(
                 descriptor.PrimarySelector,
@@ -354,7 +354,7 @@
                 applyInputAction,
                 getDefaultFunc);
             registeredCommands.Add(command);
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IInputCommandRegistration RegisterInputCommand(
@@ -411,12 +411,13 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getPromptTextExpression, instance);
-            var applyInputAction = GetApplyInputActionForInputCommand(applyInputExpression, instance);
-            var getDefaultFunc = GetDefaultFuncForInputCommand(getDefaultExpression, instance);
+            var getPromptTextFunc =
+                methodFactoryService.CreatePromptTextFuncForInputCommand(getPromptTextExpression, instance);
+            var applyInputAction =
+                methodFactoryService.CreateApplyInputActionForInputCommand(applyInputExpression, instance);
+            var getDefaultFunc = methodFactoryService.CreateDefaultFuncForInputCommand(getDefaultExpression, instance);
 
-            var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-            var descriptor = getDescriptorFunc(descriptorContainer);
+            var descriptor = ThrowIfNullDescriptor(GetCommandDescriptor(getDescriptorFunc));
 
             return RegisterInputCommand(
                 descriptor.PrimarySelector,
@@ -458,7 +459,7 @@
                 getDefaultCommandFunc);
             command.Parent = targetCommand;
             (targetCommand as IInputCommand).NextCommand = command;
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IContainerCommandRegistration SetChildToContainerCommand(
@@ -482,14 +483,10 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var getDefaultCommandFunc = GetDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
+            var getDefaultCommandFunc =
+                methodFactoryService.CreateDefaultCommandFuncForContainerCommand(getDefaultCommandExpression, instance);
 
-            ICommandDescriptor descriptor = null;
-            if (getDescriptorFunc != null)
-            {
-                var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-                descriptor = getDescriptorFunc(descriptorContainer);
-            }
+            var descriptor = GetCommandDescriptor(getDescriptorFunc);
 
             return SetChildToContainerCommand(
                 descriptor?.PrimarySelector,
@@ -517,7 +514,7 @@
             var command = new GenericExecutableCommand(primarySelector, aliasSelectors, name, helpText, executeAction);
             command.Parent = targetCommand;
             (targetCommand as IInputCommand).NextCommand = command;
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IExecutableCommandRegistration SetChildToExecutableCommand(
@@ -540,14 +537,9 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var executeAction = GetExecuteActionForExecuteCommand(executeExpression, instance);
+            var executeAction = methodFactoryService.CreateExecuteActionForExecuteCommand(executeExpression, instance);
 
-            ICommandDescriptor descriptor = null;
-            if (getDescriptorFunc != null)
-            {
-                var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-                descriptor = getDescriptorFunc(descriptorContainer);
-            }
+            var descriptor = GetCommandDescriptor(getDescriptorFunc);
 
             return SetChildToExecutableCommand(
                 descriptor?.PrimarySelector,
@@ -584,7 +576,7 @@
                 getDefaultFunc);
             command.Parent = targetCommand;
             (targetCommand as IInputCommand).NextCommand = command;
-            return new CommandRegistrations(registeredCommands, command, iocContainer);
+            return CreateNewInstance(command);
         }
 
         public IInputCommandRegistration SetChildToInputCommand(
@@ -656,16 +648,13 @@
             TCommand instance = null)
             where TCommand : class
         {
-            var getPromptTextFunc = GetPromptTextFuncForInputCommand(getPromptTextExpression, instance);
-            var applyInputAction = GetApplyInputActionForInputCommand(applyInputExpression, instance);
-            var getDefaultFunc = GetDefaultFuncForInputCommand(getDefaultExpression, instance);
+            var getPromptTextFunc =
+                methodFactoryService.CreatePromptTextFuncForInputCommand(getPromptTextExpression, instance);
+            var applyInputAction =
+                methodFactoryService.CreateApplyInputActionForInputCommand(applyInputExpression, instance);
+            var getDefaultFunc = methodFactoryService.CreateDefaultFuncForInputCommand(getDefaultExpression, instance);
 
-            ICommandDescriptor descriptor = null;
-            if (getDescriptorFunc != null)
-            {
-                var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
-                descriptor = getDescriptorFunc(descriptorContainer);
-            }
+            var descriptor = GetCommandDescriptor(getDescriptorFunc);
 
             return SetChildToInputCommand(
                 descriptor?.PrimarySelector,
@@ -701,162 +690,32 @@
             return SetChildToInputCommand(getPromptTextExpression, applyInputExpression, null, instance);
         }
 
-        private string GenerateMethodSignatureText(MethodCallExpression methodExpression)
+        private CommandRegistrations CreateNewInstance(ICommand command)
         {
-            var builder = new StringBuilder();
-            builder.Append($"{methodExpression.Method.ReturnType.Name} ");
-            builder.Append($"{methodExpression.Method.Name}(");
-            builder.Append(string.Join(", ", methodExpression.Arguments.Select(x => x.Type.Name)));
-            builder.Append(")");
-            return builder.ToString();
+            return new CommandRegistrations(registeredCommands, command, iocContainer, methodFactoryService);
         }
 
-        private Action<ICommandContext, string> GetApplyInputActionForInputCommand<TCommand>(
-            Expression<Action<TCommand>> applyInputExpression,
-            TCommand instance)
-            where TCommand : class
+        private ICommandDescriptor GetCommandDescriptor<TDescriptorContainer>(
+            Func<TDescriptorContainer, ICommandDescriptor> getDescriptorFunc)
         {
-            var method = ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
-                applyInputExpression,
-                x => x.ApplyInput(null, null));
+            ICommandDescriptor descriptor = null;
+            if (getDescriptorFunc != null)
+            {
+                var descriptorContainer = iocContainer.Resolve<TDescriptorContainer>();
+                descriptor = getDescriptorFunc(descriptorContainer);
+            }
 
-            return (context, input) =>
-                {
-                    var target = instance ?? context.GetService<TCommand>();
-                    method.Invoke(target, new object[] { context, input });
-                };
+            return descriptor;
         }
 
-        private Func<ICommandContext, IEnumerable<ICommand>, ICommand>
-            GetDefaultCommandFuncForContainerCommand<TCommand>(
-                Expression<Action<TCommand>> getDefaultCommandExpression,
-                TCommand instance)
-            where TCommand : class
+        private ICommandDescriptor ThrowIfNullDescriptor(ICommandDescriptor descriptor)
         {
-            var method = ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
-                getDefaultCommandExpression,
-                x => x.GetDefaultCommand(null, null));
-
-            return (context, commands) =>
-                {
-                    var target = instance ?? context.GetService<TCommand>();
-                    return (ICommand)method.Invoke(target, new object[] { context, commands });
-                };
-        }
-
-        private Func<ICommandContext, string> GetDefaultFuncForInputCommand<TCommand>(
-            Expression<Action<TCommand>> getDefaultExpression,
-            TCommand instance)
-            where TCommand : class
-        {
-            if (getDefaultExpression != null)
+            if (descriptor == null)
             {
-                var method =
-                    ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
-                        getDefaultExpression,
-                        x => x.GetDefaultValue(null));
-
-                return context =>
-                    {
-                        var target = instance ?? context.GetService<TCommand>();
-                        return (string)method.Invoke(target, new object[] { context });
-                    };
+                throw new ArgumentException("A command descriptor is required for this registration.");
             }
 
-            return null;
-        }
-
-        private Action<ICommandContext> GetExecuteActionForExecuteCommand<TCommand>(
-            Expression<Action<TCommand>> executeExpression,
-            TCommand instance)
-            where TCommand : class
-        {
-            var method =
-                ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
-                    executeExpression,
-                    x => x.Execute(null));
-
-            return context =>
-                {
-                    var target = instance ?? context.GetService<TCommand>();
-                    method.Invoke(target, new object[] { context });
-                };
-        }
-
-        private Func<ICommandContext, string> GetPromptTextFuncForInputCommand<TCommand>(
-            Expression<Action<TCommand>> getPromptTextExpression,
-            TCommand instance)
-            where TCommand : class
-        {
-            var method = ValidateMethodCallExpressionAndReturnMethodInfo<TCommand, ICommandDelegateMethodSignatures>(
-                getPromptTextExpression,
-                x => x.GetPromptText(null));
-
-            return context =>
-                {
-                    var target = instance ?? context.GetService<TCommand>();
-                    return (string)method.Invoke(target, new object[] { context });
-                };
-        }
-
-        private MethodInfo ValidateMethodCallExpressionAndReturnMethodInfo<TValidate, TExpected>(
-            Expression<Action<TValidate>> expressionToValidate,
-            Expression<Action<TExpected>> knownCompatibleExpression)
-        {
-            if (expressionToValidate == null)
-            {
-                throw new ArgumentNullException(nameof(expressionToValidate));
-            }
-
-            if (knownCompatibleExpression == null)
-            {
-                throw new ArgumentNullException(nameof(knownCompatibleExpression));
-            }
-
-            if (!(expressionToValidate.Body is MethodCallExpression methodExpressionToValidate))
-            {
-                throw new ArgumentException(
-                    $"Expression must be a {nameof(MethodCallExpression)}",
-                    nameof(expressionToValidate));
-            }
-
-            if (!(knownCompatibleExpression.Body is MethodCallExpression knownGoodMethodExpression))
-            {
-                throw new ArgumentException(
-                    $"Expression must be a {nameof(MethodCallExpression)}",
-                    nameof(knownCompatibleExpression));
-            }
-
-            bool signatureMatches = true;
-            if (methodExpressionToValidate.Arguments.Count == knownGoodMethodExpression.Arguments.Count)
-            {
-                for (int i = 0; i < knownGoodMethodExpression.Arguments.Count; i++)
-                {
-                    if (!methodExpressionToValidate.Arguments[i].Type
-                            .IsAssignableFrom(knownGoodMethodExpression.Arguments[i].Type))
-                    {
-                        signatureMatches = false;
-                        break;
-                    }
-                }
-            }
-
-            if (signatureMatches)
-            {
-                signatureMatches =
-                    methodExpressionToValidate.Method.ReturnType.IsAssignableFrom(
-                        knownGoodMethodExpression.Method.ReturnType)
-                    || (methodExpressionToValidate.Method.ReturnType == typeof(void)
-                        && knownGoodMethodExpression.Method.ReturnType == typeof(void));
-            }
-
-            if (signatureMatches)
-            {
-                return methodExpressionToValidate.Method;
-            }
-
-            throw new ArgumentException(
-                $"Method selected in expression does not have a compatible signature. Expected signature of: {GenerateMethodSignatureText(knownGoodMethodExpression)} but received {GenerateMethodSignatureText(methodExpressionToValidate)}");
+            return descriptor;
         }
     }
 }

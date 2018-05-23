@@ -45,6 +45,7 @@
     <Compile Include="CommandDescriptor.cs" />
     <Compile Include="CommandHistoryProvider.cs" />
     <Compile Include="CommandLineProcessorProvider.cs" />
+    <Compile Include="CommandMethodFactoryProvider.cs" />
     <Compile Include="CommandPathCalculator.cs" />
     <Compile Include="CommandRegistrations.cs" />
     <Compile Include="CommandRepositoryProvider.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="GenericInputCommand.cs" />
     <Compile Include="IContainerCommandEdit.cs" />
     <Compile Include="InputHandlerProvider.cs" />
+    <Compile Include="MethodCallValidatorProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

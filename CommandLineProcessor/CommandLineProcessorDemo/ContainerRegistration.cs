@@ -22,6 +22,8 @@
             container.Register<ICommandContext, CommandContext>(ServiceLifestyle.Transient);
             container.Register<ICommandDataStore, CommandDataStore>(ServiceLifestyle.Transient);
             container.RegisterAsFactory<ICommandContextFactory>(ServiceLifestyle.Singleton);
+            container.Register<IMethodCallValidatorService, MethodCallValidatorProvider>(ServiceLifestyle.Singleton);
+            container.Register<ICommandMethodFactoryService, CommandMethodFactoryProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandHistoryAccess, ICommandHistoryControlAccess, CommandHistoryAccess>(ServiceLifestyle.Singleton);
             container.Register<EchoCommand>(ServiceLifestyle.Transient);
             container.Register<ExitCommand>(ServiceLifestyle.Transient);

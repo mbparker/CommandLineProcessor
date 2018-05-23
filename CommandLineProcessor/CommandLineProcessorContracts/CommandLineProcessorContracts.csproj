@@ -54,6 +54,7 @@
     <Compile Include="Commands\ICommandDescriptor.cs" />
     <Compile Include="ICommandHistoryService.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />
+    <Compile Include="ICommandMethodFactoryService.cs" />
     <Compile Include="ICommandPathCalculator.cs" />
     <Compile Include="ICommandRepositoryService.cs" />
     <Compile Include="Commands\IContainerCommand.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Commands\Registration\IInputCommandRegistration.cs" />
     <Compile Include="IInputHandlerService.cs" />
     <Compile Include="Commands\Registration\IRootCommandRegistration.cs" />
+    <Compile Include="IMethodCallValidatorService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
