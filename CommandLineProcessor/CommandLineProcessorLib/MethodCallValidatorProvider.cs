@@ -51,6 +51,10 @@
                     }
                 }
             }
+            else
+            {
+                signatureMatches = false;
+            }
 
             if (signatureMatches)
             {
