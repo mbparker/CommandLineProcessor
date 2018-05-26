@@ -2,8 +2,8 @@
 {
     using CommandLineProcessorContracts;
 
-    public interface ITestCommandHistoryWriter : ICommandHistoryWriter
+    public interface ITestApplication : IApplication
     {
-        ICommandHistoryWriter Mock { get; }
+        IApplication Mock { get; }
     }
 }

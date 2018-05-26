@@ -1,19 +1,21 @@
 ﻿namespace CommandLineProcessorTests.IntegrationTests.Services
 {
-    using System.Collections.Generic;
+    using CommandLineProcessorContracts;
+
+    using NSubstitute;
 
     public class TestCommandHistoryWriter : ITestCommandHistoryWriter
     {
         public TestCommandHistoryWriter()
         {
-            Entries = new List<string>();
+            Mock = Substitute.For<ICommandHistoryWriter>();
         }
 
-        public List<string> Entries { get; }
+        public ICommandHistoryWriter Mock { get; }
 
         public void WriteLine(string text)
         {
-            Entries.Add(text);
+            Mock.WriteLine(text);
         }
     }
 }

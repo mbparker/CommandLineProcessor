@@ -1,16 +1,21 @@
 ﻿namespace CommandLineProcessorDemo.DemoCommands
 {
-    using System.Windows.Forms;
-
     using CommandLineProcessorContracts;
 
     public class ExitCommand
     {
+        private readonly IApplication application;
+
+        public ExitCommand(IApplication application)
+        {
+            this.application = application;
+        }
+
         public void Exit_ApplyInputMethod(ICommandContext context, string input)
         {
             if (input.ToUpper().StartsWith("Y"))
             {
-                Application.Exit();
+                application.Exit();
             }
         }
 

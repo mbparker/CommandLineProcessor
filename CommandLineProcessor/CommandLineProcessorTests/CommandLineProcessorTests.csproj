@@ -57,7 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IntegrationTests\CommandLineProcessorTests.cs" />
-    <Compile Include="IntegrationTests\ContainerRegistration.cs" />
+    <Compile Include="IntegrationTests\Services\ITestApplication.cs" />
+    <Compile Include="IntegrationTests\Services\TestApplication.cs" />
+    <Compile Include="IntegrationTests\TestContainerRegistration.cs" />
     <Compile Include="IntegrationTests\Services\ITestCommandHistoryWriter.cs" />
     <Compile Include="IntegrationTests\Services\TestCommandHistoryWriter.cs" />
     <Compile Include="UnitTests\CommandDataStoreTests.cs" />
@@ -83,6 +85,10 @@
       <Project>{642ab68f-f0a5-4b53-8b0b-ade8a943481b}</Project>
       <Name>CommandLineProcessorContracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CommandLineProcessorDemo\CommandLineProcessorDemo.csproj">
+      <Project>{769005e9-1dc1-4a45-8431-c5347c362996}</Project>
+      <Name>CommandLineProcessorDemo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommandLineProcessorEntity\CommandLineProcessorEntity.csproj">
       <Project>{2f513c2d-2ee5-47b0-9712-d0e28715dd42}</Project>
       <Name>CommandLineProcessorEntity</Name>
@@ -95,6 +101,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

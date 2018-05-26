@@ -252,6 +252,11 @@
             return AddInputCommand(getDescriptorFunc, getPromptTextExpression, applyInputExpression, null, instance);
         }
 
+        public void Clear()
+        {
+            registeredCommands.Clear();
+        }
+
         public IContainerCommandRegistration RegisterContainerCommand(
             string primarySelector,
             IEnumerable<string> aliasSelectors,

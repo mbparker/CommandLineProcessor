@@ -48,6 +48,7 @@
     <Compile Include="CommandLineStatus.cs" />
     <Compile Include="Events\CommandLineStatusChangedEventArgs.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="IApplication.cs" />
     <Compile Include="ICommandContext.cs" />
     <Compile Include="ICommandContextFactory.cs" />
     <Compile Include="ICommandDataStore.cs" />

@@ -6,6 +6,8 @@
 
     public interface ICommandRegistration
     {
+        void Clear();
+
         IEnumerable<ICommand> RegisteredCommands { get; }            
     }
 }
