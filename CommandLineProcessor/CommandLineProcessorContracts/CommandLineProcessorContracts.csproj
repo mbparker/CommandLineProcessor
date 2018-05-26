@@ -53,6 +53,7 @@
     <Compile Include="ICommandDataStore.cs" />
     <Compile Include="Commands\ICommandDescriptor.cs" />
     <Compile Include="ICommandHistoryService.cs" />
+    <Compile Include="ICommandHistoryWriter.cs" />
     <Compile Include="ICommandLineProcessorService.cs" />
     <Compile Include="ICommandMethodFactoryService.cs" />
     <Compile Include="ICommandPathCalculator.cs" />

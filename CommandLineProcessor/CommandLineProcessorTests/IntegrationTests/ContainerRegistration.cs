@@ -1,13 +1,13 @@
-﻿namespace CommandLineProcessorDemo
+﻿namespace CommandLineProcessorTests.IntegrationTests
 {
     using CommandLineProcessorCommon.Ioc;
 
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands.Registration;
 
-    using CommandLineProcessorDemo.DemoCommands;
-
     using CommandLineProcessorLib;
+
+    using global::CommandLineProcessorTests.IntegrationTests.Services;
 
     public static class ContainerRegistration
     {
@@ -24,11 +24,7 @@
             container.RegisterAsFactory<ICommandContextFactory>(ServiceLifestyle.Singleton);
             container.Register<IMethodCallValidatorService, MethodCallValidatorProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandMethodFactoryService, CommandMethodFactoryProvider>(ServiceLifestyle.Singleton);
-            container.Register<ICommandHistoryWriter, ICommandHistoryControlAccess, CommandHistoryAccess>(ServiceLifestyle.Singleton);
-            container.Register<EchoCommand>(ServiceLifestyle.Transient);
-            container.Register<ExitCommand>(ServiceLifestyle.Transient);
-            container.Register<MathCommand>(ServiceLifestyle.Transient);
-            container.Register<CommandDescriptors>(ServiceLifestyle.Transient);
+            container.Register<ICommandHistoryWriter, ITestCommandHistoryWriter, TestCommandHistoryWriter>(ServiceLifestyle.Singleton);
         }
     }
 }

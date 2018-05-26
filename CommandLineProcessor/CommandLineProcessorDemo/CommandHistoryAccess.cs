@@ -3,7 +3,9 @@
     using System;
     using System.Windows.Forms;
 
-    public class CommandHistoryAccess : ICommandHistoryAccess, ICommandHistoryControlAccess
+    using CommandLineProcessorContracts;
+
+    public class CommandHistoryAccess : ICommandHistoryWriter, ICommandHistoryControlAccess
     {
         private TextBox historyControl;
 

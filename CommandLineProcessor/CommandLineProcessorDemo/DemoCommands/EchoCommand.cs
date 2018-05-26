@@ -4,9 +4,9 @@
 
     public class EchoCommand
     {
-        private readonly ICommandHistoryAccess commandHistoryAccess;
+        private readonly ICommandHistoryWriter commandHistoryAccess;
 
-        public EchoCommand(ICommandHistoryAccess commandHistoryAccess)
+        public EchoCommand(ICommandHistoryWriter commandHistoryAccess)
         {
             this.commandHistoryAccess = commandHistoryAccess;
         }

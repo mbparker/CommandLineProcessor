@@ -56,6 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IntegrationTests\CommandLineProcessorTests.cs" />
+    <Compile Include="IntegrationTests\ContainerRegistration.cs" />
+    <Compile Include="IntegrationTests\Services\ITestCommandHistoryWriter.cs" />
+    <Compile Include="IntegrationTests\Services\TestCommandHistoryWriter.cs" />
     <Compile Include="UnitTests\CommandDataStoreTests.cs" />
     <Compile Include="UnitTests\CommandHistoryProviderTests.cs" />
     <Compile Include="UnitTests\CommandLineProcessorProviderTests.cs" />

@@ -8,9 +8,9 @@
 
     public class MathCommand
     {
-        private readonly ICommandHistoryAccess commandHistoryAccess;
+        private readonly ICommandHistoryWriter commandHistoryAccess;
 
-        public MathCommand(ICommandHistoryAccess commandHistoryAccess)
+        public MathCommand(ICommandHistoryWriter commandHistoryAccess)
         {
             this.commandHistoryAccess = commandHistoryAccess;
         }
