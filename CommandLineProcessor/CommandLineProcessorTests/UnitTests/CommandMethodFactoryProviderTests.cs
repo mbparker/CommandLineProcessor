@@ -2,8 +2,6 @@
 {
     using System.Collections.Generic;
 
-    using CommandLineProcessorCommon.Ioc;
-
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands;
 
@@ -23,8 +21,6 @@
         private const string PromptText = "prompt-text";
 
         private ICommandContext commandContextMock;
-
-        private IIocContainer iocContainerMock;
 
         private IMethodCallValidatorService methodCallValidatorServiceMock;
 
@@ -212,10 +208,8 @@
             methodCallValidatorServiceMock = Substitute.For<IMethodCallValidatorService>();
             systemUnderTest = new CommandMethodFactoryProvider(methodCallValidatorServiceMock);
             commandContextMock = Substitute.For<ICommandContext>();
-            iocContainerMock = Substitute.For<IIocContainer>();
             testingCommandImplementorMock = Substitute.For<ITestingCommandImplementor>();
             testingCommandImplementorProxy = new TestingCommandImplementor(testingCommandImplementorMock);
-            iocContainerMock.Resolve<TestingCommandImplementor>().Returns(testingCommandImplementorProxy);
             commandContextMock.GetService<TestingCommandImplementor>().Returns(testingCommandImplementorProxy);
         }
 
