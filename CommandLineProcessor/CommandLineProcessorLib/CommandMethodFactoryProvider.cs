@@ -16,7 +16,7 @@
             this.methodValidator = methodValidator;
         }
 
-        private interface ICommandDelegateMethodSignatures
+        public interface ICommandDelegateMethodSignatures
         {
             void ApplyInput(ICommandContext context, string inputText);
 

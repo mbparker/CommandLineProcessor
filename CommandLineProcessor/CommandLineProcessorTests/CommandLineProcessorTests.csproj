@@ -59,6 +59,7 @@
     <Compile Include="UnitTests\CommandDataStoreTests.cs" />
     <Compile Include="UnitTests\CommandHistoryProviderTests.cs" />
     <Compile Include="UnitTests\CommandLineProcessorProviderTests.cs" />
+    <Compile Include="UnitTests\CommandMethodFactoryProviderTests.cs" />
     <Compile Include="UnitTests\CommandPathCalculatorTests.cs" />
     <Compile Include="UnitTests\CommandRepositoryProviderTests.cs" />
     <Compile Include="UnitTests\InputHandlerProviderTests.cs" />
