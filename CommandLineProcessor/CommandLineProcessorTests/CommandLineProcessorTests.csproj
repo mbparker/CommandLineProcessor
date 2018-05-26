@@ -64,7 +64,7 @@
     <Compile Include="UnitTests\CommandRepositoryProviderTests.cs" />
     <Compile Include="UnitTests\InputHandlerProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestDataGenerators\MockCommandGenerator.cs" />
+    <Compile Include="TestData\MockCommandGenerator.cs" />
     <Compile Include="UnitTests\MethodCallValidatorProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>

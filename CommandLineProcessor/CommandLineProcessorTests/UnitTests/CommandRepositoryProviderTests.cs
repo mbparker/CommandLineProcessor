@@ -9,7 +9,7 @@
 
     using CommandLineProcessorLib;
 
-    using CommandLineProcessorTests.TestDataGenerators;
+    using CommandLineProcessorTests.TestData;
 
     using NUnit.Framework;
 

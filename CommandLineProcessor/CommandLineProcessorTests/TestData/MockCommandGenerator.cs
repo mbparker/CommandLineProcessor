@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorTests.TestDataGenerators
+﻿namespace CommandLineProcessorTests.TestData
 {
     using System.Collections.Generic;
 
