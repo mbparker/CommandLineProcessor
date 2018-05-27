@@ -136,14 +136,28 @@
             commandHistoryWriterMock.Mock.DidNotReceive().WriteLine(Arg.Any<string>());
         }
 
-        [TestCase("Math|Mult|3.25|`math|add|2|3|1.75")]
-        public void ProcessInput_WhenOverlappingCommands_AllCommandsComplete(string input)
+        [Test]
+        public void ProcessInput_WhenOverlappingCommands_AllCommandsComplete()
         {
             RegisterCommands();
 
-            processor.ProcessInput(input);
+            processor.ProcessInput("Math|Mult|3.25|`math|add|2|3|1.75");
 
-            commandHistoryWriterMock.Mock.Received(1).WriteLine("2 + 3 = 5");
+            Received.InOrder(
+                () =>
+                    {
+                        commandHistoryWriterMock.Mock.WriteLine("2 + 3 = 5");
+                        commandHistoryWriterMock.Mock.WriteLine("3.25 X 1.75 = 5.6875");
+                    });
+        }
+
+        [Test]
+        public void ProcessInput_WhenOverlappingCommandsAndTopCancelled_FirstCommandCompletes()
+        {
+            RegisterCommands();
+
+            processor.ProcessInput("Math|Mult|3.25|`math|add|2|^C|^C|^C|1.75");
+
             commandHistoryWriterMock.Mock.Received(1).WriteLine("3.25 X 1.75 = 5.6875");
         }
 

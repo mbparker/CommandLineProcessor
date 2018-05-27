@@ -179,6 +179,11 @@
         private void CancelCurrentCommand()
         {
             ActiveCommand = ActiveCommand?.Parent;
+            while (ActiveCommand == null && stateStack.Any())
+            {
+                TryResumePreviousCommand();
+            }
+
             while (ActiveCommand != null)
             {
                 if (ActiveCommand.CommandIs<IInputCommand>() || ActiveCommand.CommandIs<IContainerCommand>())
@@ -188,6 +193,10 @@
                 }
 
                 ActiveCommand = ActiveCommand.Parent;
+                while (ActiveCommand == null && stateStack.Any())
+                {
+                    TryResumePreviousCommand();
+                }
             }
 
             UpdateStateForEndOfProcessing();
