@@ -42,6 +42,30 @@
             IocContainerHolder.DisposeContainer();
         }
 
+        [TestCase("Echo|Hello World", "Hello World")]
+        [TestCase("Echo| Hello World ", "Hello World")]
+        [TestCase("Echo| Hello World ", "Hello World")]
+        [TestCase("E| Hello  World ", "Hello  World")]
+        public void ProcessInput_WhenEchoInvoked_WritesToHistory(string input, string expectedOutput)
+        {
+            RegisterCommands();
+
+            processor.ProcessInput(input);
+
+            commandHistoryWriterMock.Mock.Received(1).WriteLine($"You entered: {expectedOutput}");
+        }
+
+        [TestCase("echo|^C")]
+        [TestCase("E| ^C ")]
+        public void ProcessInput_WhenEchoInvokedAndCancel_DoesNotWriteToHistory(string input)
+        {
+            RegisterCommands();
+
+            processor.ProcessInput(input);
+
+            commandHistoryWriterMock.Mock.DidNotReceive().WriteLine(Arg.Any<string>());
+        }
+
         [TestCase("Exit", "Y")]
         [TestCase("Exit", "Yes")]
         [TestCase("exit", "y")]
@@ -72,6 +96,55 @@
             processor.ProcessInput(input2);
 
             applicationMock.Mock.DidNotReceive().Exit();
+        }
+
+        [TestCase("Math|Add|3.25|4.75", "3.25 + 4.75 = 8")]
+        [TestCase("MATH|add|3|4", "3 + 4 = 7")]
+        [TestCase("math|ADD|0.25 | 7", "0.25 + 7 = 7.25")]
+        [TestCase("math|a|-1 | 10", "-1 + 10 = 9")]
+        public void ProcessInput_WhenMathAddInvoked_WritesToHistory(string input, string expectedOutput)
+        {
+            RegisterCommands();
+
+            processor.ProcessInput(input);
+
+            commandHistoryWriterMock.Mock.Received(1).WriteLine(expectedOutput);
+        }
+
+        [TestCase("Math|Mult|3.25|4.75", "3.25 X 4.75 = 15.4375")]
+        [TestCase("MATH|mult|3|4", "3 X 4 = 12")]
+        [TestCase("MATH|M|3|4", "3 X 4 = 12")]
+        [TestCase("math|MULT|0.25 | 7", "0.25 X 7 = 1.75")]
+        public void ProcessInput_WhenMathMultInvoked_WritesToHistory(string input, string expectedOutput)
+        {
+            RegisterCommands();
+
+            processor.ProcessInput(input);
+
+            commandHistoryWriterMock.Mock.Received(1).WriteLine(expectedOutput);
+        }
+
+        [TestCase("Math|Mult|3.25|^C")]
+        [TestCase("Math|Mult|^C")]
+        [TestCase("Math|^C")]
+        public void ProcessInput_WhenMathMultInvokedAndCancel_DoesNotWriteToHistory(string input)
+        {
+            RegisterCommands();
+
+            processor.ProcessInput(input);
+
+            commandHistoryWriterMock.Mock.DidNotReceive().WriteLine(Arg.Any<string>());
+        }
+
+        [TestCase("Math|Mult|3.25|`math|add|2|3|1.75")]
+        public void ProcessInput_WhenOverlappingCommands_AllCommandsComplete(string input)
+        {
+            RegisterCommands();
+
+            processor.ProcessInput(input);
+
+            commandHistoryWriterMock.Mock.Received(1).WriteLine("2 + 3 = 5");
+            commandHistoryWriterMock.Mock.Received(1).WriteLine("3.25 X 1.75 = 5.6875");
         }
 
         [SetUp]
