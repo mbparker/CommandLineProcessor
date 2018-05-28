@@ -1,5 +1,6 @@
 ﻿namespace CommandLineProcessorTests.IntegrationTests
 {
+    using System;
     using System.Collections.Generic;
 
     using CommandLineProcessorCommon.Ioc.Windsor;
@@ -50,8 +51,9 @@
         {
             RegisterCommands();
 
-            processor.ProcessInput(input);
+            InvokeProcessInput(input);
 
+            commandHistoryWriterMock.Mock.Received(1).WriteLine(Arg.Any<string>());
             commandHistoryWriterMock.Mock.Received(1).WriteLine($"You entered: {expectedOutput}");
         }
 
@@ -61,39 +63,35 @@
         {
             RegisterCommands();
 
-            processor.ProcessInput(input);
+            InvokeProcessInput(input);
 
             commandHistoryWriterMock.Mock.DidNotReceive().WriteLine(Arg.Any<string>());
         }
 
-        [TestCase("Exit", "Y")]
-        [TestCase("Exit", "Yes")]
-        [TestCase("exit", "y")]
-        [TestCase("exit", " yessir ")]
-        [TestCase(" EXIT ", "Y")]
-        public void ProcessInput_WhenExitInvokedWithConfirm_InvokesExitOnApplication(string input1, string input2)
+        [TestCase("Exit;Y")]
+        [TestCase("Exit;Yes")]
+        [TestCase("exit;y")]
+        [TestCase("exit; yessir ")]
+        [TestCase(" EXIT ;Y")]
+        public void ProcessInput_WhenExitInvokedWithConfirm_InvokesExitOnApplication(string input)
         {
             RegisterCommands();
 
-            processor.ProcessInput(input1);
-            processor.ProcessInput(input2);
+            InvokeProcessInput(input);
 
             applicationMock.Mock.Received(1).Exit();
         }
 
-        [TestCase("Exit", "N")]
-        [TestCase("Exit", "No")]
-        [TestCase("exit", "n")]
-        [TestCase("exit", " nope ")]
-        [TestCase(" EXIT ", "N")]
-        public void ProcessInput_WhenExitInvokedWithNoConfirm_DoesNotInvokeExitOnApplication(
-            string input1,
-            string input2)
+        [TestCase("Exit;N")]
+        [TestCase("Exit;No")]
+        [TestCase("exit;n")]
+        [TestCase("exit; nope ")]
+        [TestCase(" EXIT ;N")]
+        public void ProcessInput_WhenExitInvokedWithNoConfirm_DoesNotInvokeExitOnApplication(string input)
         {
             RegisterCommands();
 
-            processor.ProcessInput(input1);
-            processor.ProcessInput(input2);
+            InvokeProcessInput(input);
 
             applicationMock.Mock.DidNotReceive().Exit();
         }
@@ -106,8 +104,9 @@
         {
             RegisterCommands();
 
-            processor.ProcessInput(input);
+            InvokeProcessInput(input);
 
+            commandHistoryWriterMock.Mock.Received(1).WriteLine(Arg.Any<string>());
             commandHistoryWriterMock.Mock.Received(1).WriteLine(expectedOutput);
         }
 
@@ -119,21 +118,52 @@
         {
             RegisterCommands();
 
-            processor.ProcessInput(input);
+            InvokeProcessInput(input);
 
+            commandHistoryWriterMock.Mock.Received(1).WriteLine(Arg.Any<string>());
             commandHistoryWriterMock.Mock.Received(1).WriteLine(expectedOutput);
         }
 
         [TestCase("Math|Mult|3.25|^C")]
         [TestCase("Math|Mult|^C")]
         [TestCase("Math|^C")]
+        [TestCase("Math;^C")]
         public void ProcessInput_WhenMathMultInvokedAndCancel_DoesNotWriteToHistory(string input)
         {
             RegisterCommands();
 
-            processor.ProcessInput(input);
+            InvokeProcessInput(input);
 
             commandHistoryWriterMock.Mock.DidNotReceive().WriteLine(Arg.Any<string>());
+        }
+
+        [TestCase("Math|Add|~|3.25;1.75", "1.75 + 3.25 = 5")]
+        [TestCase("Math|Add|~|~;3.25;1.75", "3.25 + 1.75 = 5")]
+        [TestCase("Math|~|~|~;a;3.25;1.75", "3.25 + 1.75 = 5")]
+        public void ProcessInput_WhenMPromptForInput_MustInvokeProcessInputAgain(
+            string macroInput,
+            string expectedOutputs)
+        {
+            RegisterCommands();
+
+            InvokeProcessInput(macroInput);
+
+            AssertMultipleWriteLine(expectedOutputs);
+        }
+
+        [TestCase("Math|Add|`math|add|2|3|~|3.25;1.75", "2 + 3 = 5;1.75 + 3.25 = 5")]
+        [TestCase("Math|Add|~|`math|add|2|3|3.25;1.75", "2 + 3 = 5;1.75 + 3.25 = 5")]
+        [TestCase("Math|Add|~|3.25;`math|add|2|3;1.75", "2 + 3 = 5;1.75 + 3.25 = 5")]
+        [TestCase("Math|Add|~|3.25;`math|add|~|3;2;1.75", "2 + 3 = 5;1.75 + 3.25 = 5")]
+        public void ProcessInput_WhenMPromptForInputAndTranparent_MustInvokeProcessInputAgain(
+            string macroInput,
+            string expectedOutputs)
+        {
+            RegisterCommands();
+
+            InvokeProcessInput(macroInput);
+
+            AssertMultipleWriteLine(expectedOutputs);
         }
 
         [Test]
@@ -143,12 +173,7 @@
 
             processor.ProcessInput("Math|Mult|3.25|`math|add|2|3|1.75");
 
-            Received.InOrder(
-                () =>
-                    {
-                        commandHistoryWriterMock.Mock.WriteLine("2 + 3 = 5");
-                        commandHistoryWriterMock.Mock.WriteLine("3.25 X 1.75 = 5.6875");
-                    });
+            AssertMultipleWriteLine("2 + 3 = 5;3.25 X 1.75 = 5.6875");
         }
 
         [Test]
@@ -158,6 +183,7 @@
 
             processor.ProcessInput("Math|Mult|3.25|`math|add|2|^C|^C|^C|1.75");
 
+            commandHistoryWriterMock.Mock.Received(1).WriteLine(Arg.Any<string>());
             commandHistoryWriterMock.Mock.Received(1).WriteLine("3.25 X 1.75 = 5.6875");
         }
 
@@ -168,11 +194,34 @@
             ResetMocks();
         }
 
+        private void AssertMultipleWriteLine(string expectedOutputs)
+        {
+            var outputs = expectedOutputs.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            commandHistoryWriterMock.Mock.Received(outputs.Length).WriteLine(Arg.Any<string>());
+            Received.InOrder(
+                () =>
+                    {
+                        foreach (var output in outputs)
+                        {
+                            commandHistoryWriterMock.Mock.WriteLine(output);
+                        }
+                    });
+        }
+
         private void GetServices()
         {
             processor = IocContainerHolder.Container.Resolve<ICommandLineProcessorService>();
             applicationMock = IocContainerHolder.Container.Resolve<ITestApplication>();
             commandHistoryWriterMock = IocContainerHolder.Container.Resolve<ITestCommandHistoryWriter>();
+        }
+
+        private void InvokeProcessInput(string macroInput)
+        {
+            var inputs = macroInput.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var input in inputs)
+            {
+                processor.ProcessInput(input);
+            }
         }
 
         private void RegisterCommands()

@@ -128,7 +128,7 @@
                 {
                     EmitHelp();
                 }
-                else if (ShouldContinuePausedCommand())
+                else if (ShouldContinuePausedCommand(input))
                 {
                     ContinuePausedCommand(input);
                 }
@@ -407,9 +407,9 @@
             }
         }
 
-        private bool ShouldContinuePausedCommand()
+        private bool ShouldContinuePausedCommand(string input)
         {
-            return state.InputList.Count > 0 && state.InputIndex >= 0;
+            return !ShouldSuspendCurrentCommand(input) && state.InputList.Count > 0 && state.InputIndex >= 0;
         }
 
         private bool ShouldSuspendCurrentCommand(string input)
