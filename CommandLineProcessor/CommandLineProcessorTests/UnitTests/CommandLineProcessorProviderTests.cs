@@ -140,7 +140,7 @@
             SetUpCommand(exeCommand);
             command = (command as IInputCommand).NextCommand;
 
-            systemUnderTest.ProcessInput("test3||subinput||~||test3||sub");
+            systemUnderTest.ProcessInput("test3|subinput|~|test3|sub");
 
             (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>());
             Assert.AreSame(systemUnderTest.ActiveCommand, inputCommand);
@@ -171,7 +171,7 @@
             SetUpCommand(exeCommand);
             command = (command as IInputCommand).NextCommand;
 
-            systemUnderTest.ProcessInput("test3||`test3||~||subinput||~||test3||sub");
+            systemUnderTest.ProcessInput("test3|`test3|~|subinput|~|test3|sub");
 
             Assert.AreSame(systemUnderTest.ActiveCommand, rootCommand);
             Assert.That(systemUnderTest.Status, Is.EqualTo(CommandLineStatus.WaitingForCommand));
@@ -264,7 +264,7 @@
 
             systemUnderTest.ProcessInput("test3");
             systemUnderTest.ProcessInput("subinput");
-            systemUnderTest.ProcessInput("^c||^c||^c");
+            systemUnderTest.ProcessInput("^c|^c|^c");
 
             (command as IExecutableCommand).DidNotReceiveWithAnyArgs().Execute(Arg.Any<ICommandContext>());
             Assert.IsNull(systemUnderTest.ActiveCommand);
@@ -287,7 +287,7 @@
 
             systemUnderTest.ProcessInput("test3");
             systemUnderTest.ProcessInput("subinput");
-            systemUnderTest.ProcessInput("`test3||subinput||hello world");
+            systemUnderTest.ProcessInput("`test3|subinput|hello world");
 
             (command as IExecutableCommand).Received(1).Execute(Arg.Any<ICommandContext>());
             Assert.AreSame(systemUnderTest.ActiveCommand, inputCommand);

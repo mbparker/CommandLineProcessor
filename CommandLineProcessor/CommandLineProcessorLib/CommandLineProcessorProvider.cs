@@ -103,18 +103,11 @@
         public void ProcessInput(string input)
         {
             try
-            {                
+            {
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    if (ActiveCommand is IInputCommand inputCommand)
-                    {
-                        input = inputCommand.GetDefaultValue(ActiveContext);
-                    }
-                    else if (ActiveCommand is IContainerCommand containerCommand)
-                    {
-                        input = containerCommand.GetDefaultCommandSelector(ActiveContext);
-                    }
-                }                
+                    input = GetDefaultValueIfAny();
+                }
 
                 if (string.IsNullOrWhiteSpace(input))
                 {
@@ -245,6 +238,21 @@
             return StackDepth == 0 && ActiveCommand == null;
         }
 
+        private string GetDefaultValueIfAny()
+        {
+            if (ActiveCommand is IInputCommand inputCommand)
+            {
+                return inputCommand.GetDefaultValue(ActiveContext);
+            }
+
+            if (ActiveCommand is IContainerCommand containerCommand)
+            {
+                return containerCommand.GetDefaultCommandSelector(ActiveContext);
+            }
+
+            return string.Empty;
+        }
+
         private string GetFullyQualifiedInput(string input)
         {
             return commandPathCalculator.CalculateFullyQualifiedPath(ActiveCommand, input);
@@ -272,7 +280,7 @@
             var fullyQualifiedInput = GetFullyQualifiedInput(input);
             SelectActiveCommandFromQuialifiedInput(fullyQualifiedInput);
             HistoryService.NotifyCommandExecuting(ActiveCommand);
-            HandleCommand();            
+            HandleCommand();
         }
 
         private void HandleCommand()
@@ -347,7 +355,13 @@
             {
                 try
                 {
-                    ProcessInputBasedOnState(inputList[i]);
+                    var input = inputList[i];
+                    if (string.IsNullOrWhiteSpace(input))
+                    {
+                        input = GetDefaultValueIfAny();
+                    }
+
+                    ProcessInputBasedOnState(input);
                 }
                 catch (WaitForInputException)
                 {
@@ -419,7 +433,7 @@
 
         private string[] SplitInput(string input)
         {
-            return input.Split(new[] { Settings.CommandSeparatorToken }, StringSplitOptions.RemoveEmptyEntries);
+            return input.Split(new[] { Settings.CommandSeparatorToken }, StringSplitOptions.None);
         }
 
         private void SuspendCurrentCommand()
