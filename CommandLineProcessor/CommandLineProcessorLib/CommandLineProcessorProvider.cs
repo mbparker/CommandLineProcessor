@@ -407,6 +407,10 @@
             {
                 HandleInput(input);
             }
+            else
+            {
+                throw new InvalidOperationException("Processor is not ready to accept commands. Did you register your commands?");
+            }
         }
 
         private void SelectActiveCommandFromQuialifiedInput(string fullyQualifiedInput)

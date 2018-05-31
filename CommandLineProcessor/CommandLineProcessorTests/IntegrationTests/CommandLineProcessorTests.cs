@@ -194,7 +194,7 @@
         }
 
         [Test]
-        public void ProcessInput_WhenUnknownCommand_FiresEvent()
+        public void ProcessInput_WhenUnknownCommand_FiresErrorEvent()
         {
             RegisterCommands();
 
@@ -203,6 +203,17 @@
             Assert.That(processingErrors.Count, Is.EqualTo(1));
             Assert.That(processingErrors[0].Exception.Message, Is.EqualTo("Command 'DoesntExist' not found."));
             processingErrors.Clear();
+        }
+
+        [Test]
+        public void ProcessInput_WhenCommandsNotRegistered_FiresErrorEvent()
+        {
+            InvokeProcessInput("Math");
+
+            Assert.That(processingErrors.Count, Is.EqualTo(1));
+            Assert.That(processingErrors[0].Exception.Message, Is.EqualTo("Processor is not ready to accept commands. Did you register your commands?"));
+            processingErrors.Clear();
+            RegisterCommands();
         }
 
         [SetUp]
@@ -215,11 +226,18 @@
         [TearDown]
         public void TearDown()
         {
+            UnhookEvents();
             AssertNoRegistrationErrors();
             AssertNoProcessingErrors();
             AssertProcessorActiveCommandIsNull();
             AssertProcessorStateIsWaitingForCommand();
             AssertProcessorStackDepthIsZero();
+        }
+
+        private void UnhookEvents()
+        {
+            processor.CommandRegistrationError -= Processor_CommandRegistrationError;
+            processor.ProcessInputError -= Processor_ProcessInputError;
         }
 
         private void AssertMultipleWriteLine(string expectedOutputs)
