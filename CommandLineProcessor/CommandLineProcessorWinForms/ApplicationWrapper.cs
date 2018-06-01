@@ -1,4 +1,4 @@
-﻿namespace CommandLineProcessorDemo
+﻿namespace CommandLineProcessorWinForms
 {
     using System.Windows.Forms;
 

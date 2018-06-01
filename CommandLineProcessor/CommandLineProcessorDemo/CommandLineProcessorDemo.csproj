@@ -56,8 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationWrapper.cs" />
-    <Compile Include="CommandHistoryAccess.cs" />
     <Compile Include="ContainerRegistration.cs" />
     <Compile Include="DemoCommands\CommandDescriptors.cs" />
     <Compile Include="DemoCommands\CommandRegistration.cs" />
@@ -70,7 +68,6 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="ICommandHistoryControlAccess.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormMain.resx">
@@ -115,6 +112,10 @@
     <ProjectReference Include="..\CommandLineProcessorLib\CommandLineProcessorLib.csproj">
       <Project>{313e1a1c-dee8-4d79-b418-ea817ac3e4a7}</Project>
       <Name>CommandLineProcessorLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandLineProcessorWinForms\CommandLineProcessorWinForms.csproj">
+      <Project>{f0a1b7aa-ee4f-4342-b7dc-1ada63af7a31}</Project>
+      <Name>CommandLineProcessorWinForms</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

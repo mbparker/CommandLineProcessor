@@ -9,6 +9,8 @@
 
     using CommandLineProcessorLib;
 
+    using CommandLineProcessorWinForms;
+
     public static class ContainerRegistration
     {
         public static void RegisterServices(IIocContainer container)
@@ -25,7 +27,9 @@
             container.Register<IMethodCallValidatorService, MethodCallValidatorProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandMethodFactoryService, CommandMethodFactoryProvider>(ServiceLifestyle.Singleton);
             container.Register<ICommandHistoryWriter, ICommandHistoryControlAccess, CommandHistoryAccess>(ServiceLifestyle.Singleton);
+            container.Register<ICommandInputControlAccess, CommandInputAccess>(ServiceLifestyle.Singleton);
             container.Register<IApplication, ApplicationWrapper>(ServiceLifestyle.Singleton);
+            container.Register<ICommandLineWinFormsHelper, CommandLineWinFormsHelper>(ServiceLifestyle.Singleton);
             container.Register<EchoCommand>(ServiceLifestyle.Transient);
             container.Register<ExitCommand>(ServiceLifestyle.Transient);
             container.Register<MathCommand>(ServiceLifestyle.Transient);

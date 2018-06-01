@@ -8,6 +8,8 @@
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands.Registration;
 
+    using CommandLineProcessorWinForms;
+
     static class Program
     {
         /// <summary>
@@ -23,10 +25,11 @@
                 Application.SetCompatibleTextRenderingDefault(false);
                 ContainerRegistration.RegisterServices(IocContainerHolder.Container);
                 var processor = IocContainerHolder.Container.Resolve<ICommandLineProcessorService>();
-                var inputHandler = IocContainerHolder.Container.Resolve<IInputHandlerService>();
                 var commandRegistration = IocContainerHolder.Container.Resolve<IRootCommandRegistration>();
-                var commahdHistoryAccess = IocContainerHolder.Container.Resolve<ICommandHistoryControlAccess>();
-                Application.Run(new FormMain(processor, inputHandler, commandRegistration, commahdHistoryAccess));
+                var commandInputAccess = IocContainerHolder.Container.Resolve<ICommandInputControlAccess>();
+                var commandHistoryAccess = IocContainerHolder.Container.Resolve<ICommandHistoryControlAccess>();
+                var helper = IocContainerHolder.Container.Resolve<ICommandLineWinFormsHelper>();
+                Application.Run(new FormMain(processor, commandRegistration, commandInputAccess, commandHistoryAccess, helper));
             }
             finally
             {
