@@ -7,7 +7,6 @@
     using CommandLineProcessorContracts;
     using CommandLineProcessorContracts.Commands;
     using CommandLineProcessorContracts.Commands.Registration;
-    using CommandLineProcessorContracts.Events;
 
     using CommandLineProcessorDemo.DemoCommands;
 
@@ -34,16 +33,10 @@
         {
             InitializeComponent();
             this.commandLineProcessor = commandLineProcessor;
-            this.commandLineProcessor.CommandRegistrationError += CommandLineProcessor_CommandRegistrationError;
             this.commandRegistration = commandRegistration;
             this.commandControlAccess = commandControlAccess;
             this.commandHistoryAccess = commandHistoryAccess;
             this.helper = helper;
-        }
-
-        private void CommandLineProcessor_CommandRegistrationError(object sender, CommandLineErrorEventArgs e)
-        {
-            MessageBox.Show(this, e.Exception.Message);
         }
 
         private IEnumerable<ICommand> CreateCommands()
@@ -56,7 +49,7 @@
             commandControlAccess.InputControl = textBox_CommandLine;
             commandHistoryAccess.HistoryControl = textBox_CommandHistory;
             helper.AutomaticHelp = true;
-            helper.OutputDiagnostics = false;
+            helper.OutputDiagnostics = true;
             helper.OutputErrors = true;
             commandLineProcessor.RegisterCommands(CreateCommands());
         }
