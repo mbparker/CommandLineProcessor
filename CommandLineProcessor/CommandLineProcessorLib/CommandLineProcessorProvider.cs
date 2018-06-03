@@ -224,13 +224,16 @@
         {
             HelpRequest?.Invoke(
                 this,
-                new CommandLineHelpEventArgs(ActiveCommand, (ActiveCommand as IContainerCommand)?.Children));
+                new CommandLineHelpEventArgs(
+                    ActiveCommand,
+                    (ActiveCommand as IContainerCommand)?.Children,
+                    GetSyntaxHelp()));
         }
 
         private void EmitHelpForAllCommands()
         {
             var commands = commandRepository.Where(x => x.Parent == null).Distinct().OrderBy(x => x.PrimarySelector);
-            HelpRequest?.Invoke(this, new CommandLineHelpEventArgs(null, commands));
+            HelpRequest?.Invoke(this, new CommandLineHelpEventArgs(null, commands, GetSyntaxHelp()));
         }
 
         private bool FullyCompleted()
@@ -268,6 +271,22 @@
 
             state.ResetInputList();
             return remainingInputs;
+        }
+
+        private IDictionary<string, string> GetSyntaxHelp()
+        {
+            var result = new Dictionary<string, string>();
+            result.Add(
+                Settings.CancelToken,
+                "Cancels the current active command, returning control to the closest previous command which requires input.");
+            result.Add(
+                Settings.CommandSeparatorToken,
+                "Separates command elements, allowing them to be combined into macros.");
+            result.Add(Settings.PauseForUserInputToken, "Pauses the execution of a macro, waiting for user input.");
+            result.Add(
+                Settings.SuspendActiveCommandToken,
+                "Suspends execution of the current command, and starts the command specified after this token.");
+            return result;
         }
 
         private string GetTransparentCommandInput(string input)
@@ -409,7 +428,8 @@
             }
             else
             {
-                throw new InvalidOperationException("Processor is not ready to accept commands. Did you register your commands?");
+                throw new InvalidOperationException(
+                    "Processor is not ready to accept commands. Did you register your commands?");
             }
         }
 

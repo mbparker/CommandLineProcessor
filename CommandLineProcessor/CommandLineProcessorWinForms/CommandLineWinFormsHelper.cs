@@ -189,7 +189,8 @@
         }
 
         private void CommandLineProcessor_HelpRequest(object sender, CommandLineHelpEventArgs e)
-        {
+        {            
+            DisplaySyntaxHelp(e.SyntaxInfo);
             if (e.CommandInfo != null)
             {
                 DisplayActiveCommandHelp(e.CommandInfo, e.SubCommandInfo);
@@ -246,6 +247,15 @@
             {
                 var aliases = GetAliasesForHelp(command);
                 historyWriter.WriteLine(GenerateHelpTextForCommand(command, aliases));
+            }
+        }
+
+        private void DisplaySyntaxHelp(IDictionary<string, string> syntaxInfo)
+        {
+            historyWriter.WriteLine("Syntax Tokens:");
+            foreach (var pair in syntaxInfo)
+            {
+                historyWriter.WriteLine($"{pair.Key}: {pair.Value}");
             }
         }
 
