@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace CommandLineLibrary.Demo
+﻿namespace CommandLineLibrary.Demo
 {
-    using Autofac;
-
     using CommandLineLibrary.Contracts;
     using CommandLineLibrary.Contracts.Commands.Registration;
     using CommandLineLibrary.Demo.Commands;
+
+    using global::Autofac;
 
     class Program
     {
@@ -21,7 +19,7 @@ namespace CommandLineLibrary.Demo
                 cli.OutputDiagnostics = true;
                 cli.OutputErrors = true;
                 cli.Run(commands);
-            }                
+            }
         }
     }
 }

@@ -3,14 +3,14 @@
     using System;
     using System.Collections.Generic;
 
-    using Autofac;
-
     using CommandLineLibrary.Contracts;
     using CommandLineLibrary.Contracts.Commands;
     using CommandLineLibrary.Contracts.Commands.Registration;
     using CommandLineLibrary.Contracts.Events;
     using CommandLineLibrary.Demo.Commands;
     using CommandLineLibrary.Tests.Integration.Services;
+
+    using global::Autofac;
 
     using NSubstitute;
 

@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineLibrary.Tests.Un
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineLibrary.Tests.Integration", "CommandLineLibrary.Tests.Integration\CommandLineLibrary.Tests.Integration.csproj", "{1DED4B22-DF10-4B66-8ECB-1BE8955E1241}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineLibrary.Demo.Commands", "CommandLineLibrary.Demo.Commands\CommandLineLibrary.Demo.Commands.csproj", "{9051DF4F-54BA-4EAE-8E60-115A2DE79839}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineLibrary.Demo.Commands", "CommandLineLibrary.Demo.Commands\CommandLineLibrary.Demo.Commands.csproj", "{9051DF4F-54BA-4EAE-8E60-115A2DE79839}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineLibrary.Autofac", "CommandLineLibrary.Autofac\CommandLineLibrary.Autofac.csproj", "{A32E52E5-8D80-40C2-A026-C3D1421DE099}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{9051DF4F-54BA-4EAE-8E60-115A2DE79839}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9051DF4F-54BA-4EAE-8E60-115A2DE79839}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9051DF4F-54BA-4EAE-8E60-115A2DE79839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A32E52E5-8D80-40C2-A026-C3D1421DE099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A32E52E5-8D80-40C2-A026-C3D1421DE099}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A32E52E5-8D80-40C2-A026-C3D1421DE099}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A32E52E5-8D80-40C2-A026-C3D1421DE099}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
