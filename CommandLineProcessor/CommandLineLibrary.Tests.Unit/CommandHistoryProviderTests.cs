@@ -79,7 +79,36 @@
         {
             systemUnderTest.NotifyCommandExecuting(command1Mock);
 
+            Assert.AreSame(command1Mock, systemUnderTest.Next());
             Assert.IsNull(systemUnderTest.Next());
+        }
+
+        [Test]
+        public void NextAndPrevious_WhenMultipleItemsAndFullTraversal_ReturnsExpectedResults()
+        {
+            systemUnderTest.NotifyCommandExecuting(command1Mock);
+            systemUnderTest.NotifyCommandExecuting(command2Mock);
+            systemUnderTest.NotifyCommandExecuting(command3Mock);
+
+            Assert.AreSame(command1Mock, systemUnderTest.Next());
+            Assert.AreSame(command2Mock, systemUnderTest.Next());
+            Assert.AreSame(command3Mock, systemUnderTest.Next());
+            Assert.IsNull(systemUnderTest.Next());
+            Assert.AreSame(command3Mock, systemUnderTest.Previous());
+            Assert.AreSame(command2Mock, systemUnderTest.Previous());
+            Assert.AreSame(command1Mock, systemUnderTest.Previous());
+            Assert.IsNull(systemUnderTest.Previous());
+        }
+
+        [Test]
+        public void NextAndPrevious_WhenOneAndFullTraversal_ReturnsExpectedResult()
+        {
+            systemUnderTest.NotifyCommandExecuting(command1Mock);
+
+            Assert.AreSame(command1Mock, systemUnderTest.Next());
+            Assert.IsNull(systemUnderTest.Next());
+            Assert.AreSame(command1Mock, systemUnderTest.Previous());
+            Assert.IsNull(systemUnderTest.Previous());
         }
 
         [Test]
@@ -132,6 +161,43 @@
             systemUnderTest.NotifyCommandExecuting(command1Mock);
 
             Assert.AreSame(command1Mock, systemUnderTest.Previous());
+        }
+
+        [Test]
+        public void Previous_WhenOneItemAndAtEnd_ReturnsNull()
+        {
+            systemUnderTest.NotifyCommandExecuting(command1Mock);
+
+            Assert.AreSame(command1Mock, systemUnderTest.Previous());
+            Assert.IsNull(systemUnderTest.Previous());
+        }
+
+        [Test]
+        public void PreviousAndNext_WhenMultipleItemsAndFullTraversal_ReturnsExpectedResults()
+        {
+            systemUnderTest.NotifyCommandExecuting(command1Mock);
+            systemUnderTest.NotifyCommandExecuting(command2Mock);
+            systemUnderTest.NotifyCommandExecuting(command3Mock);
+
+            Assert.AreSame(command3Mock, systemUnderTest.Previous());
+            Assert.AreSame(command2Mock, systemUnderTest.Previous());
+            Assert.AreSame(command1Mock, systemUnderTest.Previous());
+            Assert.IsNull(systemUnderTest.Previous());
+            Assert.AreSame(command1Mock, systemUnderTest.Next());
+            Assert.AreSame(command2Mock, systemUnderTest.Next());
+            Assert.AreSame(command3Mock, systemUnderTest.Next());
+            Assert.IsNull(systemUnderTest.Next());
+        }
+
+        [Test]
+        public void PreviousAndNext_WhenOneAndFullTraversal_ReturnsExpectedResult()
+        {
+            systemUnderTest.NotifyCommandExecuting(command1Mock);
+
+            Assert.AreSame(command1Mock, systemUnderTest.Previous());
+            Assert.IsNull(systemUnderTest.Previous());
+            Assert.AreSame(command1Mock, systemUnderTest.Next());
+            Assert.IsNull(systemUnderTest.Next());
         }
 
         [SetUp]

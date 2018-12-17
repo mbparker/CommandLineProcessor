@@ -10,7 +10,7 @@
     {
         private readonly List<ICommand> history = new List<ICommand>();
 
-        private int historyIndex = -1;
+        private int historyIndex = -2;
 
         public CommandHistoryProvider()
         {
@@ -35,13 +35,16 @@
         {
             if (historyIndex < 0)
             {
-                historyIndex = history.Count - 1;
-                return null;
+                return First();
             }
 
-            if (historyIndex < history.Count - 1)
+            if (historyIndex < history.Count)
             {
-                historyIndex++;
+                historyIndex++;                
+            }
+
+            if (historyIndex >= 0 && historyIndex < history.Count)
+            {
                 return FetchHistoryItem();
             }
 
@@ -60,21 +63,25 @@
                     }
 
                     history.Add(command);
-                    historyIndex = -1;
+                    historyIndex = -2;
                 }
             }
         }
 
         public ICommand Previous()
         {
-            if (historyIndex < 0)
+            if (historyIndex < -1)
             {
                 return Last();
             }
 
-            if (historyIndex > 0)
+            if (historyIndex >= 0)
             {
-                historyIndex--;
+                historyIndex--;                
+            }
+
+            if (historyIndex >= 0 && historyIndex < history.Count)
+            {
                 return FetchHistoryItem();
             }
 
