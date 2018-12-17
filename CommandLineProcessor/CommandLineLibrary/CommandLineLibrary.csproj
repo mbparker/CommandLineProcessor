@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
+    <Company>Tristar Advanced Software Systems</Company>
+    <Product>Command Line Processor</Product>
+    <Authors>Mathew B. Parker</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyName>CommandLineLibrary</AssemblyName>
+  </PropertyGroup>
+
+</Project>
