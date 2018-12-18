@@ -9,6 +9,7 @@
     <Authors>Mathew B. Parker</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>CommandLineLibrary</AssemblyName>
+    <Description>A .NET based command line processor for applications such as CAD programs.</Description>
   </PropertyGroup>
 
 </Project>
