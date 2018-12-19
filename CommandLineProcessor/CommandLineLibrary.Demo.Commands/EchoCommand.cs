@@ -1,5 +1,7 @@
 ﻿namespace CommandLineLibrary.Demo.Commands
 {
+    using System;
+
     using CommandLineLibrary.Contracts;
 
     public class EchoCommand
@@ -19,7 +21,7 @@
         public void Echo_Execute(ICommandContext context)
         {
             var text = context.DataStore.Get<string>("TEXT");
-            commandHistoryAccess.WriteLine($"You entered: {text}");
+            commandHistoryAccess.WriteLine($"{Environment.NewLine}You entered: {text}");
         }
 
         public string Echo_GetDefault(ICommandContext context)

@@ -114,6 +114,7 @@
         public void Run(IEnumerable<ICommand> commandLexicon)
         {
             commandLineProcessor.RegisterCommands(commandLexicon);
+            UpdateCommandLine();
             while (true)
             {
                 HandleKeyPress(Console.ReadKey(true));
@@ -171,7 +172,7 @@
 
         private void CommandLineProcessor_ProcessInputError(object sender, CommandLineErrorEventArgs e)
         {
-            historyWriter.WriteLine($"Input Error: {e.Exception.Message}");
+            historyWriter.WriteLine($"{Environment.NewLine}Input Error: {e.Exception.Message}");
         }
 
         private void CommandLineProcessor_StatusChanged(object sender, CommandLineStatusChangedEventArgs e)

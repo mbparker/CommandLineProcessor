@@ -16,7 +16,7 @@
                 var commands = CommandRegistration.Register(rootCommandRegistration);
                 var cli = container.Resolve<ICommandLineInterface>();
                 cli.AutomaticHelp = true;
-                cli.OutputDiagnostics = true;
+                cli.OutputDiagnostics = false;
                 cli.OutputErrors = true;
                 cli.Run(commands);
             }
