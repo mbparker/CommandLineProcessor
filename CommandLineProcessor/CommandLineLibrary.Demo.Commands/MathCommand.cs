@@ -1,5 +1,6 @@
 ﻿namespace CommandLineLibrary.Demo.Commands
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -20,7 +21,7 @@
             var num1 = context.DataStore.Get<double>("N1");
             var num2 = context.DataStore.Get<double>("N2");
             var result = num1 + num2;
-            commandHistoryAccess.WriteLine($"{num1} + {num2} = {result}");
+            commandHistoryAccess.WriteLine($"{Environment.NewLine}{num1} + {num2} = {result}");
         }
 
         public void Math_ApplyInput_1(ICommandContext context, string input)
@@ -53,7 +54,7 @@
             var num1 = context.DataStore.Get<double>("N1");
             var num2 = context.DataStore.Get<double>("N2");
             var result = num1 * num2;
-            commandHistoryAccess.WriteLine($"{num1} X {num2} = {result}");
+            commandHistoryAccess.WriteLine($"{Environment.NewLine}{num1} X {num2} = {result}");
         }
     }
 }

@@ -210,7 +210,7 @@
 
         private void DisplaySyntaxHelp(IDictionary<string, string> syntaxInfo)
         {
-            historyWriter.WriteLine("Syntax Tokens:");
+            historyWriter.WriteLine($"{Environment.NewLine}Syntax Tokens:");
             foreach (var pair in syntaxInfo)
             {
                 historyWriter.WriteLine($"{pair.Key}: {pair.Value}");
