@@ -21,6 +21,7 @@
             builder.RegisterType<EchoCommand>().InstancePerDependency();
             builder.RegisterType<ExitCommand>().InstancePerDependency();
             builder.RegisterType<MathCommand>().InstancePerDependency();
+            builder.RegisterType<ConfigCommand>().InstancePerDependency();
             builder.RegisterType<CommandDescriptors>().InstancePerDependency();
             builder.RegisterType<ApplicationInstance>().As<IApplication, ICommandHistoryWriter>().SingleInstance();
 

@@ -44,6 +44,28 @@
                     x => x.Math_ApplyInput_2(null, null))
                 .SetChildToExecutableCommand<MathCommand>(x => x.Math_Mult_Execute(null));
 
+            var configCommand = registration.RegisterContainerCommand<ConfigCommand, CommandDescriptors>(
+                x => x.Config_Descriptor,
+                x => x.Config_GetDefaultCommand(null, null));
+
+            configCommand.AddInputCommand<ConfigCommand, CommandDescriptors>(
+                x => x.Config_AutomaticHelp_Descriptor,
+                x => x.Config_AutomaticHelp_GetPromptText(null),
+                x => x.Config_AutomaticHelp_ApplyInputMethod(null, null),
+                x => x.Config_AutomaticHelp_GetDefault(null));
+
+            configCommand.AddInputCommand<ConfigCommand, CommandDescriptors>(
+                x => x.Config_OutputDiagnostics_Descriptor,
+                x => x.Config_OutputDiagnostics_GetPromptText(null),
+                x => x.Config_OutputDiagnostics_ApplyInputMethod(null, null),
+                x => x.Config_OutputDiagnostics_GetDefault(null));
+
+            configCommand.AddInputCommand<ConfigCommand, CommandDescriptors>(
+                x => x.Config_OutputErrors_Descriptor,
+                x => x.Config_OutputErrors_GetPromptText(null),
+                x => x.Config_OutputErrors_ApplyInputMethod(null, null),
+                x => x.Config_OutputErrors_GetDefault(null));
+
             return registration.RegisteredCommands;
         }
     }

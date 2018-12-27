@@ -47,5 +47,40 @@
                     Name = "Multiplication",
                     HelpText = "Multiplies two numbers and displays the result."
                 };
+
+        public ICommandDescriptor Config_Descriptor =>
+            new CommandDescriptor
+                {
+                    PrimarySelector = "Config",
+                    Name = "Configuration Settings",
+                    HelpText = "Supports checking and updating configuration settings."
+                };
+
+        public ICommandDescriptor Config_AutomaticHelp_Descriptor =>
+            new CommandDescriptor
+                {
+                    PrimarySelector = "Autohelp",
+                    AliasSelectors = new[] { "A" },
+                    Name = "Automatic Help",
+                    HelpText = "Controls whether the automatic help text system is active."
+                };
+
+        public ICommandDescriptor Config_OutputDiagnostics_Descriptor =>
+            new CommandDescriptor
+                {
+                    PrimarySelector = "Diagout",
+                    AliasSelectors = new[] { "D" },
+                    Name = "Output Diagnostics",
+                    HelpText = "Controls whether diagnostic messages are written to the console."
+                };
+
+        public ICommandDescriptor Config_OutputErrors_Descriptor =>
+            new CommandDescriptor
+                {
+                    PrimarySelector = "Errorsout",
+                    AliasSelectors = new[] { "E" },
+                    Name = "Output Errors",
+                    HelpText = "Controls whether error messages are written to the console."
+                };
     }
 }
